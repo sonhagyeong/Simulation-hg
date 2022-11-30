@@ -4172,13 +4172,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 208621015}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94e708016be3dda4c9f50d5b9bc5dfb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Y_Position: 1.5
-  Segment: {fileID: 0}
   Truck: {fileID: 3151086261457232587, guid: 143ba14b2bcd21c4bbac872dad038af5, type: 3}
   segment_position: {x: 0, y: 0, z: 0}
   Truck_position: {x: 0, y: 0, z: 0}
