@@ -403,8 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cde2d72bdb21e8542bfb0a4516cc158b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trafficSystem: {fileID: 8618832685377349214, guid: e2d23d23b0621c54781755a470aba3eb,
-    type: 3}
+  trafficSystem: {fileID: 0}
   waypointThresh: 2.5
   raycastAnchor: {fileID: 451167079458263051}
   raycastLength: 3
