@@ -4319,6 +4319,7 @@ MonoBehaviour:
   Y_Position: 1.5
   segment: {fileID: 0}
   Truck: {fileID: 3151086261457232587, guid: 143ba14b2bcd21c4bbac872dad038af5, type: 3}
+  selectedTruck: 
   path_Position: {x: 0, y: 0, z: 0}
   path_Rotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1001 &209015807
@@ -5543,7 +5544,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276436625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.37966156, y: 0, z: -1.171917}
+  m_LocalPosition: {x: -0.3461647, y: 0, z: 0.5301857}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 416631478}
@@ -5726,7 +5727,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279247004}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.3273735, y: 0, z: -6.114525}
+  m_LocalPosition: {x: -0.20503235, y: 0, z: -7.2482643}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 496017520}
@@ -17869,7 +17870,7 @@ PrefabInstance:
     - target: {fileID: 3151086261457232587, guid: 5436edf760797b840ad338ae91eec01e,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5436edf760797b840ad338ae91eec01e, type: 3}
@@ -33200,7 +33201,7 @@ MonoBehaviour:
   - {fileID: 863305561}
   - {fileID: 496017519}
   intersections: []
-  curSegment: {fileID: 416631479}
+  curSegment: {fileID: 496017519}
 --- !u!4 &1449957559
 Transform:
   m_ObjectHideFlags: 0

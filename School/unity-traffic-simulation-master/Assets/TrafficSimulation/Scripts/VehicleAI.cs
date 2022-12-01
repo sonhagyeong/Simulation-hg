@@ -71,7 +71,7 @@ namespace TrafficSimulation {
                 return;
 
             initMaxSpeed = wheelDrive.maxSpeed;
-            Debug.Log("initMaxSpeed is " + initMaxSpeed);
+            // Debug.Log("initMaxSpeed is " + initMaxSpeed);
             SetWaypointVehicleIsOn();
         }
 
@@ -280,14 +280,14 @@ namespace TrafficSimulation {
         }
 
         void SetWaypointVehicleIsOn(){
-            Debug.Log("SetWaypointVehicleIsOn() Start");
+            // Debug.Log("SetWaypointVehicleIsOn() Start");
             //Find current target
             foreach(Segment segment in trafficSystem.segments){
-                Debug.Log("segment is " + segment);
+                // Debug.Log("segment is " + segment);
                 if(segment.IsOnSegment(this.transform.position)){
-                    Debug.Log("this car is no Segment");
+                    // Debug.Log("this car is no Segment");
                     currentTarget.segment = segment.id;
-                    Debug.Log("currentTarget.segment is " + currentTarget.segment);
+                    // Debug.Log("currentTarget.segment is " + currentTarget.segment);
 
                     //Find nearest waypoint to start within the segment
                     float minDist = float.MaxValue;
@@ -303,7 +303,7 @@ namespace TrafficSimulation {
                     }
                     break;
                 }
-                Debug.Log("this car is not in segment");
+                // Debug.Log("this car is not in segment");
             }
 
             //Get future target

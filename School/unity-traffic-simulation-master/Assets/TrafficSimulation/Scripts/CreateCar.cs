@@ -12,36 +12,37 @@ namespace TrafficSimulation{
         public GameObject segment;
         // 뽑을 트럭
         public GameObject Truck;
+        public string selectedTruck;
+
         // Segment별 Position
         public Vector3 path_Position;
         public Quaternion path_Rotation;
 
-        string selectedPath;
-        string nameTag;
+        public string selectedPath;
+        public string nameTag;
 
         List<string> pathName = new List<string>();
+        List<string> truckName = new List<string>();
 
         Dictionary<string, string> tagsDic = new Dictionary<string, string>();
-        // Dictionary<string, Vector3> pathPositionsDic = new Dictionary<string, Vector3>();
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
-        
-        
-        
+
         
         // Start is called before the first frame update
         void Start()
         {   
             AddPathName();
+            AddTruckName();
             AddTags();
             AddRotation();
-            // AddPosition();
-            GetPath();
+            GetPathName();
             GetPathPosition();
             GetPathRotation();
-            // Create();
+            GetTruck();
+            Create();
         }
 
-        void AddPathName()
+        public void AddPathName()
         {
             pathName.Add("path_0");
             pathName.Add("path_1");
@@ -49,7 +50,7 @@ namespace TrafficSimulation{
             pathName.Add("path_3");
         }
         
-        void AddTags()
+        public void AddTags()
         {
             //path에 tag는 string 값으로 추가
             tagsDic.Add(pathName[0], "place1");
@@ -58,7 +59,7 @@ namespace TrafficSimulation{
             tagsDic.Add(pathName[3], "place4");
         }
     
-        void AddRotation()
+        public void AddRotation()
         {
             //path종류는 String, 좌표는 V3 값으로 추가
             rotationsDic.Add(pathName[0], Quaternion.Euler(0, 0, 0));
@@ -67,43 +68,54 @@ namespace TrafficSimulation{
             rotationsDic.Add(pathName[3], Quaternion.Euler(0, 0, 0));
         }
 
-        // void AddPosition()
-        // {
-        //     //path종류는 String, 좌표는 V3 값으로 추가
-        //     pathPositionsDic.Add(pathName[0], GameObject.Find(pathName[0]).transform.position);
-        //     pathPositionsDic.Add(pathName[1], GameObject.Find(pathName[1]).transform.position);
-        //     pathPositionsDic.Add(pathName[2], GameObject.Find(pathName[2]).transform.position);
-        //     pathPositionsDic.Add(pathName[3], GameObject.Find(pathName[3]).transform.position);
-        // }
-
-        void GetPath()
+        public void AddTruckName()
         {
-            int randomNum = Random.Range(0, 4);
-            selectedPath = pathName[randomNum];
-            // Debug.Log("selected path : " + selectedPath);
+            truckName.Add("Truck1");
+            truckName.Add("Truck2");
+        }
+
+        public void GetPathName()
+        {
+            int pathRandomNum = Random.Range(0, 4);
+            selectedPath = pathName[pathRandomNum];
+            Debug.Log("selected path : " + selectedPath);
         }
 
         // 뽑은 Segment position 얻기
-        void GetPathPosition()
+        public void GetPathPosition()
         {   
             path_Position = GameObject.Find(selectedPath).transform.position;
             // Debug.Log("path_Position : "+ path_Position);
         }
 
-        void GetPathRotation()
+        public void GetPathRotation()
         {
             path_Rotation = rotationsDic[selectedPath];
         }
 
-        void GetTag()
+        public void GetTag()
         {
             nameTag = tagsDic[selectedPath];
         }
+
+        public void GetTruck()
+        {   
+            int truckRandomNum = Random.Range(0, 1);
+            selectedTruck = truckName[truckRandomNum];
+            
+            Debug.Log("truckRandomNum : "+ truckRandomNum);
+            // Debug.Log("truckName[truckRandomNum] : "+ truckName[truckRandomNum]);
+            // Truck = Resources.Load<GameObject>(truckName[truckRandomNum]);
+            Debug.Log(selectedTruck);
+        }
+
         // Truck 인스턴스화 하기
         void Create()
         {   
+            Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
             Instantiate(Truck, path_Position, path_Rotation);
+            // Instantiate(Truck, GameObject.Find("path_0").transform.position, Quaternion.Euler(0, 0, 0));
             
             Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
