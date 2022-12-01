@@ -114,10 +114,11 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+            Truck.AddComponent<SetNameTag>();
+            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
             Instantiate(Truck, path_Position, path_Rotation);
             // Instantiate(Truck, GameObject.Find("path_0").transform.position, Quaternion.Euler(0, 0, 0));
-            
-            Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
+            // Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
 
 
