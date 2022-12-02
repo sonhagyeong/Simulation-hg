@@ -19,7 +19,7 @@ namespace TrafficSimulation{
         public Quaternion path_Rotation;
 
         public string selectedPath;
-        public string nameTag;
+        public static string nameTag;
 
         List<string> pathName = new List<string>();
         List<string> truckName = new List<string>();
@@ -27,7 +27,7 @@ namespace TrafficSimulation{
         Dictionary<string, string> tagsDic = new Dictionary<string, string>();
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
-        
+
         // Start is called before the first frame update
         void Start()
         {   
@@ -39,6 +39,7 @@ namespace TrafficSimulation{
             GetPathPosition();
             GetPathRotation();
             GetTruck();
+            GetTag();
             Create();
         }
 
@@ -110,12 +111,15 @@ namespace TrafficSimulation{
         }
 
         // Truck 인스턴스화 하기
-        void Create()
+        public void Create()
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            Truck.AddComponent<SetNameTag>();
             Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+
+            Debug.Log("nameTag : " + nameTag);
+            Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
+    
             Instantiate(Truck, path_Position, path_Rotation);
             // Instantiate(Truck, GameObject.Find("path_0").transform.position, Quaternion.Euler(0, 0, 0));
             // Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);

@@ -1687,7 +1687,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 80272117}
-  m_LocalRotation: {x: 0.1666212, y: 0.00083444203, z: -0.00014100691, w: 0.9860206}
+  m_LocalRotation: {x: 0.16662113, y: 0.0011122739, z: -0.00018795594, w: 0.9860204}
   m_LocalPosition: {x: -41, y: 6.5, z: -36.04}
   m_LocalScale: {x: 1, y: 3.393734, z: 1}
   m_Children:
@@ -4148,7 +4148,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 202831624}
-  m_LocalRotation: {x: 0.1666212, y: 0.00083444203, z: -0.00014100691, w: 0.9860206}
+  m_LocalRotation: {x: 0.16662113, y: 0.0011122739, z: -0.00018795594, w: 0.9860204}
   m_LocalPosition: {x: -41, y: 6.5, z: -36.04}
   m_LocalScale: {x: 1.4177, y: 1.5293, z: 1}
   m_Children: []
@@ -4322,6 +4322,7 @@ MonoBehaviour:
   selectedTruck: 
   path_Position: {x: 0, y: 0, z: 0}
   path_Rotation: {x: 0, y: 0, z: 0, w: 0}
+  selectedPath: 
 --- !u!1001 &209015807
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20896,11 +20897,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Truck1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3151086261457232587, guid: 143ba14b2bcd21c4bbac872dad038af5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 143ba14b2bcd21c4bbac872dad038af5, type: 3}
@@ -44790,24 +44786,6 @@ Transform:
   m_Father: {fileID: 1534125234}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1 &1935301712 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3151086261457232587, guid: 143ba14b2bcd21c4bbac872dad038af5,
-    type: 3}
-  m_PrefabInstance: {fileID: 916363457}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1935301713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935301712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcee39d48d26a014ab2924a3968ef418, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1938862187
 GameObject:
   m_ObjectHideFlags: 0
@@ -51245,11 +51223,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 451167080861334316, guid: 5436edf760797b840ad338ae91eec01e,
-        type: 3}
-      propertyPath: raySpacing
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 451167080861334316, guid: 5436edf760797b840ad338ae91eec01e,
         type: 3}
       propertyPath: trafficSystem
