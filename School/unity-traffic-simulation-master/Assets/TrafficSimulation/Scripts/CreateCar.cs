@@ -126,7 +126,9 @@ namespace TrafficSimulation{
             // Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
             // Instantiate(Truck, path_Position, path_Rotation);
-            Instantiate(Truck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 180, 0));
+
+            // Test할 때
+            Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
             Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
 
