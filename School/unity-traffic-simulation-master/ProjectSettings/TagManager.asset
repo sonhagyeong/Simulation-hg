@@ -7,8 +7,8 @@ TagManager:
   - AutonomousVehicle
   - Waypoint
   - CarTracking
-  - Spot1
-  - Spot2
+  - place1
+  - place2
   layers:
   - Default
   - TransparentFX

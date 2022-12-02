@@ -35,6 +35,11 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
+            CreateProcess();
+        }
+
+        public void CreateProcess()
+        {
             GetPathName();
             GetPathPosition();
             GetPathRotation();
@@ -45,10 +50,10 @@ namespace TrafficSimulation{
 
         public void AddPathName()
         {
-            pathName.Add("path_0");
-            pathName.Add("path_1");
-            pathName.Add("path_2");
-            pathName.Add("path_3");
+            pathName.Add("Segment-0");
+            pathName.Add("Segment-1");
+            pathName.Add("Segment-2");
+            pathName.Add("Segment-3");
         }
         
         public void AddTags()
@@ -86,7 +91,7 @@ namespace TrafficSimulation{
         public void GetPathPosition()
         {   
             path_Position = GameObject.Find(selectedPath).transform.position;
-            // Debug.Log("path_Position : "+ path_Position);
+            Debug.Log("path_Position : "+ path_Position);
         }
 
         public void GetPathRotation()
@@ -115,14 +120,14 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
 
-            Debug.Log("nameTag : " + nameTag);
-            Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
+            // Debug.Log("nameTag : " + nameTag);
+            // Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
-            Instantiate(Truck, path_Position, path_Rotation);
-            // Instantiate(Truck, GameObject.Find("path_0").transform.position, Quaternion.Euler(0, 0, 0));
-            // Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
+            // Instantiate(Truck, path_Position, path_Rotation);
+            Instantiate(Truck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 180, 0));
+            Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
 
 
