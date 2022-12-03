@@ -9,6 +9,7 @@ TagManager:
   - CarTracking
   - place1
   - place2
+  - place0
   layers:
   - Default
   - TransparentFX

@@ -27,6 +27,8 @@ namespace TrafficSimulation{
         Dictionary<string, string> tagsDic = new Dictionary<string, string>();
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
+        public int SegmentCount = 6;
+        public int TruckPrefabCount = 2;
 
         // Start is called before the first frame update
         void Start()
@@ -54,15 +56,21 @@ namespace TrafficSimulation{
             pathName.Add("Segment-1");
             pathName.Add("Segment-2");
             pathName.Add("Segment-3");
+            pathName.Add("Segment-4");
+            pathName.Add("Segment-5");
+            pathName.Add("Segment-6");
         }
         
         public void AddTags()
         {
             //path에 tag는 string 값으로 추가
-            tagsDic.Add(pathName[0], "place1");
-            tagsDic.Add(pathName[1], "place2");
-            tagsDic.Add(pathName[2], "place3");
-            tagsDic.Add(pathName[3], "place4");
+            tagsDic.Add(pathName[0], "place0");
+            tagsDic.Add(pathName[1], "place1");
+            tagsDic.Add(pathName[2], "place2");
+            tagsDic.Add(pathName[3], "place3");
+            tagsDic.Add(pathName[4], "place4");
+            tagsDic.Add(pathName[5], "place5");
+            tagsDic.Add(pathName[6], "place6");
         }
     
         public void AddRotation()
@@ -71,7 +79,11 @@ namespace TrafficSimulation{
             rotationsDic.Add(pathName[0], Quaternion.Euler(0, 0, 0));
             rotationsDic.Add(pathName[1], Quaternion.Euler(0, 180, 0));
             rotationsDic.Add(pathName[2], Quaternion.Euler(0, 180, 90));
-            rotationsDic.Add(pathName[3], Quaternion.Euler(0, 0, 0));
+            rotationsDic.Add(pathName[3], Quaternion.Euler(0, 180, 0));
+            rotationsDic.Add(pathName[4], Quaternion.Euler(0, 180, 0));
+            rotationsDic.Add(pathName[5], Quaternion.Euler(0, 0, 0));
+            rotationsDic.Add(pathName[6], Quaternion.Euler(0, 180, 0));
+
         }
 
         public void AddTruckName()
@@ -82,7 +94,7 @@ namespace TrafficSimulation{
 
         public void GetPathName()
         {
-            int pathRandomNum = Random.Range(0, 4);
+            int pathRandomNum = Random.Range(0, SegmentCount -1);
             selectedPath = pathName[pathRandomNum];
             Debug.Log("selected path : " + selectedPath);
         }
@@ -106,7 +118,7 @@ namespace TrafficSimulation{
 
         public void GetTruck()
         {   
-            int truckRandomNum = Random.Range(0, 1);
+            int truckRandomNum = Random.Range(0, TruckPrefabCount -1);
             selectedTruck = truckName[truckRandomNum];
             
             Debug.Log("truckRandomNum : "+ truckRandomNum);
@@ -128,7 +140,7 @@ namespace TrafficSimulation{
             // Instantiate(Truck, path_Position, path_Rotation);
 
             // Test할 때
-            Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
             Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
 
