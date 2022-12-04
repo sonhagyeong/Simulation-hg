@@ -5,5 +5,6 @@ using UnityEngine;
 public class SetNameTag : MonoBehaviour
 {   
     public string truckNameTag;
+    public string segmentNameTag;
 
 }

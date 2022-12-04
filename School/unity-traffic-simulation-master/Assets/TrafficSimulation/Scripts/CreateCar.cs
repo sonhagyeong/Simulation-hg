@@ -27,7 +27,7 @@ namespace TrafficSimulation{
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
         public int SegmentCount = 6;
-        public int TruckPrefabCount = 2;
+        public int TruckPrefabCount = 3;
         public int carCount = 0;
         public int carEndCount = 3;
 
@@ -85,12 +85,12 @@ namespace TrafficSimulation{
         {
             //path에 tag는 string 값으로 추가
             tagsDic.Add(pathName[0], "place0");
-            tagsDic.Add(pathName[1], "place1");
-            tagsDic.Add(pathName[2], "place2");
-            tagsDic.Add(pathName[3], "place3");
-            tagsDic.Add(pathName[4], "place4");
-            tagsDic.Add(pathName[5], "place5");
-            tagsDic.Add(pathName[6], "place6");
+            tagsDic.Add(pathName[1], "place2");
+            tagsDic.Add(pathName[2], "place0");
+            tagsDic.Add(pathName[3], "place4");
+            tagsDic.Add(pathName[4], "place1");
+            tagsDic.Add(pathName[5], "place3");
+            tagsDic.Add(pathName[6], "place4");
         }
     
         public void AddRotation()
@@ -110,6 +110,7 @@ namespace TrafficSimulation{
         {
             truckName.Add("Truck1");
             truckName.Add("Truck2");
+            truckName.Add("Truck3");
         }
 
         public void GetPathName()
@@ -153,6 +154,7 @@ namespace TrafficSimulation{
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
             Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
             Debug.Log("nameTag : " + nameTag);
             Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
