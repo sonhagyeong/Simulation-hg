@@ -7,7 +7,6 @@ namespace TrafficSimulation{
 
     public class CreateCar : MonoBehaviour
     {   
-        public float Y_Position = 1.5f;
         // 뽑을 Segment
         public GameObject segment;
         // 뽑을 트럭
@@ -29,6 +28,8 @@ namespace TrafficSimulation{
 
         public int SegmentCount = 6;
         public int TruckPrefabCount = 2;
+        public int carCount = 0;
+        public int carEndCount = 3;
 
         // Start is called before the first frame update
         void Start()
@@ -37,7 +38,26 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
-            CreateProcess();
+            // CreateProcess();
+            StartCoroutine(createVehicle());
+        }
+
+        IEnumerator createVehicle()
+        {
+            // AddPathName();
+            // AddTruckName();
+            // AddTags();
+            // AddRotation();
+            // CreateProcess();
+            while (true){
+                yield return new WaitForSecondsRealtime( 5.0f );
+                carCount += 1;
+                CreateProcess();
+                if(carCount == carEndCount)
+                {
+                    break;
+                }
+            }
         }
 
         public void CreateProcess()
@@ -103,7 +123,7 @@ namespace TrafficSimulation{
         public void GetPathPosition()
         {   
             path_Position = GameObject.Find(selectedPath).transform.position;
-            Debug.Log("path_Position : "+ path_Position);
+            // Debug.Log("path_Position : "+ path_Position);
         }
 
         public void GetPathRotation()
@@ -121,10 +141,10 @@ namespace TrafficSimulation{
             int truckRandomNum = Random.Range(0, TruckPrefabCount -1);
             selectedTruck = truckName[truckRandomNum];
             
-            Debug.Log("truckRandomNum : "+ truckRandomNum);
+            // Debug.Log("truckRandomNum : "+ truckRandomNum);
             // Debug.Log("truckName[truckRandomNum] : "+ truckName[truckRandomNum]);
             // Truck = Resources.Load<GameObject>(truckName[truckRandomNum]);
-            Debug.Log(selectedTruck);
+            // Debug.Log(selectedTruck);
         }
 
         // Truck 인스턴스화 하기
@@ -132,16 +152,16 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
 
-            // Debug.Log("nameTag : " + nameTag);
-            // Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
+            Debug.Log("nameTag : " + nameTag);
+            Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
-            // Instantiate(Truck, path_Position, path_Rotation);
+            Instantiate(Truck, path_Position, path_Rotation);
 
             // Test할 때
-            Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
-            Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
+            // Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
+            // Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
         }
 
 

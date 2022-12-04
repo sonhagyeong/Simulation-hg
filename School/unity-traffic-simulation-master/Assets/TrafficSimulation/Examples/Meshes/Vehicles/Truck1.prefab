@@ -387,8 +387,8 @@ MonoBehaviour:
   maxTorque: 100
   brakeTorque: 100000
   unitType: 0
-  minSpeed: 2
-  maxSpeed: 8
+  minSpeed: 10
+  maxSpeed: 15
   leftWheelShape: {fileID: 100002, guid: 25a29d2766309ac48a1840f0088d95eb, type: 3}
   rightWheelShape: {fileID: 100004, guid: 25a29d2766309ac48a1840f0088d95eb, type: 3}
   animateWheels: 1
