@@ -313,6 +313,7 @@ GameObject:
   - component: {fileID: 3151086261457232584}
   - component: {fileID: 451167080861334316}
   - component: {fileID: -549438475485083545}
+  - component: {fileID: 3985948322759418040}
   m_Layer: 9
   m_Name: Truck2
   m_TagString: AutonomousVehicle
@@ -386,8 +387,8 @@ MonoBehaviour:
   maxTorque: 100
   brakeTorque: 100000
   unitType: 0
-  minSpeed: 2
-  maxSpeed: 8
+  minSpeed: 10
+  maxSpeed: 15
   leftWheelShape: {fileID: 100002, guid: 25a29d2766309ac48a1840f0088d95eb, type: 3}
   rightWheelShape: {fileID: 100004, guid: 25a29d2766309ac48a1840f0088d95eb, type: 3}
   animateWheels: 1
@@ -426,6 +427,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   truckNameTag: 
+--- !u!114 &3985948322759418040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3151086261457232587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcee39d48d26a014ab2924a3968ef418, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3151086261457265451
 GameObject:
   m_ObjectHideFlags: 0
