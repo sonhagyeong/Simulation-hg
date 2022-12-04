@@ -29,7 +29,7 @@ namespace TrafficSimulation{
         public int SegmentCount = 6;
         public int TruckPrefabCount = 3;
         public int carCount = 0;
-        public int carEndCount = 3;
+        public int carEndCount = 20;
 
         // Start is called before the first frame update
         void Start()
@@ -50,7 +50,7 @@ namespace TrafficSimulation{
             // AddRotation();
             // CreateProcess();
             while (true){
-                yield return new WaitForSecondsRealtime( 5.0f );
+                yield return new WaitForSecondsRealtime( 3.0f );
                 carCount += 1;
                 CreateProcess();
                 if(carCount == carEndCount)
@@ -98,7 +98,7 @@ namespace TrafficSimulation{
             //path종류는 String, 좌표는 V3 값으로 추가
             rotationsDic.Add(pathName[0], Quaternion.Euler(0, 0, 0));
             rotationsDic.Add(pathName[1], Quaternion.Euler(0, 180, 0));
-            rotationsDic.Add(pathName[2], Quaternion.Euler(0, 180, 90));
+            rotationsDic.Add(pathName[2], Quaternion.Euler(0, 0, 0));
             rotationsDic.Add(pathName[3], Quaternion.Euler(0, 180, 0));
             rotationsDic.Add(pathName[4], Quaternion.Euler(0, 180, 0));
             rotationsDic.Add(pathName[5], Quaternion.Euler(0, 0, 0));
@@ -162,8 +162,7 @@ namespace TrafficSimulation{
             Instantiate(Truck, path_Position, path_Rotation);
 
             // Test할 때
-            // Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
-            // Debug.Log("Truck traffic system is " + Truck.GetComponent<VehicleAI>().trafficSystem);
+            // Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
         }
 
 

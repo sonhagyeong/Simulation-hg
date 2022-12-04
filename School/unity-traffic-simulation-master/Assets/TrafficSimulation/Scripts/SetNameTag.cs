@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SetNameTag : MonoBehaviour
 {   
-    public string truckNameTag;
+    // StartPoint
     public string segmentNameTag;
+    // Finish Point
+    public string truckNameTag;
+    
 }
