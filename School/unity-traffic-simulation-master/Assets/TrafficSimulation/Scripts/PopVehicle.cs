@@ -42,7 +42,7 @@ public class PopVehicle : MonoBehaviour
         else 
         {
             stopwatch.Start();
-            UnityEngine.Debug.Log("No crash");
+            // UnityEngine.Debug.Log("No crash");
         }
     }
     

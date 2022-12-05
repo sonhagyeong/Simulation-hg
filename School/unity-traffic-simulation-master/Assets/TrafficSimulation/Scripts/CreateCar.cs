@@ -29,7 +29,7 @@ namespace TrafficSimulation{
         public int SegmentCount = 6;
         public int TruckPrefabCount = 3;
         public int carCount = 0;
-        public int carEndCount = 20;
+        public int carLastCount = 5;
 
         // Start is called before the first frame update
         void Start()
@@ -52,9 +52,13 @@ namespace TrafficSimulation{
             while (true){
                 yield return new WaitForSecondsRealtime( 3.0f );
                 carCount += 1;
+                Debug.Log("carCount : " + carCount);
                 CreateProcess();
-                if(carCount == carEndCount)
-                {
+                if(carCount == carLastCount)
+                {   
+                    Debug.Log("carCount : " + carCount);
+                    Debug.Log("carLastCount : " + carLastCount);
+                    Debug.Log("carCount and carEndCount are same");
                     break;
                 }
             }
@@ -159,7 +163,8 @@ namespace TrafficSimulation{
             Debug.Log("nameTag : " + nameTag);
             Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
-            Instantiate(Truck, path_Position, path_Rotation);
+            GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
+            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
             // Test할 때
             // Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
