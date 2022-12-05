@@ -7,7 +7,7 @@ using System.IO;
 // 이 스크립는 Truck한테 있어야함
 public class PopVehicle : MonoBehaviour
 {
-    // public string currentNameTag = GetComponent<SetNameTag>().truckNameTag;
+    int endNumberOfTruck;
 
     Stopwatch stopwatch = new Stopwatch();
 
@@ -30,13 +30,14 @@ public class PopVehicle : MonoBehaviour
             var list = new List<string>();
             string startSegment = GetComponent<SetNameTag>().segmentNameTag;
             string finishPlace = GetComponent<SetNameTag>().truckNameTag;
-            int endNumberOfTruck = GameObject.Find("Trucks").transform.childCount;
-
-            UnityEngine.Debug.Log("startSegment : " + startSegment);
-            UnityEngine.Debug.Log("finishPlace : " + finishPlace);
-            UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
-
             // string name = this.gameObject.ToString();
+
+            Invoke("GetValue", 1);
+
+            // UnityEngine.Debug.Log("startSegment : " + startSegment);
+            // UnityEngine.Debug.Log("finishPlace : " + finishPlace);
+            // UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
+
             list.Add((time*0.001).ToString());
             
             for (int i = 0; i < list.Count; i++)
@@ -57,5 +58,11 @@ public class PopVehicle : MonoBehaviour
             // UnityEngine.Debug.Log("No crash");
         }
     }
+
+    public void GetValue()
+    {
+        var trucksChildren = GameObject.Find("Trucks").GetComponentsInChildren<Transform>();
+        endNumberOfTruck = trucksChildren.Length;
+    } 
     
 }

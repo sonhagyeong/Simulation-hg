@@ -27,7 +27,7 @@ namespace TrafficSimulation{
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
         public int SegmentCount = 6;
-        public int TruckPrefabCount = 3;
+        public int TruckPrefabCount = 4;
         public int carCount = 0;
         public int carLastCount = 5;
 
@@ -38,8 +38,11 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
-            CreateProcess();
-            // StartCoroutine(createVehicle());
+            StartCoroutine(createVehicle());
+
+            // Test 할때
+            // CreateProcess();
+            
         }
 
         IEnumerator createVehicle()
@@ -115,13 +118,14 @@ namespace TrafficSimulation{
             truckName.Add("Truck1");
             truckName.Add("Truck2");
             truckName.Add("Truck3");
+            truckName.Add("Truck4");
         }
 
         public void GetPathName()
         {
             int pathRandomNum = Random.Range(0, SegmentCount -1);
             selectedPath = pathName[pathRandomNum];
-            Debug.Log("selected path : " + selectedPath);
+            // Debug.Log("selected path : " + selectedPath);
         }
 
         // 뽑은 Segment position 얻기
@@ -145,11 +149,6 @@ namespace TrafficSimulation{
         {   
             int truckRandomNum = Random.Range(0, TruckPrefabCount -1);
             selectedTruck = truckName[truckRandomNum];
-            
-            // Debug.Log("truckRandomNum : "+ truckRandomNum);
-            // Debug.Log("truckName[truckRandomNum] : "+ truckName[truckRandomNum]);
-            // Truck = Resources.Load<GameObject>(truckName[truckRandomNum]);
-            // Debug.Log(selectedTruck);
         }
 
         // Truck 인스턴스화 하기
@@ -157,20 +156,20 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
+            Debug.Log("selectedPath : "+ selectedPath);
             Debug.Log("nameTag : " + nameTag);
-            Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
-            // GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
-            // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+            GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
+            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
             // Test할 때
-            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
-            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
-            GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
-            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+            // Truck.GetComponent<SetNameTag>().truckNameTag = "place2";
+            // Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-1";
+            // GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
+            // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
         }
 
