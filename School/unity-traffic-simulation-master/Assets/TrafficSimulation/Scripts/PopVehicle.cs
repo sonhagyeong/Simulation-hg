@@ -8,15 +8,18 @@ using System.IO;
 public class PopVehicle : MonoBehaviour
 {
     // public string currentNameTag = GetComponent<SetNameTag>().truckNameTag;
-    
+
     Stopwatch stopwatch = new Stopwatch();
 
     public void OnTriggerEnter(Collider collider)
     {   
+        int initialNumberOfTruck = GameObject.Find("Trucks").transform.childCount;
+
         //트럭의 trucknametag와 부딪힌 오브젝트의 태그와 동일한 경우 
         if (collider.gameObject.tag == GetComponent<SetNameTag>().truckNameTag)
         {
             gameObject.SetActive(false);
+            // Destroy(gameObject);
             stopwatch.Stop();
             float time = stopwatch.ElapsedMilliseconds ;
             UnityEngine.Debug.Log(time*0.001);
@@ -25,7 +28,15 @@ public class PopVehicle : MonoBehaviour
             StreamWriter streamWriter = new StreamWriter(fs, System.Text.Encoding.Unicode);
 
             var list = new List<string>();
-            string name = this.gameObject.ToString();
+            string startSegment = GetComponent<SetNameTag>().segmentNameTag;
+            string finishPlace = GetComponent<SetNameTag>().truckNameTag;
+            int endNumberOfTruck = GameObject.Find("Trucks").transform.childCount;
+
+            UnityEngine.Debug.Log("startSegment : " + startSegment);
+            UnityEngine.Debug.Log("finishPlace : " + finishPlace);
+            UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
+
+            // string name = this.gameObject.ToString();
             list.Add((time*0.001).ToString());
             
             for (int i = 0; i < list.Count; i++)
@@ -33,7 +44,8 @@ public class PopVehicle : MonoBehaviour
                 var tmp = list[i];
 
                 //Debug.Log(string.Format("{0},{1}", tmp.nIndex, tmp.sName));
-                streamWriter.WriteLine(string.Format("{0},{1:F4}", name.Substring(0, name.Length - 24), tmp));
+                // streamWriter.WriteLine(string.Format("{0},{1:F4}", name.Substring(0, name.Length - 24), tmp));
+                streamWriter.WriteLine(string.Format("{0},{1},{2:F4},{3},{4}", startSegment, finishPlace, tmp, initialNumberOfTruck, endNumberOfTruck));
             }
 
             streamWriter.Close();
