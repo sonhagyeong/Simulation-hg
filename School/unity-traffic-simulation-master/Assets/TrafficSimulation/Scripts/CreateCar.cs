@@ -31,6 +31,8 @@ namespace TrafficSimulation{
         public int carCount = 0;
         public int carLastCount = 5;
 
+        private bool _isDone = false;
+
         // Start is called before the first frame update
         void Start()
         {   
@@ -38,11 +40,10 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
-            StartCoroutine(createVehicle());
+            // StartCoroutine(createVehicle());
 
             // Test 할때
-            // CreateProcess();
-            
+            CreateProcess();          
         }
 
         IEnumerator createVehicle()
@@ -67,6 +68,14 @@ namespace TrafficSimulation{
             }
         }
 
+        private void Update()
+        {
+            if(GameObject.Find("Trucks").transform.childCount == 0)
+            {
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
+        }
+
         public void CreateProcess()
         {
             GetPathName();
@@ -81,7 +90,8 @@ namespace TrafficSimulation{
         {
             pathName.Add("Segment-0");
             pathName.Add("Segment-1");
-            pathName.Add("Segment-2");
+            // Segment 2랑 7연결
+            pathName.Add("Segment-7");
             pathName.Add("Segment-3");
             pathName.Add("Segment-4");
             pathName.Add("Segment-5");
@@ -105,7 +115,7 @@ namespace TrafficSimulation{
             //path종류는 String, 좌표는 V3 값으로 추가
             rotationsDic.Add(pathName[0], Quaternion.Euler(0, 0, 0));
             rotationsDic.Add(pathName[1], Quaternion.Euler(0, 180, 0));
-            rotationsDic.Add(pathName[2], Quaternion.Euler(0, 0, 0));
+            rotationsDic.Add(pathName[2], Quaternion.Euler(0, 270, 0));
             rotationsDic.Add(pathName[3], Quaternion.Euler(0, 180, 0));
             rotationsDic.Add(pathName[4], Quaternion.Euler(0, 180, 0));
             rotationsDic.Add(pathName[5], Quaternion.Euler(0, 0, 0));
@@ -156,20 +166,20 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
-            Debug.Log("selectedPath : "+ selectedPath);
-            Debug.Log("nameTag : " + nameTag);
+            // Debug.Log("selectedPath : "+ selectedPath);
+            // Debug.Log("nameTag : " + nameTag);
     
-            GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
-            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
-
-            // Test할 때
-            // Truck.GetComponent<SetNameTag>().truckNameTag = "place2";
-            // Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-1";
-            // GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
+            // GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
             // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+
+            //Test할 때
+            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
+            GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
         }
 
