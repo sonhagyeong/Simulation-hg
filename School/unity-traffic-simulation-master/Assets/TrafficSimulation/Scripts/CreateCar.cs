@@ -38,8 +38,8 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
-            // CreateProcess();
-            StartCoroutine(createVehicle());
+            CreateProcess();
+            // StartCoroutine(createVehicle());
         }
 
         IEnumerator createVehicle()
@@ -157,17 +157,21 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
             Debug.Log("nameTag : " + nameTag);
             Debug.Log("truckNameTag : "+ Truck.GetComponent<SetNameTag>().truckNameTag);
     
-            GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
-            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+            // GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
+            // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
             // Test할 때
-            // Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
+            GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+
         }
 
 
