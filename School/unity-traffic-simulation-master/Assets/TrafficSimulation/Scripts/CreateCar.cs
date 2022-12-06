@@ -29,9 +29,10 @@ namespace TrafficSimulation{
         public int SegmentCount = 6;
         public int TruckPrefabCount = 4;
         public int carCount = 0;
-        public int carLastCount = 5;
-
-        private bool _isDone = false;
+        // 생성할 총 트럭 개수
+        public int carEndCount;
+        public float waitSecond = 3f;
+        // private bool _isDone = false;
 
         // Start is called before the first frame update
         void Start()
@@ -40,10 +41,15 @@ namespace TrafficSimulation{
             AddTruckName();
             AddTags();
             AddRotation();
-            // StartCoroutine(createVehicle());
 
-            // Test 할때
-            CreateProcess();          
+            // Test할때
+            // 출발지 고정할 때
+            // carEndCount 6까지 Test 
+            TestCreateTruck();
+
+            //랜덤으로 트럭 생기게
+            carEndCount = 1;
+            StartCoroutine(createVehicle());
         }
 
         IEnumerator createVehicle()
@@ -54,27 +60,29 @@ namespace TrafficSimulation{
             // AddRotation();
             // CreateProcess();
             while (true){
-                yield return new WaitForSecondsRealtime( 3.0f );
+                // yield return new WaitForSecondsRealtime( waitSecond );
                 carCount += 1;
                 Debug.Log("carCount : " + carCount);
                 CreateProcess();
-                if(carCount == carLastCount)
+                if(carCount == carEndCount)
                 {   
                     Debug.Log("carCount : " + carCount);
-                    Debug.Log("carLastCount : " + carLastCount);
+                    Debug.Log("carEndCount : " + carEndCount);
                     Debug.Log("carCount and carEndCount are same");
                     break;
                 }
+
+                yield return new WaitForSecondsRealtime(waitSecond);
             }
         }
 
-        private void Update()
-        {
-            if(GameObject.Find("Trucks").transform.childCount == 0)
-            {
-                UnityEditor.EditorApplication.isPlaying = false;
-            }
-        }
+        // private void Update()
+        // {
+        //     if(GameObject.Find("Trucks").transform.childCount == 0)
+        //     {
+        //         UnityEditor.EditorApplication.isPlaying = false;
+        //     }
+        // }
 
         public void CreateProcess()
         {
@@ -86,6 +94,7 @@ namespace TrafficSimulation{
             Create();
         }
 
+        // 출발지
         public void AddPathName()
         {
             pathName.Add("Segment-0");
@@ -98,6 +107,7 @@ namespace TrafficSimulation{
             pathName.Add("Segment-6");
         }
         
+        // 목적지
         public void AddTags()
         {
             //path에 tag는 string 값으로 추가
@@ -109,7 +119,8 @@ namespace TrafficSimulation{
             tagsDic.Add(pathName[5], "place3");
             tagsDic.Add(pathName[6], "place4");
         }
-    
+
+        // 회전값
         public void AddRotation()
         {
             //path종류는 String, 좌표는 V3 값으로 추가
@@ -166,23 +177,46 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
-            // Debug.Log("selectedPath : "+ selectedPath);
-            // Debug.Log("nameTag : " + nameTag);
+            // 자동화 할때
+            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+
+            Debug.Log("selectedPath : "+ selectedPath);
+            Debug.Log("nameTag : " + nameTag);
     
-            // GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
+            Instantiate(Truck, path_Position, path_Rotation);
             // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
-
-            //Test할 때
-            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
-            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
-            GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
-            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
         }
 
+        public void TestCreateTruck()
+        {
+            //Test할 때
 
+            GameObject testingTruck = Resources.Load<GameObject>("Truck2");
+            testingTruck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+
+            // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            
+            // 출발지
+            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
+            
+            // 목적지
+            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            
+            //출발지에서 트럭 생성 => 출발지, 회전값 수정
+
+            // Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            Instantiate(Truck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            // Instantiate(Truck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(Truck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(Truck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
+            // Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
+
+            // 아래 수정 금지
+            // testTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+        }
     }
 }
