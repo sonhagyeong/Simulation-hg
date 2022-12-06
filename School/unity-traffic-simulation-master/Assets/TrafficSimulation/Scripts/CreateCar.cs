@@ -68,13 +68,13 @@ namespace TrafficSimulation{
             }
         }
 
-        private void Update()
-        {
-            if(GameObject.Find("Trucks").transform.childCount == 0)
-            {
-                UnityEditor.EditorApplication.isPlaying = false;
-            }
-        }
+        // private void Update()
+        // {
+        //     if(GameObject.Find("Trucks").transform.childCount == 0)
+        //     {
+        //         UnityEditor.EditorApplication.isPlaying = false;
+        //     }
+        // }
 
         public void CreateProcess()
         {
@@ -166,20 +166,21 @@ namespace TrafficSimulation{
         {   
             Truck = Resources.Load<GameObject>(selectedTruck);
             Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
-            // Debug.Log("selectedPath : "+ selectedPath);
-            // Debug.Log("nameTag : " + nameTag);
+            Debug.Log("selectedPath : "+ selectedPath);
+            Debug.Log("nameTag : " + nameTag);
     
-            // GameObject newTruck = Instantiate(Truck, path_Position, path_Rotation);
+            Instantiate(Truck, path_Position, path_Rotation);
             // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
             //Test할 때
-            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
-            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
-            GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
-            newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+            // Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            // Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
+            // Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            // GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
         }
 

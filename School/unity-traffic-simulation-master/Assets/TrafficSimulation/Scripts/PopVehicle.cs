@@ -7,13 +7,13 @@ using System.IO;
 // 이 스크립는 Truck한테 있어야함
 public class PopVehicle : MonoBehaviour
 {
-    int endNumberOfTruck;
+    // int endNumberOfTruck;
 
     Stopwatch stopwatch = new Stopwatch();
 
     public void OnTriggerEnter(Collider collider)
     {   
-        int initialNumberOfTruck = GameObject.Find("Trucks").transform.childCount;
+        int initialNumberOfTruck = GameObject.FindGameObjectsWithTag("AutonomousVehicle").Length;
 
         //트럭의 trucknametag와 부딪힌 오브젝트의 태그와 동일한 경우 
         if (collider.gameObject.tag == GetComponent<SetNameTag>().truckNameTag)
@@ -30,13 +30,14 @@ public class PopVehicle : MonoBehaviour
             var list = new List<string>();
             string startSegment = GetComponent<SetNameTag>().segmentNameTag;
             string finishPlace = GetComponent<SetNameTag>().truckNameTag;
+            int endNumberOfTruck = GameObject.FindGameObjectsWithTag("AutonomousVehicle").Length;
             // string name = this.gameObject.ToString();
 
-            Invoke("GetValue", 1);
+            // Invoke("GetValue", 1);
 
             // UnityEngine.Debug.Log("startSegment : " + startSegment);
             // UnityEngine.Debug.Log("finishPlace : " + finishPlace);
-            // UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
+            UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
 
             list.Add((time*0.001).ToString());
             
@@ -59,10 +60,10 @@ public class PopVehicle : MonoBehaviour
         }
     }
 
-    public void GetValue()
-    {
-        var trucksChildren = GameObject.Find("Trucks").GetComponentsInChildren<Transform>();
-        endNumberOfTruck = trucksChildren.Length;
-    } 
+    // public void GetValue()
+    // {
+    //     var trucksChildren = GameObject.Find("Trucks").GetComponentsInChildren<Transform>();
+    //     endNumberOfTruck = trucksChildren.Length;
+    // } 
     
 }
