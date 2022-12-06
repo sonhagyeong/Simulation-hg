@@ -48,7 +48,7 @@ namespace TrafficSimulation{
             TestCreateTruck();
 
             //랜덤으로 트럭 생기게
-            carEndCount = 1;
+            carEndCount = 2;
             StartCoroutine(createVehicle());
         }
 
@@ -200,20 +200,20 @@ namespace TrafficSimulation{
             // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
             
             // 출발지
-            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-6";
+            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
             
             // 목적지
-            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place4";
+            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place0";
             
             //출발지에서 트럭 생성 => 출발지, 회전값 수정
 
-            // Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
-            Instantiate(testingTruck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
         }
     }
 }
