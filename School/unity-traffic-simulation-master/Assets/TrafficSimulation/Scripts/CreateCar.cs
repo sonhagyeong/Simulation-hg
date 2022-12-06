@@ -200,23 +200,20 @@ namespace TrafficSimulation{
             // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
             
             // 출발지
-            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
+            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-1";
             
             // 목적지
-            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place2";
             
             //출발지에서 트럭 생성 => 출발지, 회전값 수정
 
             // Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
-            Instantiate(Truck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
-            // Instantiate(Truck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(Truck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(Truck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
-            // Instantiate(Truck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
-
-            // 아래 수정 금지
-            // testTruck.transform.SetParent(GameObject.Find("Trucks").transform);
+            Instantiate(testingTruck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
         }
     }
 }
