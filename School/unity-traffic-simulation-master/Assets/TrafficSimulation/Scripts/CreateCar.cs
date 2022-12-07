@@ -13,6 +13,9 @@ namespace TrafficSimulation{
         public GameObject Truck;
         public string selectedTruck;
 
+        // path random number
+        public int pathRandomNum;
+
         // Segment별 Position
         public Vector3 path_Position;
         public Quaternion path_Rotation;
@@ -26,7 +29,7 @@ namespace TrafficSimulation{
         Dictionary<string, string> tagsDic = new Dictionary<string, string>();
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
-        public int SegmentCount = 6;
+        public int SegmentCount;
         public int TruckPrefabCount = 4;
         public int carCount = 0;
         public int carLastCount = 5;
@@ -77,9 +80,28 @@ namespace TrafficSimulation{
         // }
 
         public void CreateProcess()
-        {
+        {   
+            SegmentCount = 6;
+            
             GetPathName();
             GetPathPosition();
+
+            // 현재 하이어라키에 있는 트럭의 위치 확인
+            var currentTruckList = GameObject.FindGameObjectsWithTag("AutonomousVehicle").transform.position;
+            Debug.Log("currentTruckList : " + currentTruckList);
+
+            // 데이터 타입이 스트링이라 가정
+            // 만약에 랜덤으로 뽑은 세그먼트에 트럭이 이미 존재하는 경우
+            // if(currentTruckList.Contains((string)path_Position))
+            // {    
+                    // pathName List에서 pathRandomNum index위치에 있는 요소 제거
+            //      pathName.RemoveAt(pathRandomNum);
+                    //pathName.ToArray();
+                    //SegmentCount = SegmentCount - 1;
+                    //GetPathName();
+                    //GetPathPosition();
+            // }
+
             GetPathRotation();
             GetTruck();
             GetTag();
@@ -133,7 +155,7 @@ namespace TrafficSimulation{
 
         public void GetPathName()
         {
-            int pathRandomNum = Random.Range(0, SegmentCount -1);
+            pathRandomNum = Random.Range(0, SegmentCount +1);
             selectedPath = pathName[pathRandomNum];
             // Debug.Log("selected path : " + selectedPath);
         }
@@ -157,28 +179,28 @@ namespace TrafficSimulation{
 
         public void GetTruck()
         {   
-            int truckRandomNum = Random.Range(0, TruckPrefabCount -1);
+            int truckRandomNum = Random.Range(0, TruckPrefabCount +1);
             selectedTruck = truckName[truckRandomNum];
         }
 
         // Truck 인스턴스화 하기
         public void Create()
         {   
-            Truck = Resources.Load<GameObject>(selectedTruck);
-            Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
-            Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
-            Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
+            // Truck = Resources.Load<GameObject>(selectedTruck);
+            // Truck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+            // Truck.GetComponent<SetNameTag>().truckNameTag = nameTag;
+            // Truck.GetComponent<SetNameTag>().segmentNameTag = selectedPath;
 
-            Debug.Log("selectedPath : "+ selectedPath);
-            Debug.Log("nameTag : " + nameTag);
+            // Debug.Log("selectedPath : "+ selectedPath);
+            // Debug.Log("nameTag : " + nameTag);
     
-            Instantiate(Truck, path_Position, path_Rotation);
+            // Instantiate(Truck, path_Position, path_Rotation);
             // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
             //Test할 때
-            // Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
-            // Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
-            // Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+            Truck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            Truck.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
+            Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
             // GameObject newTruck = Instantiate(Truck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
             // newTruck.transform.SetParent(GameObject.Find("Trucks").transform);
 
