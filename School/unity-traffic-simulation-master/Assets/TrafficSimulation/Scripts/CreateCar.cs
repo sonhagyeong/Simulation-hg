@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,12 +22,16 @@ namespace TrafficSimulation{
         public static string nameTag;
 
         List<string> pathName = new List<string>();
+        List<string> usingPathName = new List<string>();
         List<string> truckName = new List<string>();
+
+        // 모든 segment의 position list
+        List<string> allPathPosition = new List<string>();
 
         Dictionary<string, string> tagsDic = new Dictionary<string, string>();
         Dictionary<string, Quaternion> rotationsDic = new Dictionary<string, Quaternion>();
 
-        public int SegmentCount = 6;
+        // public int SegmentCount;
         public int TruckPrefabCount = 4;
         public int carCount = 0;
         // 생성할 총 트럭 개수
@@ -38,6 +43,7 @@ namespace TrafficSimulation{
         void Start()
         {   
             AddPathName();
+            AddAllPathPosition();
             AddTruckName();
             AddTags();
             AddRotation();
@@ -45,20 +51,15 @@ namespace TrafficSimulation{
             // Test할때
             // 출발지 고정할 때
             // carEndCount 6까지 Test 
-            TestCreateTruck();
-
+            // TestCreateTruck();
+    
             //랜덤으로 트럭 생기게
-            carEndCount = 2;
+            carEndCount = 20;
             StartCoroutine(createVehicle());
         }
 
         IEnumerator createVehicle()
         {
-            // AddPathName();
-            // AddTruckName();
-            // AddTags();
-            // AddRotation();
-            // CreateProcess();
             while (true){
                 // yield return new WaitForSecondsRealtime( waitSecond );
                 carCount += 1;
@@ -66,7 +67,6 @@ namespace TrafficSimulation{
                 CreateProcess();
                 if(carCount == carEndCount)
                 {   
-                    Debug.Log("carCount : " + carCount);
                     Debug.Log("carEndCount : " + carEndCount);
                     Debug.Log("carCount and carEndCount are same");
                     break;
@@ -76,16 +76,10 @@ namespace TrafficSimulation{
             }
         }
 
-        // private void Update()
-        // {
-        //     if(GameObject.Find("Trucks").transform.childCount == 0)
-        //     {
-        //         UnityEditor.EditorApplication.isPlaying = false;
-        //     }
-        // }
-
         public void CreateProcess()
-        {
+        {   
+            // 기존 Segment 총 개수
+            // SegmentCount = 6;
             GetPathName();
             GetPathPosition();
             GetPathRotation();
@@ -106,7 +100,16 @@ namespace TrafficSimulation{
             pathName.Add("Segment-5");
             pathName.Add("Segment-6");
         }
-        
+
+        public void AddAllPathPosition()
+        {   
+            for(int i =0; i<pathName.Count; i++)
+            {
+                allPathPosition.Add(GameObject.Find(pathName[i]).transform.position.ToString());
+                // Debug.Log("allPathPosition : " + allPathPosition[i]);
+            }
+        }
+
         // 목적지
         public void AddTags()
         {
@@ -119,6 +122,8 @@ namespace TrafficSimulation{
             tagsDic.Add(pathName[5], "place3");
             tagsDic.Add(pathName[6], "place4");
         }
+
+
 
         // 회전값
         public void AddRotation()
@@ -143,10 +148,38 @@ namespace TrafficSimulation{
         }
 
         public void GetPathName()
-        {
-            int pathRandomNum = Random.Range(0, SegmentCount + 1);
-            selectedPath = pathName[pathRandomNum];
-            // Debug.Log("selected path : " + selectedPath);
+        {   
+            // Debug.Log("Original pathName Count : " + pathName.Count);
+            List<string> truckPositionList = new List<string>();
+
+            // 현재 하이어라키에 존재하는 트럭들 불러오기
+            var currentTruckList = GameObject.FindGameObjectsWithTag("AutonomousVehicle");
+
+            for(int i = 0; i<currentTruckList.Length; i++)
+            {   
+                // 하이어라키에 존재하는 트럭들 위치 List에 추가
+                truckPositionList.Add(currentTruckList[i].transform.position.ToString());
+                // Debug.Log("truckPositionList : " +truckPositionList[i]);
+            }
+
+            Debug.Log("allPathPosition.Count : " + allPathPosition.Count);
+            Debug.Log("truckPositionList.Count : "+ truckPositionList.Count);
+            List<string> usingPathPosition = allPathPosition.Except(truckPositionList).ToList();
+            int usingPathPositionCount = usingPathPosition.Count;
+            Debug.Log("usingPathPosition.Count : " + usingPathPositionCount);
+
+            // 랜덤하게 뽑기
+            int pathPositionRandomNum = Random.Range(0, usingPathPositionCount);
+            Debug.Log("pathPositionRandomNum : "+ pathPositionRandomNum);
+
+            string selectedPosition = usingPathPosition[pathPositionRandomNum];
+            // Debug.Log("selectedPosition : "+ selectedPosition);
+
+            int pathIndex = allPathPosition.IndexOf(selectedPosition);
+            // Debug.Log("selected position : " + selectedPosition);
+            // Debug.Log(" selected path Index : " + pathIndex);
+            selectedPath = pathName[pathIndex];
+            Debug.Log(" selected path : " + selectedPath);
         }
 
         // 뽑은 Segment position 얻기
@@ -200,18 +233,18 @@ namespace TrafficSimulation{
             // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
             
             // 출발지
-            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
+            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-4";
             
             // 목적지
-            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place1";
             
             //출발지에서 트럭 생성 => 출발지, 회전값 수정
 
-            Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+            // Instantiate(testingTruck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
+            Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
             // Instantiate(testingTruck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
         }
