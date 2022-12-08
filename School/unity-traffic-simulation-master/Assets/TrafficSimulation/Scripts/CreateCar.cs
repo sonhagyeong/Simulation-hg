@@ -54,7 +54,7 @@ namespace TrafficSimulation{
             // TestCreateTruck();
     
             //랜덤으로 트럭 생기게
-            carEndCount = 20;
+            carEndCount = 10;
             StartCoroutine(createVehicle());
         }
 
@@ -78,8 +78,6 @@ namespace TrafficSimulation{
 
         public void CreateProcess()
         {   
-            // 기존 Segment 총 개수
-            // SegmentCount = 6;
             GetPathName();
             GetPathPosition();
             GetPathRotation();
