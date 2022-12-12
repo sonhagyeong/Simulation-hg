@@ -36,7 +36,7 @@ namespace TrafficSimulation{
         public int carCount = 0;
         // 생성할 총 트럭 개수
         public int carEndCount;
-        public float waitSecond = 3f;
+        public float waitingSecond = 15f;
         // private bool _isDone = false;
 
         // Start is called before the first frame update
@@ -54,7 +54,7 @@ namespace TrafficSimulation{
             // TestCreateTruck();
     
             //랜덤으로 트럭 생기게
-            carEndCount = 10;
+            carEndCount = 80;
             StartCoroutine(createVehicle());
         }
 
@@ -64,7 +64,8 @@ namespace TrafficSimulation{
                 // yield return new WaitForSecondsRealtime( waitSecond );
                 carCount += 1;
                 Debug.Log("carCount : " + carCount);
-                CreateProcess();
+                // CreateProcess();
+                TestCreateTruck();
                 if(carCount == carEndCount)
                 {   
                     Debug.Log("carEndCount : " + carEndCount);
@@ -72,7 +73,7 @@ namespace TrafficSimulation{
                     break;
                 }
 
-                yield return new WaitForSecondsRealtime(waitSecond);
+                yield return new WaitForSecondsRealtime(waitingSecond);
             }
         }
 
@@ -224,27 +225,87 @@ namespace TrafficSimulation{
         public void TestCreateTruck()
         {
             //Test할 때
-
-            GameObject testingTruck = Resources.Load<GameObject>("Truck4");
+            GameObject testingTruck = Resources.Load<GameObject>("Truck3");
             testingTruck.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+            // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // 출발지
+            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-0";
+            // 목적지
+            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place0";
+            //출발지에서 트럭 생성 => 출발지, 회전값 수정
+            Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
+
+
+
+            GameObject testingTruck1 = Resources.Load<GameObject>("Truck2");
+            testingTruck1.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
 
             // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
-            
             // 출발지
-            testingTruck.GetComponent<SetNameTag>().segmentNameTag = "Segment-4";
-            
+            testingTruck1.GetComponent<SetNameTag>().segmentNameTag = "Segment-1";
             // 목적지
-            testingTruck.GetComponent<SetNameTag>().truckNameTag = "place1";
-            
-            //출발지에서 트럭 생성 => 출발지, 회전값 수정
+            testingTruck1.GetComponent<SetNameTag>().truckNameTag = "place2";
 
-            // Instantiate(testingTruck, GameObject.Find("Segment-0").transform.position, Quaternion.Euler(0, 0, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
-            Instantiate(testingTruck, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
-            // Instantiate(testingTruck, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
+            Instantiate(testingTruck1, GameObject.Find("Segment-1").transform.position, Quaternion.Euler(0, 180, 0));
+
+
+
+            // GameObject testingTruck2 = Resources.Load<GameObject>("Truck1");
+            // testingTruck2.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+
+            // // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // // 출발지
+            // testingTruck2.GetComponent<SetNameTag>().segmentNameTag = "Segment-7";
+            // // 목적지
+            // testingTruck2.GetComponent<SetNameTag>().truckNameTag = "place0";
+
+            // Instantiate(testingTruck2, GameObject.Find("Segment-7").transform.position, Quaternion.Euler(0, 270, 0));
+
+
+
+            // GameObject testingTruck3 = Resources.Load<GameObject>("Truck4");
+            // testingTruck3.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+
+            // // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // // 출발지
+            // testingTruck3.GetComponent<SetNameTag>().segmentNameTag = "Segment-3";
+            // // 목적지
+            // testingTruck3.GetComponent<SetNameTag>().truckNameTag = "place4";
+
+            // Instantiate(testingTruck3, GameObject.Find("Segment-3").transform.position, Quaternion.Euler(0, 180, 0));
+
+
+
+            // GameObject testingTruck4 = Resources.Load<GameObject>("Truck3");
+            // testingTruck4.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+
+            // // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // // 출발지
+            // testingTruck4.GetComponent<SetNameTag>().segmentNameTag = "Segment-4";
+            // // 목적지
+            // testingTruck4.GetComponent<SetNameTag>().truckNameTag = "place1";
+
+            // Instantiate(testingTruck4, GameObject.Find("Segment-4").transform.position, Quaternion.Euler(0, 180, 0));
+
+
+
+            GameObject testingTruck5 = Resources.Load<GameObject>("Truck2");
+            testingTruck5.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+            // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // 출발지
+            testingTruck5.GetComponent<SetNameTag>().segmentNameTag = "Segment-5";
+            // 목적지
+            testingTruck5.GetComponent<SetNameTag>().truckNameTag = "place3";
+            Instantiate(testingTruck5, GameObject.Find("Segment-5").transform.position, Quaternion.Euler(0, 0, 0));
+
+            GameObject testingTruck6 = Resources.Load<GameObject>("Truck1");
+            testingTruck6.GetComponent<VehicleAI>().trafficSystem = FindObjectOfType<TrafficSystem>();
+            // 출발지, 목적지 설정 이유 : result.csv에 저장하려고
+            // 출발지
+            testingTruck6.GetComponent<SetNameTag>().segmentNameTag = "Segment-6";
+            // 목적지
+            testingTruck6.GetComponent<SetNameTag>().truckNameTag = "place4";
+            Instantiate(testingTruck6, GameObject.Find("Segment-6").transform.position, Quaternion.Euler(0, 180, 0));
         }
     }
 }

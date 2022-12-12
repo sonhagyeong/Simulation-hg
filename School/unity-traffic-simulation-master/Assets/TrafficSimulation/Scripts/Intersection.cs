@@ -25,8 +25,8 @@ namespace TrafficSimulation{
         public List<Segment> lightsNbr1;
         public List<Segment> lightsNbr2;
 
-        private List<GameObject> vehiclesQueue;
-        private List<GameObject> vehiclesInIntersection;
+        public List<GameObject> vehiclesQueue;
+        public List<GameObject> vehiclesInIntersection;
         private TrafficSystem trafficSystem;
         
         [HideInInspector] public int currentRedLightsGroup = 1;

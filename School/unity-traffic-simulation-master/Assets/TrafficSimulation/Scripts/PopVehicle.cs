@@ -4,16 +4,61 @@ using UnityEngine;
 using System.Diagnostics;
 using System.IO;
 
+namespace TrafficSimulation{
 // 이 스크립는 Truck한테 있어야함
 public class PopVehicle : MonoBehaviour
 {
     Stopwatch stopwatch = new Stopwatch();
     
     int initialNumberOfTruck;
+    int hitCount = 0;
     
     void Start()
     {
         initialNumberOfTruck = GameObject.FindGameObjectsWithTag("AutonomousVehicle").Length;
+    }
+
+    
+    private void OnCollisionEnter(Collision collision)
+    {   
+        List<GameObject> collisionTruck = new List<GameObject>();
+
+        if(collision.gameObject.tag == gameObject.tag)
+        {   
+            hitCount = hitCount+1;
+            UnityEngine.Debug.Log("hitCount : " + hitCount);
+            int vehiclesQueueCount = GameObject.Find("Intersection-0").GetComponent<Intersection>().vehiclesQueue.Count;
+            UnityEngine.Debug.Log("intersection.vehiclesQueue " + vehiclesQueueCount);
+            // for(int i =0; i < vehiclesQueueCount; i++)
+            // {
+            //     UnityEngine.Debug.Log("intersection.vehiclesQueue[i] " + GameObject.Find("Intersection-0").GetComponent<Intersection>().vehiclesQueue[i]);
+            // }
+            
+            GameObject.Find("Intersection-0").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-0").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+
+            GameObject.Find("Intersection-1").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-1").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+
+            GameObject.Find("Intersection-4").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-4").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+            
+            GameObject.Find("Intersection-2").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-2").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+            
+            GameObject.Find("Intersection-3").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-3").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+
+            GameObject.Find("Intersection-5").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-5").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+
+            GameObject.Find("Intersection-6").GetComponent<Intersection>().vehiclesQueue.Remove(gameObject);
+            GameObject.Find("Intersection-6").GetComponent<Intersection>().vehiclesInIntersection.Remove(gameObject);
+
+
+            Destroy(gameObject);
+        }
+
     }
 
     public void OnTriggerEnter(Collider collider)
@@ -22,7 +67,8 @@ public class PopVehicle : MonoBehaviour
         if (collider.gameObject.tag == GetComponent<SetNameTag>().truckNameTag)
         {   
             stopwatch.Stop();
-            gameObject.SetActive(false);
+            // gameObject.SetActive(false);
+            Destroy(gameObject);
 
             int endNumberOfTruck = GameObject.FindGameObjectsWithTag("AutonomousVehicle").Length;
             UnityEngine.Debug.Log("endNumberOfTruck : " + endNumberOfTruck);
@@ -56,7 +102,7 @@ public class PopVehicle : MonoBehaviour
 
                 //Debug.Log(string.Format("{0},{1}", tmp.nIndex, tmp.sName));
                 // streamWriter.WriteLine(string.Format("{0},{1:F4}", name.Substring(0, name.Length - 24), tmp));
-                streamWriter.WriteLine(string.Format("{0},{1},{2:F4},{3},{4}", startSegment, finishPlace, tmp, initialNumberOfTruck, endNumberOfTruck));
+                streamWriter.WriteLine(string.Format("{0},{1},{2:F4},{3},{4}", startSegment, finishPlace, tmp, initialNumberOfTruck, endNumberOfTruck, hitCount));
             }
 
             streamWriter.Close();
@@ -75,4 +121,5 @@ public class PopVehicle : MonoBehaviour
     //     endNumberOfTruck = trucksChildren.Length;
     // } 
     
+}
 }
