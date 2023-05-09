@@ -20,10 +20,10 @@ namespace TrafficSimulation {
         private Waypoint lastWaypoint;
 
         private static string routeName = "Route-1";
-        private static string intersectionName = "Intersection-1";
+        // private static string intersectionName = "Intersection-2";
 
         private static List<Vector3> routePoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
-        private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0)};
+        private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10)};
 
         // Original
         [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
@@ -88,7 +88,7 @@ namespace TrafficSimulation {
         private static void CreateIntersectionSystem(){
             EditorHelper.SetUndoGroup("Create Intersection System");
             
-            GameObject mainGo = EditorHelper.CreateGameObject(intersectionName);
+            GameObject mainGo = EditorHelper.CreateGameObject("Intersection System");
             mainGo.transform.position = Vector3.zero;
             EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
@@ -265,7 +265,7 @@ namespace TrafficSimulation {
 
         private static void AddIntersection(Vector3 position) {
             int intId = wps.intersections.Count;
-            GameObject intGo = EditorHelper.CreateGameObject(intersectionName, wps.transform.GetChild(1).transform);
+            GameObject intGo = EditorHelper.CreateGameObject("Intersection-" + intId, wps.transform.GetChild(0).transform);
             intGo.transform.position = position;
 
             BoxCollider bc = EditorHelper.AddComponent<BoxCollider>(intGo);
