@@ -8,17 +8,24 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+
+
 namespace TrafficSimulation {
     [CustomEditor(typeof(TrafficSystem))]
     public class TrafficEditor : Editor {
 
-        private TrafficSystem wps;
+        private static TrafficSystem wps;
         
         //References for moving a waypoint
         private Vector3 startPosition;
         private Vector3 lastPoint;
         private Waypoint lastWaypoint;
         
+        private static string routeName = "Route-1";
+        private static List<Vector3> routePoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
+
         [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
         private static void CreateTraffic(){
             EditorHelper.SetUndoGroup("Create Traffic Objects");
@@ -36,6 +43,62 @@ namespace TrafficSimulation {
             //Close Undo Operation
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
+
+
+        // New Traffic System
+        [MenuItem("Component/Traffic Simulation/Create Route System")]
+        private static void CreateRouteSystem(){
+            EditorHelper.SetUndoGroup("Create Route System");
+            
+            GameObject mainGo = EditorHelper.CreateGameObject(routeName);
+            mainGo.transform.position = Vector3.zero;
+            EditorHelper.AddComponent<TrafficSystem>(mainGo);
+
+            GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
+            segmentsGo.transform.position = Vector3.zero;
+
+            // GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
+            // intersectionsGo.transform.position = Vector3.zero;
+            
+            //Close Undo Operation
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+
+            Selection.activeGameObject = mainGo;
+        }
+
+        [MenuItem("Component/Traffic Simulation/Create Routes")]
+        private static void CreateRoutes(){
+            // EditorHelper.SetUndoGroup("Create Routes");
+            
+            EditorHelper.BeginUndoGroup("Add Segment", wps);
+            AddSegment(routePoints[0]);
+
+            foreach(Vector3 point in routePoints)
+            {
+                AddWaypoint(point);
+            }
+        
+            //Close Undo Group
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+        }
+
+        [MenuItem("Component/Traffic Simulation/Create Intersection System")]
+        private static void CreateIntersectionSystem(){
+            EditorHelper.SetUndoGroup("Create Intersection System");
+            
+            GameObject mainGo = EditorHelper.CreateGameObject(routeName);
+            mainGo.transform.position = Vector3.zero;
+            EditorHelper.AddComponent<TrafficSystem>(mainGo);
+
+            GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
+            intersectionsGo.transform.position = Vector3.zero;
+            
+            //Close Undo Operation
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+
+            Selection.activeGameObject = mainGo;
+        }
+
 
         void OnEnable(){
             wps = target as TrafficSystem;
@@ -157,7 +220,7 @@ namespace TrafficSimulation {
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void AddWaypoint(Vector3 position) {
+        private static void AddWaypoint(Vector3 position) {
             GameObject go = EditorHelper.CreateGameObject("Waypoint-" + wps.curSegment.waypoints.Count, wps.curSegment.transform);
             go.transform.position = position;
 
@@ -169,9 +232,9 @@ namespace TrafficSimulation {
             wps.curSegment.waypoints.Add(wp);
         }
 
-        private void AddSegment(Vector3 position) {
+        private static void AddSegment(Vector3 position) {
             int segId = wps.segments.Count;
-            GameObject segGo = EditorHelper.CreateGameObject("Segment-" + segId, wps.transform.GetChild(0).transform);
+            GameObject segGo = EditorHelper.CreateGameObject(routeName, wps.transform.GetChild(0).transform);
             segGo.transform.position = position;
 
             wps.curSegment = EditorHelper.AddComponent<Segment>(segGo);
@@ -183,6 +246,21 @@ namespace TrafficSimulation {
             Undo.RecordObject(wps, "");
             wps.segments.Add(wps.curSegment);
         }
+
+        // private static void AddSegment(Vector3 position) {
+        //     int segId = wps.segments.Count;
+        //     GameObject segGo = EditorHelper.CreateGameObject("Segment-" + segId, wps.transform.GetChild(0).transform);
+        //     segGo.transform.position = position;
+
+        //     wps.curSegment = EditorHelper.AddComponent<Segment>(segGo);
+        //     wps.curSegment.id = segId;
+        //     wps.curSegment.waypoints = new List<Waypoint>();
+        //     wps.curSegment.nextSegments = new List<Segment>();
+
+        //     //Record changes to the TrafficSystem (string not relevant here)
+        //     Undo.RecordObject(wps, "");
+        //     wps.segments.Add(wps.curSegment);
+        // }
 
         private void AddIntersection(Vector3 position) {
             int intId = wps.intersections.Count;
