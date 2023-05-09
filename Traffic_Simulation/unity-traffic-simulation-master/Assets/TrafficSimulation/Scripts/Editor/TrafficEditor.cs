@@ -20,7 +20,6 @@ namespace TrafficSimulation {
         private Waypoint lastWaypoint;
 
         private static string routeName = "Route-1";
-        // private static string intersectionName = "Intersection-2";
 
         private static List<Vector3> routePoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
         private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10)};
