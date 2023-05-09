@@ -20,9 +20,10 @@ namespace TrafficSimulation {
         private Waypoint lastWaypoint;
 
         private static string routeName = "Route-1";
-        private static string IntersectionName = "Intersection-1";
+        private static string intersectionName = "Intersection-1";
 
         private static List<Vector3> routePoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
+        private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0)};
 
         // Original
         [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
@@ -82,12 +83,12 @@ namespace TrafficSimulation {
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
 
-
+        // Create Intersection System
         [MenuItem("Component/Traffic Simulation/Create Intersection System")]
         private static void CreateIntersectionSystem(){
             EditorHelper.SetUndoGroup("Create Intersection System");
             
-            GameObject mainGo = EditorHelper.CreateGameObject(IntersectionName);
+            GameObject mainGo = EditorHelper.CreateGameObject(intersectionName);
             mainGo.transform.position = Vector3.zero;
             EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
@@ -98,6 +99,21 @@ namespace TrafficSimulation {
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
 
             Selection.activeGameObject = mainGo;
+        }
+
+        // Create Intersections
+        [MenuItem("Component/Traffic Simulation/Create Intersections")]
+        private static void CreateIntersections(){
+            
+            EditorHelper.BeginUndoGroup("Add Intersection", wps);
+
+            foreach(Vector3 point in intersectionPoints)
+            {
+                AddIntersection(point);
+            }
+        
+            //Close Undo Group
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
 
         void OnEnable(){
@@ -247,9 +263,9 @@ namespace TrafficSimulation {
             wps.segments.Add(wps.curSegment);
         }
 
-        private void AddIntersection(Vector3 position) {
+        private static void AddIntersection(Vector3 position) {
             int intId = wps.intersections.Count;
-            GameObject intGo = EditorHelper.CreateGameObject("Intersection-" + intId, wps.transform.GetChild(1).transform);
+            GameObject intGo = EditorHelper.CreateGameObject(intersectionName, wps.transform.GetChild(1).transform);
             intGo.transform.position = position;
 
             BoxCollider bc = EditorHelper.AddComponent<BoxCollider>(intGo);
