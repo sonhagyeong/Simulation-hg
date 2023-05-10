@@ -44,7 +44,7 @@ namespace TrafficSimulation {
         }
 
 
-        // New Traffic System
+        // Route System
         [MenuItem("Component/Traffic Simulation/Create Route System")]
         private static void CreateRouteSystem(){
             EditorHelper.SetUndoGroup("Create Route System");
