@@ -19,29 +19,17 @@ namespace TrafficSimulation {
         private Vector3 lastPoint;
         private Waypoint lastWaypoint;
 
-        private static string routeName = "Route-1";
+        // private static string routeName = "Route-2";
+        private static string routeName;
+        private static List<string> routeNames = new List<string>{"Route-1", "Route-2"};
 
-        private static List<Vector3> routePoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
+
+        private static List<Vector3> route_1 = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
+        private static List<Vector3> route_2 = new List<Vector3>{new Vector3(10,0,0), new Vector3(10,0,10), new Vector3(10,0,20)};
+        private static List<List<Vector3>> routes = new List<List<Vector3>>{route_1, route_2};
+         
+
         private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10)};
-
-        // Original
-        [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
-        private static void CreateTraffic(){
-            EditorHelper.SetUndoGroup("Create Traffic Objects");
-            
-            GameObject mainGo = EditorHelper.CreateGameObject("Traffic System");
-            mainGo.transform.position = Vector3.zero;
-            EditorHelper.AddComponent<TrafficSystem>(mainGo);
-
-            GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-            segmentsGo.transform.position = Vector3.zero;
-
-            GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
-            intersectionsGo.transform.position = Vector3.zero;
-            
-            //Close Undo Operation
-            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-        }
 
 
         // Route System
@@ -49,35 +37,46 @@ namespace TrafficSimulation {
         private static void CreateRouteSystem(){
             EditorHelper.SetUndoGroup("Create Route System");
             
-            GameObject mainGo = EditorHelper.CreateGameObject(routeName);
-            mainGo.transform.position = Vector3.zero;
-            EditorHelper.AddComponent<TrafficSystem>(mainGo);
+            foreach(string routeName in routeNames)
+            {
+                GameObject mainGo = EditorHelper.CreateGameObject(routeName);
+                mainGo.transform.position = Vector3.zero;
+                EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
-            GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-            segmentsGo.transform.position = Vector3.zero;
-
-            // GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
-            // intersectionsGo.transform.position = Vector3.zero;
+                GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
+                segmentsGo.transform.position = Vector3.zero;
+            }
             
             //Close Undo Operation
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
 
-            Selection.activeGameObject = mainGo;
+            // Selection.activeGameObject = mainGo;
         }
 
         // Create Routes
         [MenuItem("Component/Traffic Simulation/Create Routes")]
         private static void CreateRoutes(){
-            // EditorHelper.SetUndoGroup("Create Routes");
+            EditorHelper.SetUndoGroup("Create Routes");
             
-            EditorHelper.BeginUndoGroup("Add Segment", wps);
-            AddSegment(routePoints[0]);
+            // EditorHelper.BeginUndoGroup("Add Segment", wps);
 
-            foreach(Vector3 point in routePoints)
-            {
-                AddWaypoint(point);
+            for(int i = 0; i<routeNames.Count; i++)
+            {   
+                EditorHelper.BeginUndoGroup("Add Segment", wps);
+                string routeName = routeNames[i];
+                
+                Selection.activeGameObject = GameObject.Find(routeName);
+
+                List<Vector3> route = routes[i];
+                
+                AddSegment(route[0], routeName);
+
+                foreach (Vector3 point in route)
+                {
+                    AddWaypoint(point);
+                }
             }
-        
+           
             //Close Undo Group
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
@@ -115,6 +114,65 @@ namespace TrafficSimulation {
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
 
+
+        // // Original
+        // [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
+        // private static void CreateTraffic(){
+        //     EditorHelper.SetUndoGroup("Create Traffic Objects");
+            
+        //     GameObject mainGo = EditorHelper.CreateGameObject("Traffic System");
+        //     mainGo.transform.position = Vector3.zero;
+        //     EditorHelper.AddComponent<TrafficSystem>(mainGo);
+
+        //     GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
+        //     segmentsGo.transform.position = Vector3.zero;
+
+        //     GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
+        //     intersectionsGo.transform.position = Vector3.zero;
+            
+        //     //Close Undo Operation
+        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+        // }
+
+
+        // // Route System
+        // [MenuItem("Component/Traffic Simulation/Create Route System")]
+        // private static void CreateRouteSystem(){
+        //     EditorHelper.SetUndoGroup("Create Route System");
+            
+        //     GameObject mainGo = EditorHelper.CreateGameObject(routeName);
+        //     mainGo.transform.position = Vector3.zero;
+        //     EditorHelper.AddComponent<TrafficSystem>(mainGo);
+
+        //     GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
+        //     segmentsGo.transform.position = Vector3.zero;
+            
+        //     //Close Undo Operation
+        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+
+        //     Selection.activeGameObject = mainGo;
+        // }
+
+        // // Create Route
+        // [MenuItem("Component/Traffic Simulation/Create Route")]
+        // private static void CreateRoute(){
+        //     // EditorHelper.SetUndoGroup("Create Routes");
+            
+        //     EditorHelper.BeginUndoGroup("Add Segment", wps);
+        //     AddSegment(route_2[0]);
+
+        //     foreach(Vector3 point in route_2)
+        //     {
+        //         AddWaypoint(point);
+        //     }
+        
+        //     //Close Undo Group
+        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+        // }
+
+
+        
+
         void OnEnable(){
             wps = target as TrafficSystem;
         }
@@ -125,39 +183,39 @@ namespace TrafficSimulation {
 
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit) && e.type == EventType.MouseDown && e.button == 0) {
-                //Add a new waypoint on mouseclick + shift
-                if (e.shift) {
-                    if (wps.curSegment == null) {
-                        return;
-                    }
+            // if (Physics.Raycast(ray, out RaycastHit hit) && e.type == EventType.MouseDown && e.button == 0) {
+            //     //Add a new waypoint on mouseclick + shift
+            //     if (e.shift) {
+            //         if (wps.curSegment == null) {
+            //             return;
+            //         }
 
-                    EditorHelper.BeginUndoGroup("Add Waypoint", wps);
-                    AddWaypoint(hit.point);
+            //         EditorHelper.BeginUndoGroup("Add Waypoint", wps);
+            //         AddWaypoint(hit.point);
 
-                    //Close Undo Group
-                    Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-                }
+            //         //Close Undo Group
+            //         Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+            //     }
 
-                //Create a segment + add a new waypoint on mouseclick + ctrl
-                else if (e.control) {
-                    EditorHelper.BeginUndoGroup("Add Segment", wps);
-                    AddSegment(hit.point);
-                    AddWaypoint(hit.point);
+            //     //Create a segment + add a new waypoint on mouseclick + ctrl
+            //     else if (e.control) {
+            //         EditorHelper.BeginUndoGroup("Add Segment", wps);
+            //         AddSegment(hit.point);
+            //         AddWaypoint(hit.point);
 
-                    //Close Undo Group
-                    Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-                }
+            //         //Close Undo Group
+            //         Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+            //     }
 
-                //Create an intersection type
-                else if (e.alt) {
-                    EditorHelper.BeginUndoGroup("Add Intersection", wps);
-                    AddIntersection(hit.point);
+            //     //Create an intersection type
+            //     else if (e.alt) {
+            //         EditorHelper.BeginUndoGroup("Add Intersection", wps);
+            //         AddIntersection(hit.point);
 
-                    //Close Undo Group
-                    Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-                }
-            }
+            //         //Close Undo Group
+            //         Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+            //     }
+            // }
 
             //Set waypoint system as the selected gameobject in hierarchy
             Selection.activeGameObject = wps.gameObject;
@@ -247,9 +305,9 @@ namespace TrafficSimulation {
             wps.curSegment.waypoints.Add(wp);
         }
 
-        private static void AddSegment(Vector3 position) {
+        private static void AddSegment(Vector3 position, string routeName) {
             int segId = wps.segments.Count;
-            GameObject segGo = EditorHelper.CreateGameObject("Segment-" + segId, wps.transform.GetChild(0).transform);
+            GameObject segGo = EditorHelper.CreateGameObject(routeName, wps.transform.GetChild(0).transform);
             segGo.transform.position = position;
 
             wps.curSegment = EditorHelper.AddComponent<Segment>(segGo);

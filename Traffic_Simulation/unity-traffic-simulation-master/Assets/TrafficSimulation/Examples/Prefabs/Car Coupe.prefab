@@ -145,6 +145,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -170,6 +172,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312457259515123973
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +305,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -327,6 +332,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312457259515132615
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,6 +387,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -406,6 +414,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312457259515318599
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,6 +469,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -485,6 +496,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312457259515318917
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,6 +555,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -572,6 +586,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312457259515319145
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,11 +869,11 @@ GameObject:
   - component: {fileID: 3312457259515600645}
   - component: {fileID: 3312457259518432589}
   - component: {fileID: 3312457259521580217}
-  - component: {fileID: 3312457259515347888}
-  - component: {fileID: 1824578128}
+  - component: {fileID: 4846598348402453415}
+  - component: {fileID: 4105124885585722444}
   m_Layer: 9
   m_Name: Car Coupe
-  m_TagString: Untagged
+  m_TagString: AutonomousVehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -910,49 +925,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1, y: 0.8, z: 2.2}
   m_Center: {x: 0, y: 0.4, z: 0}
---- !u!114 &3312457259515347888
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3312457259515347895}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf6cd240b0e7c2e4da06b844784123c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WheelColliders:
-  - {fileID: 3312457259527611629}
-  - {fileID: 3312457259529924835}
-  - {fileID: 3312457259527616587}
-  - {fileID: 3312457259527605455}
-  MotorWheels:
-  - {fileID: 3312457259527616587}
-  - {fileID: 3312457259527605455}
-  BrakeWheels:
-  - {fileID: 3312457259527611629}
-  - {fileID: 3312457259529924835}
-  - {fileID: 3312457259527616587}
-  - {fileID: 3312457259527605455}
-  SteeringWheels:
-  - {fileID: 3312457259527616587}
-  - {fileID: 3312457259527605455}
-  WheelMeshes:
-  - {fileID: 3312457259515132543}
-  - {fileID: 3312457259515132615}
-  - {fileID: 3312457259515123657}
-  - {fileID: 3312457259515318599}
-  MaximumSteerAngle: 60
-  SteerHelper: 0.5
-  TractionControl: 0.5
-  FullTorqueOverAllWheels: 10000
-  ReverseTorque: 100
-  Downforce: 200
-  Topspeed: 20
-  SlipLimit: 0.2
-  BrakeTorque: 0
---- !u!114 &1824578128
+--- !u!114 &4846598348402453415
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -965,16 +938,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trafficSystem: {fileID: 0}
-  waypointThresh: 2
-  raycastAnchor: {fileID: 950268279}
+  waypointThresh: 6
+  raycastAnchor: {fileID: 0}
   raycastLength: 5
   raySpacing: 2
   raysNumber: 6
-  minTopSpeed: 10
-  maxTopSpeed: 30
-  hasToStop: 0
-  hasToGo: 0
-  curSeg: 0
+  emergencyBrakeThresh: 2
+  slowDownThresh: 4
+  vehicleStatus: 0
+--- !u!114 &4105124885585722444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3312457259515347895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5021f9004f348d74abb4f0ae3ed02375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  downForce: 100
+  maxAngle: 30
+  steeringLerp: 5
+  steeringSpeedMax: 20
+  maxTorque: 300
+  brakeTorque: 30000
+  unitType: 0
+  minSpeed: 5
+  maxSpeed: 50
+  leftWheelShape: {fileID: 0}
+  rightWheelShape: {fileID: 0}
+  animateWheels: 1
+  driveType: 0
 --- !u!1 &3312457259515349719
 GameObject:
   m_ObjectHideFlags: 0
