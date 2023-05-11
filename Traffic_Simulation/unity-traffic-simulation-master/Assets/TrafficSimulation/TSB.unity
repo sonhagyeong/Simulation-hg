@@ -658,7 +658,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 955430847}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.37, y: 0, z: 20}
+  m_LocalPosition: {x: 3.8, y: 0, z: 20.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 168794256}
@@ -1005,6 +1005,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Truck4
       objectReference: {fileID: 0}
+    - target: {fileID: 6065543447552222051, guid: ee4df3a59ebe71b4c9d4ef73528a1ce3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6874449121000569305, guid: ee4df3a59ebe71b4c9d4ef73528a1ce3,
         type: 3}
       propertyPath: m_RootOrder
@@ -1122,6 +1127,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Truck3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6065543447552222051, guid: 381991a36bed6bf468276c1f8b5157ae,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6874449121000569305, guid: 381991a36bed6bf468276c1f8b5157ae,
         type: 3}

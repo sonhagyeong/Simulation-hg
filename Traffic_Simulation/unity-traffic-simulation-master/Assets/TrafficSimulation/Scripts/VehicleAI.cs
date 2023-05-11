@@ -85,7 +85,6 @@ namespace TrafficSimulation {
 
         void WaypointChecker(){
             GameObject waypoint = trafficSystem.segments[currentTarget.segment].waypoints[currentTarget.waypoint].gameObject;
-
             //Position of next waypoint relative to the car
             Vector3 wpDist = this.transform.InverseTransformPoint(new Vector3(waypoint.transform.position.x, this.transform.position.y, waypoint.transform.position.z));
 
@@ -95,6 +94,7 @@ namespace TrafficSimulation {
                 currentTarget.waypoint++;
                 if(currentTarget.waypoint >= trafficSystem.segments[currentTarget.segment].waypoints.Count){
                     pastTargetSegment = currentTarget.segment;
+
                     currentTarget.segment = futureTarget.segment;
                     currentTarget.waypoint = 0;
                 }
@@ -312,19 +312,16 @@ namespace TrafficSimulation {
 
         public int GetSegmentVehicleIsIn(){
             int vehicleSegment = currentTarget.segment;
-            Debug.Log("trafficSystem.segments[vehicleSegment] : " + trafficSystem.segments[vehicleSegment]);
 
             bool isOnSegment = trafficSystem.segments[vehicleSegment].IsOnSegment(this.transform.position);
-            Debug.Log("isOnSegment: " + isOnSegment);
             if(!isOnSegment){
-                Debug.Log("isOnSegment is false");
 
                 bool isOnPSegement = trafficSystem.segments[pastTargetSegment].IsOnSegment(this.transform.position);
-                Debug.Log("when isOnSegment : " + isOnSegment);
+
                 if(isOnPSegement)
                     vehicleSegment = pastTargetSegment;
             }
-            Debug.Log("second vehicleSegment: "+ vehicleSegment);
+            
             return vehicleSegment;
         }
     }

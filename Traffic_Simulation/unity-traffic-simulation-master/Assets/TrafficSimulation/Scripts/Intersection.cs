@@ -30,6 +30,8 @@ namespace TrafficSimulation{
         
         [HideInInspector] public int currentRedLightsGroup = 1;
 
+        private Target currentTarget;
+        
         void Start(){
             vehiclesQueue = new List<GameObject>();
             vehiclesInIntersection = new List<GameObject>();
@@ -66,25 +68,73 @@ namespace TrafficSimulation{
 
         void TriggerStop(GameObject _vehicle){
             VehicleAI vehicleAI = _vehicle.GetComponent<VehicleAI>();
+            Debug.Log("vehicleAI : "+ vehicleAI);
+            string vehicleAIRouteName = vehicleAI.trafficSystem.name;
+            Debug.Log("vehicleAIRouteName : "+ vehicleAIRouteName);
             
-            //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
-            int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
-            Debug.Log("vehicleSegment: "+ vehicleSegment);
-            if(!IsPrioritySegment(vehicleSegment)){
-                if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
+            if(!IsPrioritySegment(vehicleAIRouteName))
+            {
+                if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0)
+                {
                     vehicleAI.vehicleStatus = Status.STOP;
                     vehiclesQueue.Add(_vehicle);
                 }
-                else{
+
+                else
+                {
                     vehiclesInIntersection.Add(_vehicle);
                     vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                 }
             }
-            else{
+
+            else
+            {
                 vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                 vehiclesInIntersection.Add(_vehicle);
             }
+            // int vehicleSegment = currentTarget.segment;
+
+            //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
+            // int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
+            
+                    
+            // if(!IsPrioritySegment(vehicleRouteName)){
+            //     if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
+            //         vehicleAI.vehicleStatus = Status.STOP;
+            //         vehiclesQueue.Add(_vehicle);
+            //     }
+            //     else{
+            //         vehiclesInIntersection.Add(_vehicle);
+            //         vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+            //     }
+            // }
+            // else{
+            //     vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+            //     vehiclesInIntersection.Add(_vehicle);
+            // }
         }
+
+        // void TriggerStop(GameObject _vehicle){
+        //     VehicleAI vehicleAI = _vehicle.GetComponent<VehicleAI>();
+            
+        //     //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
+        //     int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
+    
+        //     if(!IsPrioritySegment(vehicleSegment)){
+        //         if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
+        //             vehicleAI.vehicleStatus = Status.STOP;
+        //             vehiclesQueue.Add(_vehicle);
+        //         }
+        //         else{
+        //             vehiclesInIntersection.Add(_vehicle);
+        //             vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+        //         }
+        //     }
+        //     else{
+        //         vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+        //         vehiclesInIntersection.Add(_vehicle);
+        //     }
+        // }
 
         void ExitStop(GameObject _vehicle){
 
@@ -143,13 +193,22 @@ namespace TrafficSimulation{
             vehiclesQueue = nVehiclesQueue;
         }
 
-        bool IsPrioritySegment(int _vehicleSegment){
+        bool IsPrioritySegment(string vehicleRouteName){
             foreach(Segment s in prioritySegments){
-                if(_vehicleSegment == s.id)
+                if(vehicleRouteName == s.name)
                     return true;
             }
             return false;
         }
+
+        // bool IsPrioritySegment(int _vehicleSegment){
+        //     foreach(Segment s in prioritySegments){
+
+        //         if(_vehicleSegment == s.id)
+        //             return true;
+        //     }
+        //     return false;
+        // }
 
         bool IsAlreadyInIntersection(GameObject _target){
             foreach(GameObject vehicle in vehiclesInIntersection){
