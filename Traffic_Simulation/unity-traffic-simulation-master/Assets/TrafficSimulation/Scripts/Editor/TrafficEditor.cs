@@ -21,69 +21,64 @@ namespace TrafficSimulation {
 
         // private static string routeName = "Route-2";
         private static string routeName;
+        private static List<Vector3> route;
+
         private static List<string> routeNames = new List<string>{"Route-1", "Route-2"};
 
-
-        private static List<Vector3> route_1 = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20)};
-        private static List<Vector3> route_2 = new List<Vector3>{new Vector3(10,0,0), new Vector3(10,0,10), new Vector3(10,0,20)};
+        private static float route_Pos_y = 1.5f;
+        private static List<Vector3> route_1 = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20), new Vector3(0,0,40)};
+        private static List<Vector3> route_2 = new List<Vector3>{new Vector3(20,0,20), new Vector3(0,0,20), new Vector3(-20,0,20)};
         private static List<List<Vector3>> routes = new List<List<Vector3>>{route_1, route_2};
          
 
-        private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10)};
+        private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,20)};
+        private static Vector3 intersectionSize = new Vector3(5,5,5);
+        private static float intersectionPos_y = intersectionSize.y/2;
 
 
-        // Route System
-        [MenuItem("Component/Traffic Simulation/Create Route System")]
-        private static void CreateRouteSystem(){
-            EditorHelper.SetUndoGroup("Create Route System");
+        // Create multiple routes
+        [MenuItem("Component/Traffic Simulation/Create Routes")]
+        private static void CreateRoutes(){
+            EditorHelper.SetUndoGroup("Create Routes");
             
-            foreach(string routeName in routeNames)
-            {
+            // foreach(string routeName in routeNames)
+            for(int i=0; i<routeNames.Count; i++)
+            {   
+                routeName = routeNames[i];
+                route = routes[i];
+
                 GameObject mainGo = EditorHelper.CreateGameObject(routeName);
                 mainGo.transform.position = Vector3.zero;
                 EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
                 GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
                 segmentsGo.transform.position = Vector3.zero;
-            }
-            
-            //Close Undo Operation
-            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
 
-            // Selection.activeGameObject = mainGo;
-        }
+                Selection.activeGameObject = mainGo;
+                wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
 
-        // Create Routes
-        [MenuItem("Component/Traffic Simulation/Create Routes")]
-        private static void CreateRoutes(){
-            EditorHelper.SetUndoGroup("Create Routes");
-            
-            // EditorHelper.BeginUndoGroup("Add Segment", wps);
-
-            for(int i = 0; i<routeNames.Count; i++)
-            {   
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
-                string routeName = routeNames[i];
-                
-                Selection.activeGameObject = GameObject.Find(routeName);
-
-                List<Vector3> route = routes[i];
-                
                 AddSegment(route[0], routeName);
 
-                foreach (Vector3 point in route)
-                {
-                    AddWaypoint(point);
+                foreach(Vector3 point in route)
+                {   
+                    Vector3 newPoint = point;
+                    newPoint.y = route_Pos_y;
+
+                    AddWaypoint(newPoint);
                 }
+
             }
-           
-            //Close Undo Group
+
+            //Close Undo Operation
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
 
-        // Create Intersection System
-        [MenuItem("Component/Traffic Simulation/Create Intersection System")]
-        private static void CreateIntersectionSystem(){
+
+
+        // Create Intersections
+        [MenuItem("Component/Traffic Simulation/Create Intersections")]
+        private static void CreateIntersections(){
             EditorHelper.SetUndoGroup("Create Intersection System");
             
             GameObject mainGo = EditorHelper.CreateGameObject("Intersection System");
@@ -92,86 +87,22 @@ namespace TrafficSimulation {
 
             GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
             intersectionsGo.transform.position = Vector3.zero;
-            
-            //Close Undo Operation
-            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
 
             Selection.activeGameObject = mainGo;
-        }
+            wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
 
-        // Create Intersections
-        [MenuItem("Component/Traffic Simulation/Create Intersections")]
-        private static void CreateIntersections(){
-            
             EditorHelper.BeginUndoGroup("Add Intersection", wps);
 
             foreach(Vector3 point in intersectionPoints)
             {
                 AddIntersection(point);
             }
-        
-            //Close Undo Group
+            
+            //Close Undo Operation
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+
         }
 
-
-        // // Original
-        // [MenuItem("Component/Traffic Simulation/Create Traffic Objects")]
-        // private static void CreateTraffic(){
-        //     EditorHelper.SetUndoGroup("Create Traffic Objects");
-            
-        //     GameObject mainGo = EditorHelper.CreateGameObject("Traffic System");
-        //     mainGo.transform.position = Vector3.zero;
-        //     EditorHelper.AddComponent<TrafficSystem>(mainGo);
-
-        //     GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-        //     segmentsGo.transform.position = Vector3.zero;
-
-        //     GameObject intersectionsGo = EditorHelper.CreateGameObject("Intersections", mainGo.transform);
-        //     intersectionsGo.transform.position = Vector3.zero;
-            
-        //     //Close Undo Operation
-        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-        // }
-
-
-        // // Route System
-        // [MenuItem("Component/Traffic Simulation/Create Route System")]
-        // private static void CreateRouteSystem(){
-        //     EditorHelper.SetUndoGroup("Create Route System");
-            
-        //     GameObject mainGo = EditorHelper.CreateGameObject(routeName);
-        //     mainGo.transform.position = Vector3.zero;
-        //     EditorHelper.AddComponent<TrafficSystem>(mainGo);
-
-        //     GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-        //     segmentsGo.transform.position = Vector3.zero;
-            
-        //     //Close Undo Operation
-        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-
-        //     Selection.activeGameObject = mainGo;
-        // }
-
-        // // Create Route
-        // [MenuItem("Component/Traffic Simulation/Create Route")]
-        // private static void CreateRoute(){
-        //     // EditorHelper.SetUndoGroup("Create Routes");
-            
-        //     EditorHelper.BeginUndoGroup("Add Segment", wps);
-        //     AddSegment(route_2[0]);
-
-        //     foreach(Vector3 point in route_2)
-        //     {
-        //         AddWaypoint(point);
-        //     }
-        
-        //     //Close Undo Group
-        //     Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
-        // }
-
-
-        
 
         void OnEnable(){
             wps = target as TrafficSystem;
@@ -326,13 +257,23 @@ namespace TrafficSimulation {
             intGo.transform.position = position;
 
             BoxCollider bc = EditorHelper.AddComponent<BoxCollider>(intGo);
+            
+            // change the size of the box collider to fit the intersection
+            bc.size = intersectionSize;
+            // change the center of the box collider to fit the intersection
+            Vector3 center = bc.center;
+            center.y = intersectionPos_y;
+            bc.center = center;
             bc.isTrigger = true;
+
             Intersection intersection = EditorHelper.AddComponent<Intersection>(intGo);
             intersection.id = intId;
 
             //Record changes to the TrafficSystem (string not relevant here)
             Undo.RecordObject(wps, "");
             wps.intersections.Add(intersection);
+
+            
         }
 
         void RestructureSystem(){

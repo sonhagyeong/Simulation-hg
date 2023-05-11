@@ -13,7 +13,6 @@ namespace TrafficSimulation {
 
         public bool IsOnSegment(Vector3 _p){
             TrafficSystem ts = GetComponentInParent<TrafficSystem>();
-
             for(int i=0; i < waypoints.Count - 1; i++){
                 float d1 = Vector3.Distance(waypoints[i].transform.position, _p);
                 float d2 = Vector3.Distance(waypoints[i+1].transform.position, _p);

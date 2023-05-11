@@ -69,7 +69,7 @@ namespace TrafficSimulation{
             
             //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
             int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
-
+            Debug.Log("vehicleSegment: "+ vehicleSegment);
             if(!IsPrioritySegment(vehicleSegment)){
                 if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
                     vehicleAI.vehicleStatus = Status.STOP;

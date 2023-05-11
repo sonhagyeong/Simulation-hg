@@ -312,12 +312,19 @@ namespace TrafficSimulation {
 
         public int GetSegmentVehicleIsIn(){
             int vehicleSegment = currentTarget.segment;
+            Debug.Log("trafficSystem.segments[vehicleSegment] : " + trafficSystem.segments[vehicleSegment]);
+
             bool isOnSegment = trafficSystem.segments[vehicleSegment].IsOnSegment(this.transform.position);
+            Debug.Log("isOnSegment: " + isOnSegment);
             if(!isOnSegment){
+                Debug.Log("isOnSegment is false");
+
                 bool isOnPSegement = trafficSystem.segments[pastTargetSegment].IsOnSegment(this.transform.position);
+                Debug.Log("when isOnSegment : " + isOnSegment);
                 if(isOnPSegement)
                     vehicleSegment = pastTargetSegment;
             }
+            Debug.Log("second vehicleSegment: "+ vehicleSegment);
             return vehicleSegment;
         }
     }
