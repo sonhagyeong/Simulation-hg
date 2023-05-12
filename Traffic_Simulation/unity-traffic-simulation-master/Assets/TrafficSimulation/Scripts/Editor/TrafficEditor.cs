@@ -24,14 +24,17 @@ namespace TrafficSimulation {
         private static List<Vector3> route;
 
         private static List<string> routeNames = new List<string>{"Route-1", "Route-2"};
+        // private static List<string> routeNames = new List<string>();
+
 
         private static float route_Pos_y = 1.5f;
         private static List<Vector3> route_1 = new List<Vector3>{new Vector3(0,0,0), new Vector3(0,0,10), new Vector3(0,0,20), new Vector3(0,0,40)};
         private static List<Vector3> route_2 = new List<Vector3>{new Vector3(20,0,20), new Vector3(0,0,20), new Vector3(-20,0,20)};
         private static List<List<Vector3>> routes = new List<List<Vector3>>{route_1, route_2};
-         
+        // private static List<List<Vector3>> routes = new List<List<Vector3>>();
 
         private static List<Vector3> intersectionPoints = new List<Vector3>{new Vector3(0,0,20)};
+
         private static Vector3 intersectionSize = new Vector3(5,5,5);
         private static float intersectionPos_y = intersectionSize.y/2;
 
