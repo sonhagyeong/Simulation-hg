@@ -9,16 +9,15 @@ namespace TrafficSimulation {
         private string routefilePath;
         private string intersectionfilePath;
 
-        // private List<List<Vector3>> routes = new List<List<Vector3>>();
-        // List<Vector3> route = new List<Vector3>();
+    
         private List<List<Vector3>> routes = new List<List<Vector3>>();
 
         private static TrafficSystem wps;
         private static float route_Pos_y = 1.5f;
-        private Vector2 scrollPosition;
+        // private Vector2 scrollPosition;
 
-        private System.Collections.Generic.List<Vector3> intersections = new System.Collections.Generic.List<Vector3>();
-        private static Vector3 intersectionSize = new Vector3(5,5,5);
+        private List<Vector3> intersections = new List<Vector3>();
+        private static Vector3 intersectionSize = new Vector3(20,5,20);
         private static float intersectionPos_y = intersectionSize.y/2;
 
 
@@ -35,6 +34,7 @@ namespace TrafficSimulation {
         private void OnGUI()
         {   
             EditorGUILayout.Space();
+            GUILayout.Label("Routes Data", EditorStyles.boldLabel);
             if(GUILayout.Button("Open Route Data File"))
             {
                 routefilePath = EditorUtility.OpenFilePanel("Select File", "", "");
@@ -43,41 +43,10 @@ namespace TrafficSimulation {
                     Debug.Log("Selected file path: " + routefilePath);
                 }
             }
-
             GUILayout.Label("File Path: " + routefilePath);
-
             EditorGUILayout.Space(10);
 
-            EditorGUILayout.BeginHorizontal();
-
-
-            if(GUILayout.Button("Create Routes List"))
-            {
-                List<List<Vector3>> now_routes = CreateRouteList(routefilePath, routes);
-
-                foreach(List<Vector3> route in routes)
-                {
-                    // Show the points of the route
-                    foreach(Vector3 point in route)
-                    {
-                        Debug.Log("Route " + routes.IndexOf(route) + " Point " + point);
-                    }
-                }
-            }
-
-            GUILayout.Label("Route Count : " + routes.Count);
-
-            GUILayout.Space(5);
-
-            if(GUILayout.Button("Reset route"))
-            {
-                routes.Clear();
-            }
-
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space(10);
-
-
+            GUILayout.Label("Intersections Data", EditorStyles.boldLabel);
             if(GUILayout.Button("Open Intersections Data File"))
             {
                 intersectionfilePath = EditorUtility.OpenFilePanel("Select File", "", "");
@@ -86,40 +55,64 @@ namespace TrafficSimulation {
                     Debug.Log("Selected file path: " + intersectionfilePath);
                 }
             }
+            GUILayout.Label("File Path: " + intersectionfilePath);
+            EditorGUILayout.Space(10);
+
 
 
             // Create the buttons
             GUILayout.FlexibleSpace();
             EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
+            GUILayout.Label("Route Count : " + routes.Count, GUILayout.Width(150));
+            GUILayout.Space(10);
+            GUILayout.Label("Intersection Count : " + routes.Count, GUILayout.Width(150));
+            EditorGUILayout.EndHorizontal();
+
+
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Create Routes in Scene", GUILayout.Width(150)))
-            {
+            {   
+                routes = CreateRouteList(routefilePath, routes);
                 CreateRoutes(routes);
             }
-            
             GUILayout.Space(10);
-
             if (GUILayout.Button("Create Intersections", GUILayout.Width(150)))
-            {
-                // CreateIntersections(intersections);
+            {   
+                intersections = CreateIntersectionList(intersectionfilePath, intersections);
+                CreateIntersections(intersections);
             }
-            GUILayout.FlexibleSpace();
-
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(10);
 
+
+            // Reset Button
+            EditorGUILayout.BeginHorizontal();
+            if(GUILayout.Button("Reset Route", GUILayout.Width(150)))
+            {
+                routes.Clear();
+            }
+            GUILayout.Space(10);
+            if(GUILayout.Button("Reset Intersection", GUILayout.Width(150)))
+            {
+                intersections.Clear();
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(10);
+
+
+            // Create All Button
             GUILayout.BeginVertical();
             if (GUILayout.Button("Create All"))
             {
-                // CreateAll(routes, intersections);
-                Close();
+                CreateAll(routefilePath, intersectionfilePath, routes, intersections);
+                // Close();
             }
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
         }
 
         //Create a list by route
-        private List<List<Vector3>> CreateRouteList(string routefilePath, List<List<Vector3>> routes)
+        private static List<List<Vector3>> CreateRouteList(string routefilePath, List<List<Vector3>> routes)
         {   
             if (!File.Exists(routefilePath))
             {
@@ -157,7 +150,7 @@ namespace TrafficSimulation {
 
                         Vector3 point = new Vector3(x, y, z);                        
                         routes[currentRoute].Add(point);
-                        // Debug.Log("currentRoute : "+ currentRoute + " point : " + point);
+                        Debug.Log("currentRoute : "+ currentRoute + " point : " + point);
                     }
 
                     line = reader.ReadLine();
@@ -167,14 +160,59 @@ namespace TrafficSimulation {
             return routes;
         }
         
-        private static void CreateAll(List<List<Vector3>> routes, List<Vector3> intersections)
+        private static List<Vector3> CreateIntersectionList(string intersectionfilePath, List<Vector3> intersections)
         {   
-            if(routes.Count > 0 & intersections.Count > 0)
+            if (!File.Exists(intersectionfilePath))
             {
-                CreateIntersections(intersections);
-                CreateRoutes(routes);
-                
+                Debug.LogError("File does not exist: " + intersectionfilePath);
+                return null;
             }
+
+            using (StreamReader reader = new StreamReader(intersectionfilePath))
+            {   
+                // Skip the first line
+                reader.ReadLine(); 
+
+                string line = reader.ReadLine();
+                string[] fields;
+
+                int currentIntersection = -1;
+                
+                while(line != null)
+                {
+                    fields = line.Split(',');
+
+                    if(fields.Length == 4)
+                    {
+                        int intersectionNum = int.Parse(fields[3]);
+
+                        if(intersectionNum != currentIntersection)
+                        {
+                            currentIntersection = intersectionNum;
+                        }
+
+                        float x = float.Parse(fields[0]);
+                        float y = float.Parse(fields[1]);
+                        float z = float.Parse(fields[2]);
+
+                        Vector3 point = new Vector3(x, y, z);                        
+                        intersections.Add(point);
+                        Debug.Log("currentIntersection : "+ currentIntersection + " point : " + point);
+                    }
+
+                    line = reader.ReadLine();
+                }
+            }
+
+            return intersections;
+        }
+
+        private static void CreateAll(string routefilePath, string intersectionfilePath, List<List<Vector3>> routes, List<Vector3> intersections)
+        {   
+            intersections = CreateIntersectionList(intersectionfilePath, intersections);
+            CreateIntersections(intersections);
+            routes = CreateRouteList(routefilePath, routes);
+            CreateRoutes(routes);
         }
 
         private static void CreateRoutes(List<List<Vector3>> routes)
@@ -230,7 +268,7 @@ namespace TrafficSimulation {
             EditorHelper.BeginUndoGroup("Add Intersection", wps);
 
             foreach(Vector3 point in intersections)
-            {
+            {   
                 AddIntersection(point);
             }
             
