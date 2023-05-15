@@ -9,12 +9,12 @@ namespace TrafficSimulation {
         private string routefilePath;
         private string intersectionfilePath;
 
-    
-        private List<List<Vector3>> routes = new List<List<Vector3>>();
-
         private static TrafficSystem wps;
+
+
+        private List<List<Vector3>> routes = new List<List<Vector3>>();
         private static float route_Pos_y = 1.5f;
-        // private Vector2 scrollPosition;
+
 
         private List<Vector3> intersections = new List<Vector3>();
         private static Vector3 intersectionSize = new Vector3(20,5,20);
@@ -65,7 +65,7 @@ namespace TrafficSimulation {
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("Route Count : " + routes.Count, GUILayout.Width(150));
             GUILayout.Space(10);
-            GUILayout.Label("Intersection Count : " + routes.Count, GUILayout.Width(150));
+            GUILayout.Label("Intersection Count : " + intersections.Count, GUILayout.Width(150));
             EditorGUILayout.EndHorizontal();
 
 
@@ -76,7 +76,7 @@ namespace TrafficSimulation {
                 CreateRoutes(routes);
             }
             GUILayout.Space(10);
-            if (GUILayout.Button("Create Intersections", GUILayout.Width(150)))
+            if (GUILayout.Button("Create Intersections in Scene", GUILayout.Width(200)))
             {   
                 intersections = CreateIntersectionList(intersectionfilePath, intersections);
                 CreateIntersections(intersections);
@@ -92,7 +92,7 @@ namespace TrafficSimulation {
                 routes.Clear();
             }
             GUILayout.Space(10);
-            if(GUILayout.Button("Reset Intersection", GUILayout.Width(150)))
+            if(GUILayout.Button("Reset Intersection", GUILayout.Width(200)))
             {
                 intersections.Clear();
             }
