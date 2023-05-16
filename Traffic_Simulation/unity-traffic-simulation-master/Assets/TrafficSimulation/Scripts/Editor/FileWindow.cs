@@ -207,7 +207,7 @@ namespace TrafficSimulation {
             return intersections;
         }
 
-        private static void CreateAll(string routefilePath, string intersectionfilePath, List<List<Vector3>> routes, List<Vector3> intersections)
+        public static void CreateAll(string routefilePath, string intersectionfilePath, List<List<Vector3>> routes, List<Vector3> intersections)
         {   
             intersections = CreateIntersectionList(intersectionfilePath, intersections);
             CreateIntersections(intersections);
@@ -305,7 +305,7 @@ namespace TrafficSimulation {
             wps.segments.Add(wps.curSegment);
         }
 
-        private static void AddIntersection(Vector3 position)
+        public static void AddIntersection(Vector3 position)
         {
             int intId = wps.intersections.Count;
             GameObject intGo = EditorHelper.CreateGameObject("Intersection-" + intId, wps.transform.GetChild(0).transform);
