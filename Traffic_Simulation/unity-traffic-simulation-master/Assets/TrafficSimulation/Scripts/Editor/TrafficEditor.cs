@@ -321,7 +321,7 @@ namespace TrafficSimulation {
             //Check intersections
             List<Intersection> nIntersections = new List<Intersection>();
             int itInter = 0;
-            foreach(Transform tI in wps.transform.GetChild(1).transform){
+            foreach(Transform tI in wps.transform.GetChild(0).transform){
                 Intersection intersection = tI.GetComponent<Intersection>();
                 if(intersection != null){
                     intersection.id = itInter;
