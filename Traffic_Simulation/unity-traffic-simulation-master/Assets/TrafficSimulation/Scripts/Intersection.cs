@@ -78,12 +78,14 @@ namespace TrafficSimulation{
                 {
                     vehicleAI.vehicleStatus = Status.STOP;
                     vehiclesQueue.Add(_vehicle);
+                    Debug.Log("STOP");
                 }
 
                 else
-                {
+                {   
                     vehiclesInIntersection.Add(_vehicle);
                     vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+                    Debug.Log("SLOW_DOWN");
                 }
             }
 
@@ -91,6 +93,7 @@ namespace TrafficSimulation{
             {
                 vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                 vehiclesInIntersection.Add(_vehicle);
+                Debug.Log("SLOW_DOWN");
             }
             // int vehicleSegment = currentTarget.segment;
 
