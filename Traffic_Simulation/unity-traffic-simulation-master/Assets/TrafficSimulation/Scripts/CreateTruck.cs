@@ -11,6 +11,8 @@ namespace TrafficSimulation{
         // private List<string> truckDataList = new List<string>();
         private static List<CreateTruckData> truckDataList = new List<CreateTruckData>();
 
+        private static float truckRotation_y;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -87,9 +89,7 @@ namespace TrafficSimulation{
                     truck.name = "Truck-" + data.Name.ToString();
                     Transform routeTransform = GameObject.Find("Route-" + data.Route).transform;
                     truck.transform.position = routeTransform.Find("Segments/Route-" + data.Route).transform.position;
-
-                    // Debug.Log("Truck.name: " + truck.name);
-                    // Debug.Log("Truck.transform.position: " + truck.transform.position);
+                    truck.transform.rotation = Quaternion.Euler(0, GetTruckRotation(routeTransform, data), 0);
 
                     // Set the truck's route
                     truck.GetComponent<VehicleAI>().trafficSystem = GameObject.Find("Route-" + data.Route).GetComponent<TrafficSystem>();
@@ -102,6 +102,42 @@ namespace TrafficSimulation{
                 }
 
             }
+        }
+
+        public static float GetTruckRotation(Transform routeTransform, CreateTruckData data)
+        {
+            Vector3 position_1 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-0").transform.position;
+            Vector3 position_2 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-1").transform.position;
+            Debug.Log("position_1: " + position_1);
+            Debug.Log("position_2: " + position_2);
+
+            if(position_1.x == position_2.x)
+            {   
+                if(position_1.z - position_2.z < 0)
+                {
+                    truckRotation_y = 0;
+                }
+
+                else
+                {
+                    truckRotation_y = 180;
+                }
+            }
+
+            else if(position_1.z == position_2.z)
+            {
+                if(position_1.x - position_2.x < 0)
+                {
+                    truckRotation_y = 90;
+                }
+
+                else
+                {
+                    truckRotation_y = 270;
+                }
+            }
+
+            return truckRotation_y;
         }
     }
 }
