@@ -108,9 +108,7 @@ namespace TrafficSimulation{
         {
             Vector3 position_1 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-0").transform.position;
             Vector3 position_2 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-1").transform.position;
-            Debug.Log("position_1: " + position_1);
-            Debug.Log("position_2: " + position_2);
-
+            
             if(position_1.x == position_2.x)
             {   
                 if(position_1.z - position_2.z < 0)
