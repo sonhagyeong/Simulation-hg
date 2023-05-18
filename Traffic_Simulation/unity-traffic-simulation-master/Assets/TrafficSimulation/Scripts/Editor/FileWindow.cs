@@ -197,7 +197,7 @@ namespace TrafficSimulation {
 
                         Vector3 point = new Vector3(x, y, z);                        
                         intersections.Add(point);
-                        Debug.Log("currentIntersection : "+ currentIntersection + " point : " + point);
+                        // Debug.Log("currentIntersection : "+ currentIntersection + " point : " + point);
                     }
 
                     line = reader.ReadLine();
@@ -242,7 +242,6 @@ namespace TrafficSimulation {
                 {   
                     Vector3 newPoint = point;
                     newPoint.y = route_Pos_y;
-
                     AddWaypoint(newPoint);
                 }
 
