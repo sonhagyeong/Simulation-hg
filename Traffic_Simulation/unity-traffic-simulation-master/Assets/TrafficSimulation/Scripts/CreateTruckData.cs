@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreateTruckData : MonoBehaviour
+[System.Serializable]
+public class CreateTruckData : ScriptableObject
 {
     public string Name { get; private set; }
     public string Route { get; private set; }
