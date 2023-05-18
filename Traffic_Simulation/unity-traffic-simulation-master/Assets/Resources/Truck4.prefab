@@ -337,7 +337,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557313104294762183}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.05, y: 1.03, z: -6.45}
+  m_LocalPosition: {x: 2, y: 1.03, z: -6.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3591147847683722964}
@@ -432,7 +432,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2642133620849512790}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.16, y: 1.03, z: 0.75}
+  m_LocalPosition: {x: -2, y: 1.03, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3591147847683722964}
@@ -523,7 +523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3507210238773740444}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3772823, y: 1.03, z: 0.75}
+  m_LocalPosition: {x: 2, y: 1.03, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3591147847683722964}
@@ -666,7 +666,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5448983823663798288}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.9100001, y: 1.03, z: -6.46}
+  m_LocalPosition: {x: -2, y: 1.03, z: -6.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3591147847683722964}
@@ -956,7 +956,7 @@ MonoBehaviour:
   raycastAnchor: {fileID: 4617705441392776722}
   raycastLength: 5
   raySpacing: 2
-  raysNumber: 6
+  raysNumber: 15
   emergencyBrakeThresh: 2
   slowDownThresh: 4
   vehicleStatus: 0
@@ -972,7 +972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5021f9004f348d74abb4f0ae3ed02375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  downForce: 100
+  downForce: 0
   maxAngle: 40
   steeringLerp: 5
   steeringSpeedMax: 20
