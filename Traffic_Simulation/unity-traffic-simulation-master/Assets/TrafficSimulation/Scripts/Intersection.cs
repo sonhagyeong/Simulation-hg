@@ -31,6 +31,9 @@ namespace TrafficSimulation{
         [HideInInspector] public int currentRedLightsGroup = 1;
 
         private Target currentTarget;
+
+        // Time to slow down to zero speed
+        public float slowingTime = 2f; 
         
         void Start(){
             vehiclesQueue = new List<GameObject>();
@@ -75,10 +78,12 @@ namespace TrafficSimulation{
             if(!IsPrioritySegment(vehicleAIRouteName))
             {
                 if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0)
-                {
-                    vehicleAI.vehicleStatus = Status.STOP;
+                {   
+                    vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                     vehiclesQueue.Add(_vehicle);
-                    Debug.Log("STOP");
+
+                    StartCoroutine(ReduceSpeed(_vehicle));
+                    vehicleAI.vehicleStatus = Status.STOP;
                 }
 
                 else
@@ -95,49 +100,26 @@ namespace TrafficSimulation{
                 vehiclesInIntersection.Add(_vehicle);
                 Debug.Log("SLOW_DOWN");
             }
-            // int vehicleSegment = currentTarget.segment;
-
-            //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
-            // int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
-            
-                    
-            // if(!IsPrioritySegment(vehicleRouteName)){
-            //     if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
-            //         vehicleAI.vehicleStatus = Status.STOP;
-            //         vehiclesQueue.Add(_vehicle);
-            //     }
-            //     else{
-            //         vehiclesInIntersection.Add(_vehicle);
-            //         vehicleAI.vehicleStatus = Status.SLOW_DOWN;
-            //     }
-            // }
-            // else{
-            //     vehicleAI.vehicleStatus = Status.SLOW_DOWN;
-            //     vehiclesInIntersection.Add(_vehicle);
-            // }
         }
 
-        // void TriggerStop(GameObject _vehicle){
-        //     VehicleAI vehicleAI = _vehicle.GetComponent<VehicleAI>();
+        private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle)
+        {
+            Debug.Log("Speed Reduce");
+            Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
             
-        //     //Depending on the waypoint threshold, the car can be either on the target segment or on the past segment
-        //     int vehicleSegment = vehicleAI.GetSegmentVehicleIsIn();
-    
-        //     if(!IsPrioritySegment(vehicleSegment)){
-        //         if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0){
-        //             vehicleAI.vehicleStatus = Status.STOP;
-        //             vehiclesQueue.Add(_vehicle);
-        //         }
-        //         else{
-        //             vehiclesInIntersection.Add(_vehicle);
-        //             vehicleAI.vehicleStatus = Status.SLOW_DOWN;
-        //         }
-        //     }
-        //     else{
-        //         vehicleAI.vehicleStatus = Status.SLOW_DOWN;
-        //         vehiclesInIntersection.Add(_vehicle);
-        //     }
-        // }
+            Vector3 initialVelocity = rb.velocity;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < slowingTime)
+            {
+                rb.velocity = Vector3.Lerp(initialVelocity, Vector3.zero, elapsedTime / slowingTime);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            rb.velocity = Vector3.zero; // Ensure velocity is set to zero
+            Debug.Log("Speed reduced to 0.");
+        }
 
         void ExitStop(GameObject _vehicle){
 
@@ -203,15 +185,6 @@ namespace TrafficSimulation{
             }
             return false;
         }
-
-        // bool IsPrioritySegment(int _vehicleSegment){
-        //     foreach(Segment s in prioritySegments){
-
-        //         if(_vehicleSegment == s.id)
-        //             return true;
-        //     }
-        //     return false;
-        // }
 
         bool IsAlreadyInIntersection(GameObject _target){
             foreach(GameObject vehicle in vehiclesInIntersection){
