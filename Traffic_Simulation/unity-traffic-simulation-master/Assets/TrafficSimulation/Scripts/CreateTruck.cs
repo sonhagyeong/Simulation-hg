@@ -80,22 +80,21 @@ namespace TrafficSimulation{
                 // Generate a random number between 1 and 4 (inclusive)
                 int randomNumber = Random.Range(1, 5);
                 string prefabPath = "Truck" + randomNumber.ToString();
-
+                string routeName = "Route-" + data.Route;
                 GameObject truckPrefab = Resources.Load(prefabPath) as GameObject;
 
                 if (truckPrefab != null)
                 {
                     GameObject truck = Instantiate(truckPrefab);
                     truck.name = "Truck-" + data.Name.ToString();
-                    Transform routeTransform = GameObject.Find("Route-" + data.Route).transform;
+                    Transform routeTransform = GameObject.Find(routeName).transform;
                     // truck.transform.position = routeTransform.Find("Segments/Route-" + data.Route).transform.position;
-                    Vector3 routePosition = routeTransform.Find("Route-" + data.Route + "/Waypoint-0").transform.position;
+                    Vector3 routePosition = routeTransform.Find(routeName + "/Waypoint-0").transform.position;
                     truck.transform.position = new Vector3(routePosition.x, 0f, routePosition.z);
-                    truck.transform.rotation = Quaternion.Euler(0, GetTruckRotation(routeTransform, data), 0);
+                    truck.transform.rotation = Quaternion.Euler(0, GetTruckRotation(routeTransform, routeName), 0);
 
                     // Set the truck's route
-                    truck.GetComponent<VehicleAI>().trafficSystem = GameObject.Find("Route-" + data.Route).GetComponent<TrafficSystem>();
-                    Debug.Log(truck.GetComponent<VehicleAI>().trafficSystem.name);
+                    truck.GetComponent<VehicleAI>().trafficSystem = GameObject.Find(routeName).GetComponent<TrafficSystem>();
                 }
 
                 else
@@ -106,10 +105,10 @@ namespace TrafficSimulation{
             }
         }
 
-        public static float GetTruckRotation(Transform routeTransform, CreateTruckData data)
+        public static float GetTruckRotation(Transform routeTransform, string routeName)
         {
-            Vector3 position_1 = routeTransform.Find("Route-" + data.Route + "/Waypoint-0").transform.position;
-            Vector3 position_2 = routeTransform.Find("Route-" + data.Route + "/Waypoint-1").transform.position;
+            Vector3 position_1 = routeTransform.Find(routeName + "/Waypoint-0").transform.position;
+            Vector3 position_2 = routeTransform.Find(routeName + "/Waypoint-1").transform.position;
             // Vector3 position_1 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-0").transform.position;
             // Vector3 position_2 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-1").transform.position;
             
