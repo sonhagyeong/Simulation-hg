@@ -21,6 +21,9 @@ namespace TrafficSimulation {
         private static float intersectionPos_y = intersectionSize.y/2;
 
         private static List<Vector3> newPoints;
+        private static Vector3 placeSize = new Vector3(20,10,10);
+        private static float placePos_y = placeSize.y/2;
+
 
         
         [MenuItem("Component/Traffic Simulation/File Window")]
@@ -269,6 +272,9 @@ namespace TrafficSimulation {
         {
             EditorHelper.SetUndoGroup("Create Routes");
 
+            GameObject places = EditorHelper.CreateGameObject("Places");
+            places.transform.position = Vector3.zero;
+
             for(int i=0; i<routes.Count; i++)
             {   
                 List<Vector3> route = routes[i];
@@ -286,8 +292,8 @@ namespace TrafficSimulation {
 
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
 
-                // AddSegment(route[0], routeName);
-                AddSegment(Vector3.zero, routeName);
+                AddSegment(route[0], routeName);
+                // AddSegment(Vector3.zero, routeName);
 
 
                 // foreach(Vector3 point in route)
@@ -322,6 +328,13 @@ namespace TrafficSimulation {
                         Vector3 newPoint = newPoints[1];
                         newPoint.y = route_Pos_y;
                         AddWaypoint(newPoint);
+
+                        GameObject place = EditorHelper.CreateGameObject("place-" + i, places.transform);
+                        place.transform.position = newPoints[1];
+                        if(place.GetComponent<Collider>() == null)
+                        {
+                            AddCollider(place);
+                        }
                     }
                 }
 
@@ -408,6 +421,16 @@ namespace TrafficSimulation {
             //Record changes to the TrafficSystem (string not relevant here)
             Undo.RecordObject(wps, "");
             wps.intersections.Add(intersection);   
+        }
+
+        public static void AddCollider(GameObject obj)
+        {
+            BoxCollider bc = obj.AddComponent<BoxCollider>();
+            bc.size = placeSize;
+            Vector3 center = bc.center;
+            center.y = placePos_y;
+            bc.center = center;
+            bc.isTrigger = true;
         }
     }
 }
