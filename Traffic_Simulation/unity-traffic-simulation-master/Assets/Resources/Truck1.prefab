@@ -972,14 +972,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5021f9004f348d74abb4f0ae3ed02375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  downForce: 0
+  downForce: 10
   maxAngle: 40
   steeringLerp: 5
-  steeringSpeedMax: 20
+  steeringSpeedMax: 60
   maxTorque: 300
   brakeTorque: 30000
   unitType: 0
-  minSpeed: 10
+  minSpeed: 20
   maxSpeed: 50
   leftWheelShape: {fileID: 1525777784649594181}
   rightWheelShape: {fileID: 1220739457035760193}
