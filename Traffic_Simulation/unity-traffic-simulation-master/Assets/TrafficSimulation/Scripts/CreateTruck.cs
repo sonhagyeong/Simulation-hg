@@ -88,7 +88,9 @@ namespace TrafficSimulation{
                     GameObject truck = Instantiate(truckPrefab);
                     truck.name = "Truck-" + data.Name.ToString();
                     Transform routeTransform = GameObject.Find("Route-" + data.Route).transform;
-                    truck.transform.position = routeTransform.Find("Segments/Route-" + data.Route).transform.position;
+                    // truck.transform.position = routeTransform.Find("Segments/Route-" + data.Route).transform.position;
+                    Vector3 routePosition = routeTransform.Find("Route-" + data.Route + "/Waypoint-0").transform.position;
+                    truck.transform.position = new Vector3(routePosition.x, 0f, routePosition.z);
                     truck.transform.rotation = Quaternion.Euler(0, GetTruckRotation(routeTransform, data), 0);
 
                     // Set the truck's route
@@ -106,8 +108,10 @@ namespace TrafficSimulation{
 
         public static float GetTruckRotation(Transform routeTransform, CreateTruckData data)
         {
-            Vector3 position_1 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-0").transform.position;
-            Vector3 position_2 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-1").transform.position;
+            Vector3 position_1 = routeTransform.Find("Route-" + data.Route + "/Waypoint-0").transform.position;
+            Vector3 position_2 = routeTransform.Find("Route-" + data.Route + "/Waypoint-1").transform.position;
+            // Vector3 position_1 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-0").transform.position;
+            // Vector3 position_2 = routeTransform.Find("Segments/Route-" + data.Route + "/Waypoint-1").transform.position;
             
             if(position_1.x == position_2.x)
             {   
