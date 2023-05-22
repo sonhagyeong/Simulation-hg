@@ -71,9 +71,9 @@ namespace TrafficSimulation{
 
         void TriggerStop(GameObject _vehicle){
             VehicleAI vehicleAI = _vehicle.GetComponent<VehicleAI>();
-            Debug.Log("vehicleAI : "+ vehicleAI);
+            // Debug.Log("vehicleAI : "+ vehicleAI);
             string vehicleAIRouteName = vehicleAI.trafficSystem.name;
-            Debug.Log("vehicleAIRouteName : "+ vehicleAIRouteName);
+            // Debug.Log("vehicleAIRouteName : "+ vehicleAIRouteName);
             
             if(!IsPrioritySegment(vehicleAIRouteName))
             {
@@ -90,7 +90,7 @@ namespace TrafficSimulation{
                 {   
                     vehiclesInIntersection.Add(_vehicle);
                     vehicleAI.vehicleStatus = Status.SLOW_DOWN;
-                    Debug.Log("SLOW_DOWN");
+                    // Debug.Log("SLOW_DOWN");
                 }
             }
 
@@ -98,13 +98,13 @@ namespace TrafficSimulation{
             {
                 vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                 vehiclesInIntersection.Add(_vehicle);
-                Debug.Log("SLOW_DOWN");
+                // Debug.Log("SLOW_DOWN");
             }
         }
 
         private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle)
         {
-            Debug.Log("Speed Reduce");
+            // Debug.Log("Speed Reduce");
             Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
             
             Vector3 initialVelocity = rb.velocity;
@@ -118,7 +118,7 @@ namespace TrafficSimulation{
             }
 
             rb.velocity = Vector3.zero; // Ensure velocity is set to zero
-            Debug.Log("Speed reduced to 0.");
+            // Debug.Log("Speed reduced to 0.");
         }
 
         void ExitStop(GameObject _vehicle){
