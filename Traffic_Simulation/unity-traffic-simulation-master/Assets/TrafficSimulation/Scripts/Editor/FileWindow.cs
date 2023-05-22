@@ -17,7 +17,7 @@ namespace TrafficSimulation {
 
 
         private List<Vector3> intersections = new List<Vector3>();
-        private static Vector3 intersectionSize = new Vector3(20,5,20);
+        private static Vector3 intersectionSize = new Vector3(110,10,110);
         private static float intersectionPos_y = intersectionSize.y/2;
 
         private static List<Vector3> newPoints;
@@ -278,15 +278,17 @@ namespace TrafficSimulation {
                 mainGo.transform.position = Vector3.zero;
                 EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
-                GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-                segmentsGo.transform.position = Vector3.zero;
+                // GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
+                // segmentsGo.transform.position = Vector3.zero;
 
                 Selection.activeGameObject = mainGo;
                 wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
 
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
 
-                AddSegment(route[0], routeName);
+                // AddSegment(route[0], routeName);
+                AddSegment(Vector3.zero, routeName);
+
 
                 // foreach(Vector3 point in route)
                 // {  
@@ -299,8 +301,17 @@ namespace TrafficSimulation {
                 {  
                     if(p+1 < route.Count)
                     {   
+                        Vector3 nowPosition = route[p];
+                        if(nowPosition == Vector3.zero)
+                        {
+                            Debug.Log("nowPosition is zero");
+                            nowPosition.x = 25f;
+                            route[p] = nowPosition;
+                            Debug.Log("changed nowPosition : " + route[p]);
+                        }
                         newPoints = EditRoutePositions(route[p], route[p+1]);
                         route[p+1] = newPoints[1];
+
                         Vector3 newPoint = newPoints[0];
                         newPoint.y = route_Pos_y;
                         AddWaypoint(newPoint);
@@ -308,7 +319,6 @@ namespace TrafficSimulation {
 
                     else
                     {   
-                        Debug.Log("Last Point");
                         Vector3 newPoint = newPoints[1];
                         newPoint.y = route_Pos_y;
                         AddWaypoint(newPoint);
@@ -361,7 +371,9 @@ namespace TrafficSimulation {
         private static void AddSegment(Vector3 position, string routeName) 
         {
             int segId = wps.segments.Count;
-            GameObject segGo = EditorHelper.CreateGameObject(routeName, wps.transform.GetChild(0).transform);
+            // GameObject segGo = EditorHelper.CreateGameObject(routeName, wps.transform.GetChild(0).transform);
+            GameObject segGo = EditorHelper.CreateGameObject(routeName, wps.transform);
+
             segGo.transform.position = position;
 
             wps.curSegment = EditorHelper.AddComponent<Segment>(segGo);
