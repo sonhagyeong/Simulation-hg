@@ -20,6 +20,7 @@ namespace TrafficSimulation {
         private static Vector3 intersectionSize = new Vector3(20,5,20);
         private static float intersectionPos_y = intersectionSize.y/2;
 
+        private static List<Vector3> newPoints;
 
         
         [MenuItem("Component/Traffic Simulation/File Window")]
@@ -150,7 +151,7 @@ namespace TrafficSimulation {
 
                         Vector3 point = new Vector3(x, y, z);                        
                         routes[currentRoute].Add(point);
-                        Debug.Log("currentRoute : "+ currentRoute + " point : " + point);
+                        // Debug.Log("currentRoute : "+ currentRoute + " point : " + point);
                     }
 
                     line = reader.ReadLine();
@@ -207,6 +208,55 @@ namespace TrafficSimulation {
             return intersections;
         }
 
+        public static List<Vector3> EditRoutePositions(Vector3 nowPosition, Vector3 nextPosition)
+        {   
+            float axis_x = nextPosition.x - nowPosition.x;
+            float axis_z = nextPosition.z - nowPosition.z;
+
+            List<Vector3> newPositions = new List<Vector3>();
+
+            if(axis_x == 0)
+            {
+                // To front side
+                if(axis_z > 0)
+                {
+                    nowPosition.x += 7.5f;
+                    nextPosition.x += 7.5f;
+                }
+
+                // To back side
+                else
+                {
+                    nowPosition.x -= 7.5f;
+                    nextPosition.x -= 7.5f;
+                }
+                    
+            
+            }
+
+            else if(axis_z == 0)
+            {   
+                // To right side
+                if(axis_x > 0)
+                {
+                    nowPosition.z -= 7.5f;
+                    nextPosition.z -= 7.5f;
+                }
+
+                // To left side
+                else
+                {
+                    nowPosition.z += 7.5f;
+                    nextPosition.z += 7.5f;
+                }
+            }
+
+            newPositions.Add(nowPosition);
+            newPositions.Add(nextPosition);
+
+            return newPositions;
+        }
+
         public static void CreateAll(string routefilePath, string intersectionfilePath, List<List<Vector3>> routes, List<Vector3> intersections)
         {   
             intersections = CreateIntersectionList(intersectionfilePath, intersections);
@@ -221,7 +271,6 @@ namespace TrafficSimulation {
 
             for(int i=0; i<routes.Count; i++)
             {   
-                // string routeName = routeNames[i];
                 List<Vector3> route = routes[i];
                 string routeName = "Route-" + i;
 
@@ -236,13 +285,34 @@ namespace TrafficSimulation {
                 wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
 
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
+
                 AddSegment(route[0], routeName);
 
-                foreach(Vector3 point in route)
-                {   
-                    Vector3 newPoint = point;
-                    newPoint.y = route_Pos_y;
-                    AddWaypoint(newPoint);
+                // foreach(Vector3 point in route)
+                // {  
+                //     Vector3 newPoint = point;
+                //     newPoint.y = route_Pos_y;
+                //     AddWaypoint(newPoint);
+                // }
+
+                for(int p=0; p <route.Count; p++)
+                {  
+                    if(p+1 < route.Count)
+                    {   
+                        newPoints = EditRoutePositions(route[p], route[p+1]);
+                        route[p+1] = newPoints[1];
+                        Vector3 newPoint = newPoints[0];
+                        newPoint.y = route_Pos_y;
+                        AddWaypoint(newPoint);
+                    }
+
+                    else
+                    {   
+                        Debug.Log("Last Point");
+                        Vector3 newPoint = newPoints[1];
+                        newPoint.y = route_Pos_y;
+                        AddWaypoint(newPoint);
+                    }
                 }
 
             }
@@ -327,7 +397,5 @@ namespace TrafficSimulation {
             Undo.RecordObject(wps, "");
             wps.intersections.Add(intersection);   
         }
-
-
     }
 }
