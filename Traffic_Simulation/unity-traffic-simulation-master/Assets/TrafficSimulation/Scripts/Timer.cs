@@ -35,7 +35,7 @@ namespace TrafficSimulation{
         public void TimerStop()
         {
             watch.Stop();
-            float arrivalTime = watch.ElapsedMilliseconds / 1000f;
+            arrivalTime = watch.ElapsedMilliseconds / 1000f;
             UnityEngine.Debug.Log("Time elapsed: " + arrivalTime + " s");
         }
 
@@ -55,7 +55,7 @@ namespace TrafficSimulation{
                 StartCoroutine(ReduceSpeed(vehicle));
                 thisVehicleAI.vehicleStatus = Status.STOP;
                 TimerStop();
-                SaveToCSV(filePath);
+                SaveToCSV(filePath, truckName, routeName, destination, departureTime, arrivalTime);
                 Invoke("Disappear", disappearDelay);
             }
         }
@@ -109,7 +109,7 @@ namespace TrafficSimulation{
             }
         }
 
-        private void SaveToCSV(string filePath)
+        private void SaveToCSV(string filePath, string truckName, string routeName, string destination, float departureTime, float arrivalTime)
         {
             // Check if the CSV file exists
             if(!File.Exists(filePath))
