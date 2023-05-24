@@ -27,15 +27,22 @@ namespace TrafficSimulation {
         private static float placePos_y = placeSize.y/2;
         private static List<Vector3> checkingRotateList;
         private static bool isRotate;
+        private static Vector3 newRoPoint;
+        private static Vector3 newPoint;
+        
         private static List<Vector3> cornerPositions = new List<Vector3>{new Vector3(0,0,0), new Vector3(1350,0,0), new Vector3(1350,0,600), new Vector3(0,0,600)};
         
         private static float x1;
         private static float x2;
         private static float x3;
+        private static float x4;
+
 
         private static float z1;
         private static float z2;
         private static float z3;
+        private static float z4;
+
         
         
         [MenuItem("Component/Traffic Simulation/File Window")]
@@ -176,7 +183,7 @@ namespace TrafficSimulation {
 
                     if(fields.Length == 4)
                     {
-                        int routeNum = int.Parse(fields[3]);
+                        int routeNum = int.Parse(fields[0]);
 
                         if(routeNum != currentRoute)
                         {
@@ -184,9 +191,9 @@ namespace TrafficSimulation {
                             routes.Add(new List<Vector3>());
                         }
 
-                        float x = float.Parse(fields[0]);
-                        float y = float.Parse(fields[1]);
-                        float z = float.Parse(fields[2]);
+                        float x = float.Parse(fields[1]);
+                        float y = float.Parse(fields[2]);
+                        float z = float.Parse(fields[3]);
 
                         Vector3 point = new Vector3(x, y, z);                        
                         routes[currentRoute].Add(point);
@@ -247,53 +254,41 @@ namespace TrafficSimulation {
             return intersections;
         }
 
-        public static List<Vector3> EditRoutePositions(Vector3 nowPosition, Vector3 nextPosition)
+        public static List<Vector3> EditPathPoints(Vector3 nowPoint, Vector3 nextPoint)
         {   
-            float axis_x = nextPosition.x - nowPosition.x;
-            float axis_z = nextPosition.z - nowPosition.z;
+            float axis_x_next_now = nextPoint.x - nowPoint.x;
+            float axis_z_next_now = nextPoint.z - nowPoint.z;
 
-            List<Vector3> newPositions = new List<Vector3>();
+            List<Vector3> EditPoints = new List<Vector3>();
 
-            if(axis_x == 0)
+            if(axis_x_next_now < 0)
             {
-                // To front side
-                if(axis_z > 0)
-                {
-                    nowPosition.x += 7.5f;
-                    nextPosition.x += 7.5f;
-                }
-
-                // To back side
-                else
-                {
-                    nowPosition.x -= 7.5f;
-                    nextPosition.x -= 7.5f;
-                }
-                    
-            
+                nowPoint.z += 7.5f;
+                nextPoint.z += 7.5f;
             }
 
-            else if(axis_z == 0)
-            {   
-                // To right side
-                if(axis_x > 0)
-                {
-                    nowPosition.z -= 7.5f;
-                    nextPosition.z -= 7.5f;
-                }
-
-                // To left side
-                else
-                {
-                    nowPosition.z += 7.5f;
-                    nextPosition.z += 7.5f;
-                }
+            else if(axis_x_next_now > 0)
+            {
+                nowPoint.z -= 7.5f;
+                nextPoint.z -= 7.5f;
             }
 
-            newPositions.Add(nowPosition);
-            newPositions.Add(nextPosition);
+            if(axis_z_next_now < 0)
+            {
+                nowPoint.x -= 7.5f;
+                nextPoint.x -= 7.5f;
+            }
 
-            return newPositions;
+            else if(axis_z_next_now > 0)
+            {
+                nowPoint.x += 7.5f;
+                nextPoint.x += 7.5f;
+            }
+
+            EditPoints.Add(nowPoint);
+            EditPoints.Add(nextPoint);
+
+            return EditPoints;
         }
 
         public static void CreateAll(string routefilePath, string intersectionfilePath, List<List<Vector3>> routes, List<Vector3> intersections)
@@ -341,38 +336,77 @@ namespace TrafficSimulation {
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
 
                 AddSegment(route[0], routeName);
+                List<Vector3> paths = new List<Vector3>();
 
                 for(int p=0; p <route.Count; p++)
                 {  
                     List<Vector3> newRotationPoints = new List<Vector3>();
                     
+                    Debug.Log("now route[p] : "+ route[p]);
                     if(p > 0 && p+1 < route.Count)
-                    {
+                    {   
+                        // 회전하는 위치인 경우
                         if(RotatePosition(route[p], checkingRotateList))
                         {
                             Debug.Log(">>> Rotate nowPosition : "+  route[p]);
                             newRotationPoints = ChangeToRotate(route[p-1], route[p], route[p+1]);
-                        
-                            foreach(Vector3 rPoint in newRotationPoints)
+                            
+                            List<Vector3> rPoints = new List<Vector3>();
+
+                            for(int rPoint = 0; rPoint <newRotationPoints.Count; rPoint++)
                             {   
-                                Debug.Log(" rPoint : " + rPoint);
-                                Vector3 newRoPoint = rPoint;
-                                newRoPoint.y = route_Pos_y;
-                                AddWaypoint(newRoPoint);
+                                if(rPoint+1 < newRotationPoints.Count)
+                                {
+                                    rPoints = EditPathPoints(newRotationPoints[rPoint], newRotationPoints[rPoint+1]);
+
+                                    newRoPoint = rPoints[0];
+                                    newRoPoint.y = route_Pos_y;
+                                    AddWaypoint(newRoPoint);
+                                }
+
+                                else
+                                {
+                                    newRoPoint = rPoints[1];
+                                    newRoPoint.y = route_Pos_y;
+                                    AddWaypoint(newRoPoint);
+                                }
+
+                                Debug.Log("newRoPoint : " + newRoPoint);
                             }
+                        }
+
+                        else
+                        {
+                            paths = EditPathPoints(route[p], route[p+1]);
+                            newPoint = paths[0];
+                            newPoint.y = route_Pos_y;
+                            AddWaypoint(newPoint);
                         }
                     }
 
+                    // p = 0 or p+1 = route.Count
                     else
-                    {
-                        Vector3 newPoint = route[p];
-                        newPoint.y = route_Pos_y;
-                        AddWaypoint(newPoint);
+                    {   
+                        if(p == 0)
+                        {
+                            paths = EditPathPoints(route[p], route[p+1]);
+
+                            newPoint = paths[0];
+                            newPoint.y = route_Pos_y;
+                            AddWaypoint(newPoint);
+                        }
+                        
 
                         if(p+1 == route.Count)
-                        {
+                        {   
+                            paths = EditPathPoints(route[p-1], route[p]);
+
+                            newPoint = paths[1];
+                            newPoint.y = route_Pos_y;
+                            AddWaypoint(newPoint);
+
                             GameObject place = EditorHelper.CreateGameObject("place-" + i, places.transform);
-                            place.transform.position = newPoint;
+                            place.transform.position = paths[1];
                             if(place.GetComponent<Collider>() == null)
                             {
                                 AddCollider(place);
@@ -532,9 +566,9 @@ namespace TrafficSimulation {
 
         private static List<Vector3> ChangeToRotate(Vector3 previousPoint, Vector3 nowPoint, Vector3 nextPoint)
         {   
-            Debug.Log("previousPoint : " + previousPoint);
-            Debug.Log("nowPoint : " + nowPoint);
-            Debug.Log("nextPoint : " + nextPoint);
+            // Debug.Log("previousPoint : " + previousPoint);
+            // Debug.Log("nowPoint : " + nowPoint);
+            // Debug.Log("nextPoint : " + nextPoint);
 
             float nowPoint_x = nowPoint.x;
             float nowPoint_z = nowPoint.z;
@@ -547,138 +581,301 @@ namespace TrafficSimulation {
 
             List<Vector3> rotatePoints = new List<Vector3>();
 
-            float Num_1 = 15f;
-            float Num_2 = Num_1 * 2;
-
-            // float x1;
-            // float x2;
-            // float x3;
-
-            // float z1;
-            // float z2;
-            // float z3;
-
-            // case 1
-            if(axis_x_next_now == 0 && axis_z_pre_now == 0)
-            {
-                // To up
-                if(axis_z_next_now > 0)
-                {   
-                    if(axis_x_pre_now < 0)
-                    {   
-                        Debug.Log("up left");
-                        x1 = nowPoint_x - Num_2;
-                        x2 = nowPoint_x - Num_1;
-                    }
-
-                    // right
-                    else if(axis_x_pre_now > 0)
-                    {   
-                        Debug.Log("up right");
-                        x1 = nowPoint_x + Num_2;
-                        x2 = nowPoint_x + Num_1;
-                    }
-
-                    x3 = nowPoint_x;
-
-                    z1 = nowPoint_z;
-                    z2 = Calculate_Z_Up(z1, Num_1);
-                    z3 = Calculate_Z_Up(z1, Num_2);
-                    // }
-                }
-
-                // To Down 1
-                else if(axis_z_next_now < 0)
-                {
-                    //left
-                    if(axis_x_pre_now > 0)
-                    {
-                        Debug.Log("case 1 down left");
-                        x1 = nowPoint_x + Num_2;
-                        x2 = nowPoint_x + Num_1;
-                    }
-
-                    //right
-                    else if(axis_x_pre_now < 0)
-                    {
-                        Debug.Log("case 1 down right");
-                        x1 = nowPoint_x - Num_2;
-                        x2 = nowPoint_x - Num_1;
-                    }
-
-                    x3 = nowPoint_x;
-
-                    z1 = nowPoint_z;
-                    z2 = Calculate_Z_Down(z1, Num_1);
-                    z3 = Calculate_Z_Down(z1, Num_2);
-                }
-            }
-
-            // case 2
-            else if(axis_x_pre_now == 0 && axis_z_next_now == 0)
+            float Num_1 = 5f;
+            float Num_2 = 15f;
+            float Num_3 = 25f;
+            
+            if(axis_x_pre_now == 0 && axis_z_next_now == 0)
             {   
-                // To down 2
-                if(axis_z_pre_now > 0 )
+                if(axis_z_pre_now > 0)
                 {
-                    // right
+                    // Down Right (ㄴ 모양)
                     if(axis_x_next_now < 0)
                     {
-                        Debug.Log("case 2 down right");
+                        Debug.Log("Down Right (ㄴ 반대 모양)");
+             
                         x2 = nowPoint_x - Num_1;
                         x3 = nowPoint_x - Num_2;
+                        x4 = nowPoint_x - Num_3;
+
                     }
 
-                    //left
+                    // Down Left (ㄴ 모양)
                     else if(axis_x_next_now > 0)
                     {
-                        Debug.Log("case 2 down left");
+                        Debug.Log("Down Left (ㄴ 모양)");
+                        
                         x2 = nowPoint_x + Num_1;
                         x3 = nowPoint_x + Num_2;
-                    }
+                        x4 = nowPoint_x + Num_3;
 
+                     
+                    }
                     x1 = nowPoint_x;
 
-                    z3 = nowPoint_z;
-                    z1 = Calculate_Z_Down2(z3, Num_2);
-                    z2 = Calculate_Z_Down2(z3, Num_1);
-                    
+                    z1 = nowPoint_z + Num_3;
+                    z2 = nowPoint_z + Num_2;
+                    z3 = nowPoint_z + Num_1;
+                    z4 = nowPoint_z;
                 }
 
-                // To up 2
                 else if(axis_z_pre_now < 0)
-                {   
-                    // right
-                    if(axis_x_next_now > 0)
+                {
+                    // Up left 2 (ㄱ 모양)
+                    if(axis_x_next_now < 0)
                     {
-                        Debug.Log("case 2 up right");
-                        x2 = nowPoint_x + Num_1;
-                        x3 = nowPoint_x + Num_2;
-                    }
-
-                    // left
-                    else if(axis_x_next_now < 0)
-                    {
-                        Debug.Log("case 2 up left");
+                        Debug.Log("Up left 2 (ㄱ 모양)");
+                    
                         x2 = nowPoint_x - Num_1;
                         x3 = nowPoint_x - Num_2;
+                        x4 = nowPoint_x - Num_3;
+
                     }
 
+                    // Up right 2(ㄱ 반대모양)
+                    else if(axis_x_next_now > 0)
+                    {
+                        Debug.Log("Up right 2(ㄱ 반대모양)");
+         
+                        x2 = nowPoint_x + Num_1;
+                        x3 = nowPoint_x + Num_2;
+                        x4 = nowPoint_x + Num_3;
+
+                    }
                     x1 = nowPoint_x;
 
-                    z3 = nowPoint_z;
-                    z1 = Calculate_Z_Up2(z3, Num_2);
-                    z2 = Calculate_Z_Up2(z3, Num_1);
+                    z1 = nowPoint_z - Num_3;
+                    z2 = nowPoint_z - Num_2;
+                    z3 = nowPoint_z - Num_1;
+                    z4 = nowPoint_z;
                 }
                 
             }
-            
 
+            else if(axis_z_pre_now == 0 && axis_x_next_now == 0)
+            {
+                if(axis_z_next_now > 0)
+                {
+                    // Up left (ㄴ 반대 모양)
+                    if(axis_x_pre_now < 0)
+                    {
+                        Debug.Log("Up left (ㄴ 반대 모양)");
+                        x1 = nowPoint_x - Num_3;
+                        x2 = nowPoint_x - Num_2;
+                        x3 = nowPoint_x - Num_1;
+  
+                    }
+
+                    // Up right (ㄴ 모양)
+                    else if(axis_x_pre_now > 0)
+                    {
+                        Debug.Log("Up right (ㄴ 모양)");
+                        x1 = nowPoint_x + Num_3;
+                        x2 = nowPoint_x + Num_2;
+                        x3 = nowPoint_x + Num_1;
+                     
+                    }
+
+                    x4 = nowPoint_x;
+
+                    z1 = nowPoint_z;
+                    z2 = nowPoint_z + Num_1;
+                    z3 = nowPoint_z + Num_2;
+                    z4 = nowPoint_z + Num_3;
+
+                }
+
+                else if(axis_z_next_now < 0)
+                {
+                    // Down right 2 (ㄱ 모양)
+                    if(axis_x_pre_now < 0)
+                    {
+                        Debug.Log("Down right 2 (ㄱ 모양)");
+                        x1 = nowPoint_x - Num_3;
+                        x2 = nowPoint_x - Num_2;
+                        x3 = nowPoint_x - Num_1;
+              
+                    }
+
+                    // Down left 2 (ㄱ 반대 모양)
+                    else if(axis_x_pre_now > 0)
+                    {
+                        Debug.Log("Down left 2 (ㄱ 반대 모양)");
+                        x1 = nowPoint_x + Num_3;
+                        x2 = nowPoint_x + Num_2;
+                        x3 = nowPoint_x + Num_1;
+               
+                    }
+
+                    x4 = nowPoint_x;
+
+
+                    z1 = nowPoint_z;
+                    z2 = nowPoint_z - Num_1;
+                    z3 = nowPoint_z - Num_2;
+                    z4 = nowPoint_z - Num_3;
+                }
+                
+            }
+     
+
+            // if(axis_x_pre_now == 0 && axis_z_next_now == 0)
+            // {   
+            //     if(axis_z_pre_now > 0)
+            //     {
+            //         // Down Right (ㄴ 모양)
+            //         if(axis_x_next_now < 0)
+            //         {
+            //             Debug.Log("Down Right (ㄴ 반대 모양)");
+            //             // x1 = nowPoint_x;
+            //             x2 = nowPoint_x - Num_2;
+            //             x3 = nowPoint_x - Num_3;
+
+            //             // z1 = nowPoint_z + Num_3;
+            //             // z2 = nowPoint_z + Num_1;
+            //             // z3 = nowPoint_z;
+            //         }
+
+            //         // Down Left (ㄴ 모양)
+            //         else if(axis_x_next_now > 0)
+            //         {
+            //             Debug.Log("Down Left (ㄴ 모양)");
+            //             // x1 = nowPoint_x;
+            //             x2 = nowPoint_x + Num_2;
+            //             x3 = nowPoint_x + Num_3;
+
+            //             // z1 = nowPoint_z + Num_3;
+            //             // z2 = nowPoint_z + Num_1;
+            //             // z3 = nowPoint_z;
+            //         }
+            //         x1 = nowPoint_x;
+
+            //         z1 = nowPoint_z + Num_3;
+            //         z2 = nowPoint_z + Num_1;
+            //         z3 = nowPoint_z;
+
+                    
+            //     }
+
+            //     else if(axis_z_pre_now < 0)
+            //     {
+            //         // Up left 2 (ㄱ 모양)
+            //         if(axis_x_next_now < 0)
+            //         {
+            //             Debug.Log("Up left 2 (ㄱ 모양)");
+            //             // x1 = nowPoint_x;
+            //             x2 = nowPoint_x - Num_2;
+            //             x3 = nowPoint_x - Num_3;
+
+            //             // z1 = nowPoint_z - Num_3;
+            //             // z2 = nowPoint_z - Num_1;
+            //             // z3 = nowPoint_z;
+            //         }
+
+            //         // Up right 2(ㄱ 반대모양)
+            //         else if(axis_x_next_now > 0)
+            //         {
+            //             Debug.Log("Up right 2(ㄱ 반대모양)");
+            //             // x1 = nowPoint_x;
+            //             x2 = nowPoint_x + Num_2;
+            //             x3 = nowPoint_x + Num_3;
+
+            //             // z1 = nowPoint_z - Num_3;
+            //             // z2 = nowPoint_z - Num_1;
+            //             // z3 = nowPoint_z;
+            //         }
+            //         x1 = nowPoint_x;
+
+            //         z1 = nowPoint_z - Num_3;
+            //         z2 = nowPoint_z - Num_1;
+            //         z3 = nowPoint_z;
+            //     }
+                
+            // }
+
+            // else if(axis_z_pre_now == 0 && axis_x_next_now == 0)
+            // {
+            //     if(axis_z_next_now > 0)
+            //     {
+            //         // Up left (ㄴ 모양)
+            //         if(axis_x_pre_now < 0)
+            //         {
+            //             Debug.Log("Up left (ㄴ 모양)");
+            //             x1 = nowPoint_x - Num_3;
+            //             x2 = nowPoint_x - Num_2;
+            //             // x3 = nowPoint_x;
+
+            //             // z1 = nowPoint_z;
+            //             // z2 = nowPoint_z + Num_1;
+            //             // z3 = nowPoint_z + Num_3;
+            //         }
+
+            //         // Up left (ㄴ 모양)
+            //         else if(axis_x_pre_now > 0)
+            //         {
+            //             Debug.Log("Up right (ㄴ 모양)");
+            //             x1 = nowPoint_x + Num_3;
+            //             x2 = nowPoint_x + Num_2;
+            //             // x3 = nowPoint_x;
+
+            //             // z1 = nowPoint_z;
+            //             // z2 = nowPoint_z + Num_1;
+            //             // z3 = nowPoint_z + Num_3;
+            //         }
+
+            //         x3 = nowPoint_x;
+
+            //         z1 = nowPoint_z;
+            //         z2 = nowPoint_z + Num_1;
+            //         z3 = nowPoint_z + Num_3;
+
+            //     }
+
+            //     else if(axis_z_next_now < 0)
+            //     {
+            //         // Down right 2 (ㄱ 모양)
+            //         if(axis_x_pre_now < 0)
+            //         {
+            //             Debug.Log("Down right 2 (ㄱ 모양)");
+            //             x1 = nowPoint_x - Num_3;
+            //             x2 = nowPoint_x - Num_2;
+            //             // x3 = nowPoint_x;
+
+            //             // z1 = nowPoint_z;
+            //             // z2 = nowPoint_z - Num_1;
+            //             // z3 = nowPoint_z - Num_3;
+            //         }
+
+            //         // Down left 2 (ㄱ 반대 모양)
+            //         else if(axis_x_pre_now > 0)
+            //         {
+            //             Debug.Log("Down left 2 (ㄱ 반대 모양)");
+            //             x1 = nowPoint_x + Num_3;
+            //             x2 = nowPoint_x + Num_2;
+            //             // x3 = nowPoint_x;
+
+            //             // z1 = nowPoint_z;
+            //             // z2 = nowPoint_z - Num_1;
+            //             // z3 = nowPoint_z - Num_3;
+            //         }
+
+            //         x3 = nowPoint_x;
+
+
+            //         z1 = nowPoint_z;
+            //         z2 = nowPoint_z - Num_1;
+            //         z3 = nowPoint_z - Num_3;
+            //     }
+                
+            // }
+     
             Debug.Log(" --- Original rotatePoints Count " + rotatePoints.Count);
             rotatePoints.Add(new Vector3(x1, 0f, z1));
             rotatePoints.Add(new Vector3(x2, 0f, z2));
             rotatePoints.Add(new Vector3(x3, 0f, z3));
+            rotatePoints.Add(new Vector3(x4, 0f, z4));
 
-            Debug.Log( "rotatePoints: " + rotatePoints[0] + " " + rotatePoints[1] + " " + rotatePoints[2]);
+            Debug.Log( "rotatePoints: " + rotatePoints[0] + " " + rotatePoints[1] + " " + rotatePoints[2] + " " + rotatePoints[3]);
             return rotatePoints;
             // }
      
