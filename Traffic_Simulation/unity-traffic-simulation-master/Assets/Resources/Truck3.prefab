@@ -956,7 +956,7 @@ MonoBehaviour:
   waypointThresh: 6
   raycastAnchor: {fileID: 4617705441392776722}
   raycastLength: 5
-  raySpacing: 2
+  raySpacing: 8
   raysNumber: 15
   emergencyBrakeThresh: 2
   slowDownThresh: 4
@@ -1000,6 +1000,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   disappearDelay: 3
   slowingTime: 2
+  filePath: Assets/result.csv
 --- !u!1 &8473119005315892768
 GameObject:
   m_ObjectHideFlags: 0
