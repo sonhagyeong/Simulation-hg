@@ -885,7 +885,7 @@ GameObject:
   - component: {fileID: 6494037355815411564}
   - component: {fileID: 1855387197945060477}
   - component: {fileID: 1427013506811726926}
-  - component: {fileID: -7815683167297579680}
+  - component: {fileID: -4331205582497494587}
   m_Layer: 9
   m_Name: Truck1
   m_TagString: AutonomousVehicle
@@ -982,11 +982,11 @@ MonoBehaviour:
   unitType: 0
   minSpeed: 20
   maxSpeed: 50
-  leftWheelShape: {fileID: 0}
-  rightWheelShape: {fileID: 0}
+  leftWheelShape: {fileID: 1525777784649594181}
+  rightWheelShape: {fileID: 1220739457035760193}
   animateWheels: 1
   driveType: 2
---- !u!114 &-7815683167297579680
+--- !u!114 &-4331205582497494587
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -999,7 +999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disappearDelay: 3
-  waitSecond: 5
+  waitSecond: 8
   slowingTime: 2
   speedTime: 4
   maxSpeed: 20
