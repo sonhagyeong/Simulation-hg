@@ -122,10 +122,11 @@ namespace TrafficSimulation{
             foreach (CreateTruckData data in dataList)
             {   
                 // Generate a random number between 1 and 4 (inclusive)
-                int randomNumber = Random.Range(1, 5);
-                string prefabPath = "Truck" + randomNumber.ToString();
+                // int randomNumber = Random.Range(1, 5);
+                // string truckPrefabName = "Truck" + randomNumber.ToString();
+                string truckPrefabName = "Truck1";
                 string routeName = "Route-" + data.Route;
-                GameObject truckPrefab = Resources.Load(prefabPath) as GameObject;
+                GameObject truckPrefab = Resources.Load(truckPrefabName) as GameObject;
 
                 if (truckPrefab != null)
                 {
@@ -143,7 +144,7 @@ namespace TrafficSimulation{
 
                 else
                 {
-                    Debug.LogError("Truck prefab not found: " + prefabPath);
+                    Debug.LogError("Truck prefab not found: " + truckPrefabName);
                 }
 
             }
