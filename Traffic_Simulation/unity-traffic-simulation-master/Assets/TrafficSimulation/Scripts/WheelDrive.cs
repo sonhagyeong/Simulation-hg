@@ -67,17 +67,31 @@ namespace TrafficSimulation{
             for (int i = 0; i < wheels.Length; ++i) 
             {
                 var wheel = wheels [i];
-
+                Debug.Log("wheel.transform : " + wheel.transform);
+                Debug.Log("wheel.transform.localPosition.x: " + wheel.transform.localPosition.x);
                 // Create wheel shapes only when needed.
                 if (leftWheelShape != null && wheel.transform.localPosition.x < 0)
                 {   
                     var ws = Instantiate (leftWheelShape);
                     ws.transform.parent = wheel.transform;
+                    Debug.Log("leftWheelShape instantiated");
                 }
                 else if(rightWheelShape != null && wheel.transform.localPosition.x > 0){
                     var ws = Instantiate(rightWheelShape);
                     ws.transform.parent = wheel.transform;
+                    Debug.Log("rightWheelShape instantiated");
                 }
+
+                // // Create wheel shapes only when needed.
+                // if (leftWheelShape == null && wheel.transform.localPosition.x < 0)
+                // {   
+                //     var ws = Instantiate (leftWheelShape);
+                //     ws.transform.parent = wheel.transform;
+                // }
+                // else if(rightWheelShape == null && wheel.transform.localPosition.x > 0){
+                //     var ws = Instantiate(rightWheelShape);
+                //     ws.transform.parent = wheel.transform;
+                // }
 
                 wheel.ConfigureVehicleSubsteps(10, 1, 1);
             }

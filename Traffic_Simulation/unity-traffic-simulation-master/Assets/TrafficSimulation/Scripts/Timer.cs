@@ -213,7 +213,7 @@ namespace TrafficSimulation{
         {   
             if(vehicle != null)
             {   
-                UnityEngine.Debug.Log("Disappear");
+                UnityEngine.Debug.Log(vehicle + " Disappear");
                 // Deactivate or destroy the object to make it disappear
                 vehicle.SetActive(false);
                 // Alternatively, you can destroy the object using Destroy(gameObject);
@@ -229,7 +229,7 @@ namespace TrafficSimulation{
         {   
             if(vehicle != null)
             {
-                UnityEngine.Debug.Log("Appear");
+                UnityEngine.Debug.Log(vehicle + " Appear");
                 vehicle.SetActive(true);
             }
 
