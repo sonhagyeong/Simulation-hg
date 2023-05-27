@@ -160,15 +160,15 @@ namespace TrafficSimulation {
         }
 
 
-        public static void AddCollider(GameObject obj)
-        {
-            BoxCollider bc = obj.AddComponent<BoxCollider>();
-            bc.size = placeSize;
-            Vector3 center = bc.center;
-            center.y = placePos_y;
-            bc.center = center;
-            bc.isTrigger = true;
-        }
+        // public static void AddCollider(GameObject obj)
+        // {
+        //     BoxCollider bc = obj.AddComponent<BoxCollider>();
+        //     bc.size = placeSize;
+        //     Vector3 center = bc.center;
+        //     center.y = placePos_y;
+        //     bc.center = center;
+        //     bc.isTrigger = true;
+        // }
 
         private static bool RotatePosition(Vector3 prePosition, Vector3 nowPosition, Vector3 nextPosition, List<Vector3> coordinateList)
         {   
@@ -495,8 +495,8 @@ namespace TrafficSimulation {
         {
             EditorHelper.SetUndoGroup("Create Routes");
 
-            GameObject places = EditorHelper.CreateGameObject("Places");
-            places.transform.position = Vector3.zero;
+            // GameObject places = EditorHelper.CreateGameObject("Places");
+            // places.transform.position = Vector3.zero;
 
             if(corners.Count > 0 && intersections.Count > 0)
             {
@@ -600,12 +600,12 @@ namespace TrafficSimulation {
                             newPoint.y = route_Pos_y;
                             AddWaypoint(newPoint);
 
-                            GameObject place = EditorHelper.CreateGameObject("place-" + i, places.transform);
-                            place.transform.position = paths[1];
-                            if(place.GetComponent<Collider>() == null)
-                            {
-                                AddCollider(place);
-                            }   
+                            // GameObject place = EditorHelper.CreateGameObject("place-" + i, places.transform);
+                            // place.transform.position = paths[1];
+                            // if(place.GetComponent<Collider>() == null)
+                            // {
+                            //     AddCollider(place);
+                            // }   
                         }
                     }
                 }

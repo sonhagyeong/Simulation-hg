@@ -70,7 +70,7 @@ namespace TrafficSimulation{
 
                 // Create wheel shapes only when needed.
                 if (leftWheelShape != null && wheel.transform.localPosition.x < 0)
-                {
+                {   
                     var ws = Instantiate (leftWheelShape);
                     ws.transform.parent = wheel.transform;
                 }

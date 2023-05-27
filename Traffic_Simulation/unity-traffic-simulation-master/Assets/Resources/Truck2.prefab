@@ -666,7 +666,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5448983823663798288}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 1.03, z: -6.46}
+  m_LocalPosition: {x: -2, y: 1.03, z: -6.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3591147847683722964}
@@ -957,9 +957,9 @@ MonoBehaviour:
   raycastAnchor: {fileID: 4617705441392776722}
   raycastLength: 5
   raySpacing: 8
-  raysNumber: 15
+  raysNumber: 20
   emergencyBrakeThresh: 2
-  slowDownThresh: 4
+  slowDownThresh: 10
   vehicleStatus: 0
 --- !u!114 &1427013506811726926
 MonoBehaviour:
@@ -982,8 +982,8 @@ MonoBehaviour:
   unitType: 0
   minSpeed: 20
   maxSpeed: 50
-  leftWheelShape: {fileID: 1525777784649594181}
-  rightWheelShape: {fileID: 1220739457035760193}
+  leftWheelShape: {fileID: 0}
+  rightWheelShape: {fileID: 0}
   animateWheels: 1
   driveType: 2
 --- !u!114 &-996315624257571712
@@ -999,8 +999,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disappearDelay: 3
+  waitSecond: 5
   slowingTime: 2
+  speedTime: 4
+  maxSpeed: 20
   filePath: Assets/result.csv
+  destinationPos: {x: 0, y: 0, z: 0}
 --- !u!1 &8473119005315892768
 GameObject:
   m_ObjectHideFlags: 0
