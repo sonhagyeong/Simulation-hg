@@ -25,7 +25,7 @@ namespace TrafficSimulation{
         public float downForce = 100f;
 
         [Tooltip("Maximum steering angle of the wheels")]
-        public float maxAngle = 30f;
+        public float maxAngle = 70f;
 
         [Tooltip("Speed at which we will reach the above steering angle (lerp)")]
         public float steeringLerp = 5f;
@@ -67,19 +67,20 @@ namespace TrafficSimulation{
             for (int i = 0; i < wheels.Length; ++i) 
             {
                 var wheel = wheels [i];
-                Debug.Log("wheel.transform : " + wheel.transform);
-                Debug.Log("wheel.transform.localPosition.x: " + wheel.transform.localPosition.x);
+                // Debug.Log("wheel.transform : " + wheel.transform);
+                // Debug.Log("wheel.transform.localPosition.x: " + wheel.transform.localPosition.x);
                 // Create wheel shapes only when needed.
-                if (leftWheelShape != null && wheel.transform.localPosition.x < 0)
+                // if (leftWheelShape != null && wheel.transform.localPosition.x < 0)
+                if(wheel.transform.childCount == 0 && leftWheelShape != null && wheel.transform.localPosition.x < 0)
                 {   
                     var ws = Instantiate (leftWheelShape);
                     ws.transform.parent = wheel.transform;
-                    Debug.Log("leftWheelShape instantiated");
+                    // Debug.Log("leftWheelShape instantiated");
                 }
-                else if(rightWheelShape != null && wheel.transform.localPosition.x > 0){
+                else if(wheel.transform.childCount == 0 && rightWheelShape != null && wheel.transform.localPosition.x > 0){
                     var ws = Instantiate(rightWheelShape);
                     ws.transform.parent = wheel.transform;
-                    Debug.Log("rightWheelShape instantiated");
+                    // Debug.Log("rightWheelShape instantiated");
                 }
 
                 // // Create wheel shapes only when needed.
