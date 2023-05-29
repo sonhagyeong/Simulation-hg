@@ -12,15 +12,16 @@ namespace TrafficSimulation{
     public class Timer : MonoBehaviour
     {
         public float disappearDelay = 3f;
-        public float waitSecond = 8f;
+        public float processTime = 8f;
         public float slowingTime = 2f; 
-        public float speedTime = 4f;
+        public float speedTime = 10f;
         public float maxSpeed = 20f;
         
         private GameObject vehicle;
         private VehicleAI thisVehicleAI;
 
-        private Stopwatch watch;
+        private Stopwatch totalWatch;
+        private Stopwatch stationWatch;
 
         // 파일 저장 위치
         [SerializeField] private string filePath = "Assets/result.csv";
@@ -31,6 +32,7 @@ namespace TrafficSimulation{
         
         private float departureTime;
         private float arrivalTime;
+        private float stationArrivalTime;
 
         private List<Vector3> pickupPositions;
         private List<Vector3> dropPositions;
@@ -44,19 +46,25 @@ namespace TrafficSimulation{
 
         void Start()
         {
-            watch = new Stopwatch();
-            departureTime = watch.ElapsedMilliseconds / 1000f;
-            watch.Start();
+            totalWatch = new Stopwatch();
+            stationWatch = new Stopwatch();
+
+            departureTime = totalWatch.ElapsedMilliseconds / 1000f;
+
+            totalWatch.Start();
+            stationWatch.Start();
+
             GetTruckInformation(truckData_List);
             vehiclesInStation = new List<GameObject>();
             stationCount = 0;
         }
 
-        public void TimerStop()
+        public void TimerStop(Stopwatch _watch)
         {
-            watch.Stop();
-            arrivalTime = watch.ElapsedMilliseconds / 1000f;
-            UnityEngine.Debug.Log("Time elapsed: " + arrivalTime + " s");
+            _watch.Stop();
+            // Convert milliseconds to minutes
+            arrivalTime = _watch.ElapsedMilliseconds / 60000f; 
+            UnityEngine.Debug.Log(vehicle + "Time elapsed: " + arrivalTime + " min");
         }
 
         void OnTriggerEnter(Collider other)
@@ -73,9 +81,10 @@ namespace TrafficSimulation{
             // compare other.name and pickup station
             if(stationCount == 0 &&(CompareStations(pickupPositions, other.name) || CompareStations(dropPositions, other.name)))
             {
-                // StartCoroutine(ReduceSpeed(vehicle, slowingTime));
-                // thisVehicleAI.vehicleStatus = Status.STOP;
-                StartCoroutine(ReduceSpeed(vehicle, slowingTime, thisVehicleAI));
+
+                StartCoroutine(ReduceSpeed(vehicle, slowingTime));
+                thisVehicleAI.vehicleStatus = Status.STOP;
+
                 // disappear after desapperDelay seconds
                 Invoke("Disappear", disappearDelay);
 
@@ -84,47 +93,21 @@ namespace TrafficSimulation{
 
                 stationCount++;
                 
-                Invoke("Appear", waitSecond);
-                thisVehicleAI.vehicleStatus = Status.GO;
+                // destination이 아닌 station에 도착했을 때
+                if(!CompareDestination(destinationPos, other.name))
+                {
+                    Invoke("Appear", processTime);
+                }
 
-                // // disappear while waitSecond seconds
-                // StartCoroutine(DisableObjectCoroutine(waitSecond, destinationPos, other, stationCount, vehicle, thisVehicleAI, vehiclesInStation));
-
-                // UnityEngine.Debug.Log("stationCount : " + stationCount);
-
-                // Invoke("Appear", waitSecond);
-                
-                // thisVehicleAI.vehicleStatus = Status.GO;
-                // StartCoroutine(IncreaseSpeed(vehicle, speedTime, maxSpeed));
-                
-
-                // if(CompareDestination(destinationPos, other.name))
-                // {   
-                //     UnityEngine.Debug.Log("Destination reached");
-                //     TimerStop();
-                //     // SaveToCSV(filePath, truckName, routeName, destinationPos, departureTime, arrivalTime);
-                // }
-
-                // else
-                // {   
-                //     if(vehiclesInStation.Count == 0)
-                //     {  
-                //         UnityEngine.Debug.Log("stationCount : " + stationCount);
-                //         vehicle.SetActive(true);
-                //         thisVehicleAI.vehicleStatus = Status.GO;
-                //         UnityEngine.Debug.Log("Go");
-                //         vehiclesInStation.Add(vehicle);
-                //     }
-                // }
-
+                // when vehicle arrives at the destination
+                else
+                {
+                    TimerStop(totalWatch);
+                    // save the result
+                    SaveToCSV(filePath, truckName, routeName, destinationPos, departureTime, arrivalTime);
+                    
+                }
             }
-
-            // else if(CompareStations(pickupPositions, other.name) || CompareStations(dropPositions, other.name))
-            // {
-            //     Invoke("Appear", waitSecond);
-            //     StartCoroutine(IncreaseSpeed(vehicle, speedTime, maxSpeed));
-            //     thisVehicleAI.vehicleStatus = Status.GO;
-            // }
         }
 
         void OnTriggerExit(Collider _other)
@@ -133,37 +116,10 @@ namespace TrafficSimulation{
             stationCount = 0;
         }
 
-        private IEnumerator DisableObjectCoroutine(float waitsecond, Vector3 _position, Collider _other, int _stationCount, GameObject _vehicle, VehicleAI _thisVehicleAI, List<GameObject> _vehiclesInStation)
-        {   
-            UnityEngine.Debug.Log("DisableObjectCoroutine");
-
-            // yield return new WaitForSeconds(waitsecond); // Wait for 5 seconds
-            yield return new WaitForSeconds(5.0f);
-
-            if(CompareDestination(_position, _other.name))
-            {   
-                UnityEngine.Debug.Log("Destination reached");
-                TimerStop();
-                // SaveToCSV(filePath, truckName, routeName, destinationPos, departureTime, arrivalTime);
-            }
-
-            else
-            {   
-                UnityEngine.Debug.Log("Here is not destination! ");
-                if(_vehiclesInStation.Count == 0)
-                {  
-                    UnityEngine.Debug.Log("_stationCount : " + _stationCount);
-                    _vehicle.SetActive(true);
-                    _thisVehicleAI.vehicleStatus = Status.GO;
-                    UnityEngine.Debug.Log("Go");
-                    _vehiclesInStation.Add(_vehicle);
-                }
-            }
-        }
 
         
         // private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
-        private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime, VehicleAI _thisVehicleAI)
+        private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
         {   
             UnityEngine.Debug.Log("ReduceSpeed");
             Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
@@ -178,37 +134,32 @@ namespace TrafficSimulation{
                 yield return null;
             }
 
-            _thisVehicleAI.vehicleStatus = Status.STOP;
+            // thisVehicleAI.vehicleStatus = Status.STOP;
             rb.velocity = Vector3.zero; // Ensure velocity is set to zero
-
-            
         }
 
-        private IEnumerator ActivateDelayedCoroutine(GameObject _vehicle, float _delay)
-        {   
-            UnityEngine.Debug.Log("ActivateDelayedCoroutine");
-            yield return new WaitForSeconds(_delay); // Delay before activating the object
-            _vehicle.SetActive(true);
-            UnityEngine.Debug.Log("Activate");
-
-            // Code to increase speed or perform any other desired actions
-        }
         private IEnumerator IncreaseSpeed(GameObject _vehicle, float _speedTime, float _maxSpeed)
-        {
-            Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
+        {   
+            UnityEngine.Debug.Log("IncreaseSpeed");
+            thisVehicleAI.vehicleStatus = Status.GO;
             
+            Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
+            // rb.centerOfMass = new Vector3(0f, -5f, 0f);
+
             Vector3 initialVelocity = rb.velocity;
             float elapsedTime = 0f;
 
             while (elapsedTime < _speedTime)
             {
-                rb.velocity = Vector3.Lerp(Vector3.zero, initialVelocity, elapsedTime / _speedTime) + Vector3.forward * _maxSpeed;
+                // rb.velocity = Vector3.Lerp(Vector3.zero, initialVelocity, elapsedTime / _speedTime) + Vector3.forward * _maxSpeed;
+                rb.velocity = Vector3.Lerp(Vector3.zero, initialVelocity + Vector3.forward * _maxSpeed, elapsedTime / _speedTime);
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
 
-            rb.velocity = initialVelocity + Vector3.forward * 20f; // Ensure velocity reaches the desired speed
+            rb.velocity = initialVelocity + Vector3.forward * _maxSpeed; // Ensure velocity reaches the desired speed
         }
+
         private void Disappear()
         {   
             if(vehicle != null)
@@ -231,6 +182,8 @@ namespace TrafficSimulation{
             {
                 UnityEngine.Debug.Log(vehicle + " Appear");
                 vehicle.SetActive(true);
+                thisVehicleAI.vehicleStatus = Status.GO;
+                // StartCoroutine(IncreaseSpeed(vehicle, speedTime, maxSpeed));
             }
 
             else
@@ -265,13 +218,13 @@ namespace TrafficSimulation{
             return destiStr == otherName;
         }
 
-        private void SaveToCSV(string filePath, string truckName, string routeName, string destination, float departureTime, float arrivalTime)
+        private void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _destination, float _departureTime, float _arrivalTime)
         {
             // Check if the CSV file exists
-            if(!File.Exists(filePath))
+            if(!File.Exists(_filePath))
             {
                 // Create a new CSV file and write the data
-                using (StreamWriter sw = File.CreateText(filePath))
+                using (StreamWriter sw = File.CreateText(_filePath))
                 {
                     string header = "Truck Name, Route, Destination, Departure Time, Arrival Time";
 
@@ -282,14 +235,14 @@ namespace TrafficSimulation{
             }
 
             // Read the existing content of the CSV file
-            string[] lines = File.ReadAllLines(filePath);
+            string[] lines = File.ReadAllLines(_filePath);
             // Append the new data to the content
             string newLine = string.Format("{0},{1},{2},{3},{4}",
-                truckName, routeName, destination, departureTime, arrivalTime);
+                _truckName, _routeName, _destination, _departureTime, _arrivalTime);
             string updatedContent = string.Join("\n", lines) + "\n" + newLine;
 
             // Write the updated content back to the CSV file
-            File.WriteAllText(filePath, updatedContent);
+            File.WriteAllText(_filePath, updatedContent);
 
         }
 
