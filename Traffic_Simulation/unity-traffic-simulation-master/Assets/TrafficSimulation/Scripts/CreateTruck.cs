@@ -17,7 +17,7 @@ namespace TrafficSimulation{
         private static float truckRotation_y;
 
         // Station Parameters
-        private static Vector3 stationSize = new Vector3(75,10,75);
+        private static Vector3 stationSize = new Vector3(30,10,30);
         private static float stationPos_y = stationSize.y/2;
 
         // Start is called before the first frame update
@@ -217,6 +217,7 @@ namespace TrafficSimulation{
                             GameObject pickupOB = new GameObject(pickupStationName);
                             pickupOB.transform.parent = stationsOB.transform;
                             pickupOB.transform.position = pickupStation;
+                            pickupOB.AddComponent<StationsInfo>();
                             AddCollider(pickupOB); 
                         }
                         
@@ -226,6 +227,7 @@ namespace TrafficSimulation{
                             GameObject dropOB = new GameObject(dropStationName);
                             dropOB.transform.parent = stationsOB.transform;
                             dropOB.transform.position = dropStation; 
+                            dropOB.AddComponent<StationsInfo>();
                             AddCollider(dropOB);
                         }
                     }
