@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TrafficSimulation{
     public class StopVehicles : MonoBehaviour
     {
-        [SerializeField] private static int vehiclesCount;
+        [SerializeField] private static int finishedCount;
         [SerializeField] private string nearStationName;
 
         public float slowingTime = 3f; 
@@ -15,40 +15,32 @@ namespace TrafficSimulation{
 
         private GameObject vehicle;
         private VehicleAI thisVehicleAI;
+        public List<GameObject> vehicleQueueList;
 
         void Start()
         {
             GetStationName();
+            vehicleQueueList = new List<GameObject>();
         }
 
         void OnTriggerEnter(Collider _other)
         {   
             GameObject nearStationOB = GameObject.Find("Stations/" + nearStationName);
 
-            vehiclesCount = nearStationOB.GetComponent<StationsInfo>().finishedVehicle_Count;
+            // finishedCount = nearStationOB.GetComponent<StationsInfo>().finishedVehicle_Count;
             
             vehicle = _other.gameObject;
 
             thisVehicleAI = vehicle.GetComponent<VehicleAI>();
 
 
-            if(vehiclesCount > 0)
+            if(finishedCount > 0)
             {
                 StartCoroutine(ReduceSpeed(vehicle, slowingTime));
                 thisVehicleAI.vehicleStatus = Status.STOP;
+                vehicleQueueList.Add(vehicle);
             }
-            // vehiclesCount = StationsInfo.finishedVehicle_Count;
-
-            // Debug.Log("vehiclesCount: " + vehiclesCount);
-
-            // vehicle = _other.gameObject;
-            // thisVehicleAI = vehicle.GetComponent<VehicleAI>();
-
-            // if(vehiclesCount > 0)
-            // {
-            //     ReduceSpeed(vehicle, slowingTime);
-            //     thisVehicleAI.vehicleStatus = Status.STOP;
-            // }
+        
         }
 
         private System.Collections.IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
@@ -73,16 +65,24 @@ namespace TrafficSimulation{
         {
             Vector3 stopPosition = this.transform.position;
 
-            if(stopPosition.z == -axis_z)
-            {   
-                Vector3 nearStationPos = new Vector3(stopPosition.x + rightNum, 0f, stopPosition.z + axis_z);
-                nearStationName = nearStationPos.ToString();
-            }
+            // if(stopPosition.z == -axis_z)
+            // {   
+            //     Vector3 nearStationPos = new Vector3(stopPosition.x + rightNum, 0f, stopPosition.z + axis_z);
+            //     nearStationName = nearStationPos.ToString();
+            // }
 
-            else
+            // else
+            // {
+            //     Vector3 nearStationPos = new Vector3(stopPosition.x - rightNum, 0f, stopPosition.z - axis_z);
+            //     nearStationName = nearStationPos.ToString();
+            // }
+        }
+
+        private void GetFinishedCount(GameObject _vehicle, GameObject _nearStation)
+        {
+            if(_vehicle.transform.rotation.y == 90f)
             {
-                Vector3 nearStationPos = new Vector3(stopPosition.x - rightNum, 0f, stopPosition.z - axis_z);
-                nearStationName = nearStationPos.ToString();
+                // int finishedCount = _nearStation.GetComponent<StationsInfo>().finishedVehicle_Count_toRight;
             }
         }
     }

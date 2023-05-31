@@ -7,7 +7,9 @@ using UnityEngine;
 namespace TrafficSimulation{
     public class StationsInfo : MonoBehaviour
     {
-        public int finishedVehicle_Count;
+        public int finishedVehicle_Count_toRight;
+        public int finishedVehicle_Count_toLeft;
+
         private List<GameObject> processingVehicles_List;
 
         private GameObject vehicle;
@@ -15,6 +17,8 @@ namespace TrafficSimulation{
         private int thisVehicle_processStatus;
         private Vector3 thisVehicle_Destination;
         private Vector3 nowPosition;
+        private List<Vector3> originalPositions;
+
         private Stopwatch vehicle_TotalWatch;
 
         private float slowingTime = 3f;
@@ -34,8 +38,9 @@ namespace TrafficSimulation{
 
         // Start is called before the first frame update
         void Start()
-        {
-            finishedVehicle_Count = 0;
+        {   
+            finishedVehicle_Count_toRight = 0;
+            finishedVehicle_Count_toLeft = 0;
             processingVehicles_List = new List<GameObject>();
             // vehiclesInStation = new List<GameObject>();
         }
@@ -59,6 +64,10 @@ namespace TrafficSimulation{
                 StartCoroutine(ReduceSpeed(vehicle, slowingTime));
                 thisVehicleAI.vehicleStatus = Status.STOP;
 
+                // save the original position of the vehicle
+                originalPositions.Add(vehicle.transform.position);
+
+                // move to the station for processing
                 StartCoroutine(MoveToProcess(slowingTime + moveDelay));
                 
                 vehicle_Info.processStatus = 1;
@@ -150,7 +159,8 @@ namespace TrafficSimulation{
             GameObject nowVehicle = processingVehicles_List[0];
             UnityEngine.Debug.Log(nowVehicle + " Processing Done");
             
-            finishedVehicle_Count += 1;
+            // finishedVehicle_Count += 1;
+            CalculateFinishedVehicle(nowVehicle);
             
             // The delay between checks for trucks
             float checkDelay = 0.5f; 
@@ -163,7 +173,8 @@ namespace TrafficSimulation{
             // Move to original position
             UnityEngine.Debug.Log(nowVehicle + " moves to original position");
 
-            finishedVehicle_Count -= 1;
+            RemoveFinishedVehicle(nowVehicle);
+            // finishedVehicle_Count -= 1;
         
             processingVehicles_List.RemoveAt(0);
 
@@ -187,5 +198,30 @@ namespace TrafficSimulation{
             return rightSide || leftSide;
         }
 
+        private void CalculateFinishedVehicle(GameObject _vehicle)
+        {
+            if(_vehicle.transform.rotation.y == 90f)
+            {
+                finishedVehicle_Count_toRight += 1;
+            }
+
+            else
+            {
+                finishedVehicle_Count_toLeft += 1;
+            }
+        }
+
+        private void RemoveFinishedVehicle(GameObject _vehicle)
+        {
+            if(_vehicle.transform.rotation.y == 90f)
+            {
+                finishedVehicle_Count_toRight -= 1;
+            }
+
+            else
+            {
+                finishedVehicle_Count_toLeft -= 1;
+            }
+        }
     }
 }
