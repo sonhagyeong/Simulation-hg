@@ -25,7 +25,8 @@ namespace TrafficSimulation{
         private Vector3 originalPos;
         private float toRightNum = 15f;
         private float toLeftNum = 30f;
-        private float checkRange = 20f;
+        private float checkRange_1 = 20f;
+        private float checkRange_2 = 1f;
 
 
         private GameObject nowStation;
@@ -56,8 +57,8 @@ namespace TrafficSimulation{
 
             // int nowStation_FinishedVehicle_toLeft = nowStationInfo.finishedVehicle_toLeft.Count;
             // int nowStation_FinishedVehicle_toRight = nowStationInfo.finishedVehicle_toRight.Count;
-            Debug.Log("nowStation_FinishedVehicle_toLeft: " + nowStation_FinishedVehicle_toLeft);
-            Debug.Log("nowStation_FinishedVehicle_toRight: " + nowStation_FinishedVehicle_toRight);
+            // Debug.Log("nowStation_FinishedVehicle_toLeft: " + nowStation_FinishedVehicle_toLeft);
+            // Debug.Log("nowStation_FinishedVehicle_toRight: " + nowStation_FinishedVehicle_toRight);
 
             // vehicle이 어느 방향으로 가는지 확인
             // 오른쪽 방향으로 가는 경우
@@ -71,11 +72,6 @@ namespace TrafficSimulation{
                     StartCoroutine(ReduceSpeed(vehicle, short_slowingTime));
                     thisVehicleAI.vehicleStatus = Status.STOP;
                 }
-
-                else
-                {
-                    thisVehicleAI.vehicleStatus = Status.GO;
-                }
             }
 
             // 왼쪽 방향으로 가는 경우
@@ -88,11 +84,6 @@ namespace TrafficSimulation{
                     StartCoroutine(ReduceSpeed(vehicle, short_slowingTime));
                     thisVehicleAI.vehicleStatus = Status.STOP;
                 }
-
-                else
-                {
-                    thisVehicleAI.vehicleStatus = Status.GO;
-                }
             }
 
             // 작업하는 곳인지 확인
@@ -103,7 +94,7 @@ namespace TrafficSimulation{
             {
                 truckStatus += 1;
 
-                StartCoroutine(WorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, moveDelay, checkDelay, checkRange, processTime));
+                StartCoroutine(WorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, moveDelay, checkDelay, checkRange_1, checkRange_2, processTime));
                 
             }
 
@@ -113,7 +104,8 @@ namespace TrafficSimulation{
 
         
         // private IEnumerator WorkingProcess(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, float _slowingTime, float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, float _checkRange, float _processTime)
-        private IEnumerator WorkingProcess(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, float _slowingTime, float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, float _checkRange, float _processTime)
+        private IEnumerator WorkingProcess(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, float _slowingTime, 
+                                            float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, float _checkRange_1, float _checkRange_2, float _processTime)
         {
             // 감속
             yield return StartCoroutine(ReduceSpeed(_vehicle, _slowingTime));
@@ -125,7 +117,7 @@ namespace TrafficSimulation{
 
             yield return StartCoroutine(Processing(_processTime, _station, _stationInfo, _vehicle, _checkDelay));
 
-            yield return StartCoroutine(MoveToOriginalPos(_vehicle, _vehicleAI, _station, _stationInfo, originalPos, _checkRange, _checkDelay));
+            yield return StartCoroutine(MoveToOriginalPos(_vehicle, _vehicleAI, _station, _stationInfo, originalPos, _checkRange_1, _checkRange_2, _checkDelay));
         }
 
         private IEnumerator MoveToProcess(GameObject _vehicle, GameObject _station, StationsInfo _stationInfo, float _delay, float _toRigthNum, float _toLeftNum, Vector3 _originalPos)
@@ -183,13 +175,16 @@ namespace TrafficSimulation{
 
         
         // private IEnumerator MoveToOriginalPos(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, Vector3 _originalPos, float _checkRange, float _checkDelay)
-        private IEnumerator MoveToOriginalPos(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, Vector3 _originalPos, float _checkRange, float _checkDelay)
+        private IEnumerator MoveToOriginalPos(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, Vector3 _originalPos, float _checkRange_1, float _checkRange_2, float _checkDelay)
         {
             // 작업이 끝나면 주변에 트럭이 있는지 확인
-            while(ExistAnyTruck(_originalPos, _checkRange))
-            {
+            while(ExistAnyTruck(_originalPos, _checkRange_1, _checkRange_2))
+            {   
+                Debug.Log("there is vehicle near original position");
                 yield return new WaitForSeconds(_checkDelay);
             }
+
+            Debug.Log("Now You can go!");
 
             // Move to original position
             // UnityEngine.Debug.Log(_vehicle.name + "Move to original position");
@@ -240,7 +235,7 @@ namespace TrafficSimulation{
 
         private IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
         {   
-            UnityEngine.Debug.Log(vehicle.name + " reduces Speed");
+            // UnityEngine.Debug.Log(vehicle.name + " reduces Speed");
             Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
             
             Vector3 initialVelocity = rb.velocity;
@@ -254,26 +249,42 @@ namespace TrafficSimulation{
             }
 
             rb.velocity = Vector3.zero; // Ensure velocity is set to zero
-            UnityEngine.Debug.Log(vehicle.name + " rb.velocity is 0!!");
+            // UnityEngine.Debug.Log(vehicle.name + " rb.velocity is 0!!");
         }
-            
 
-        private bool ExistAnyTruck(Vector3 _position, float _checkRange)
+        private bool ExistAnyTruck(Vector3 _position, float _checkRange_1, float _checkRange_2)
+        {   
+            // // Perform a raycast to check for vehicles on both sides
+            // bool rightSide = CheckRaycast(_position, Vector3.right, _checkRange);
+            // bool leftSide = CheckRaycast(_position, Vector3.left, _checkRange);
+
+            // Perform a raycast to check for vehicles on both sides
+            bool rightSide = CheckRaycast(_position, new Vector3(1f, 0f, 0f), _checkRange_1);
+            bool leftSide = CheckRaycast(_position, new Vector3(-1f, 0f, 0f), _checkRange_1);
+            bool forwardSide = CheckRaycast(_position, new Vector3(0f, 0f, 1f), _checkRange_2);
+            bool backwardSide = CheckRaycast(_position, new Vector3(0f, 0f, -1f), _checkRange_2);
+
+            return rightSide || leftSide || forwardSide || backwardSide;
+
+            // return rightSide || leftSide;
+        }
+
+        private bool CheckRaycast(Vector3 _position, Vector3 _direction, float _range)
         {
-            // Perform a raycast to check for vehicles
+            // Perform a raycast in the specified direction
             RaycastHit hit;
+            if (Physics.Raycast(_position, _direction, out hit, _range))
+            {   
+                return true;
+            }
 
-            // The range on the x-axis to check for vehicles
-            bool rightSide = Physics.Raycast(_position, Vector3.right, out hit, _checkRange);
-            bool leftSide = Physics.Raycast(_position, Vector3.left, out hit, _checkRange);
-
-            return rightSide || leftSide;
+            return false;
         }
 
         // private void PlusFinishedVehicle(GameObject _station, GameObject _vehicle)
         private void PlusFinishedVehicle(StationsInfo _stationInfo, GameObject _vehicle)
         {   
-            Debug.Log(_vehicle.name + " PlusFinishedVehicle");
+            // Debug.Log(_vehicle.name + " PlusFinishedVehicle");
             
             if(CheckRotation_IsToRight(_vehicle))
             {
@@ -293,7 +304,7 @@ namespace TrafficSimulation{
         // private void MinusFinishedVehicle(GameObject _station, GameObject _vehicle)
         private void MinusFinishedVehicle(StationsInfo _stationInfo, GameObject _vehicle)
         {   
-            Debug.Log(_vehicle.name + " MinusFinishedVehicle");
+            // Debug.Log(_vehicle.name + " MinusFinishedVehicle");
             if(CheckRotation_IsToRight(_vehicle))
             {
                 // _station.GetComponent<StationsInfo>().finishedVehicle_toRight_Count -= 1;
@@ -308,6 +319,5 @@ namespace TrafficSimulation{
                 // return _stationInfo.finishedVehicle_toLeft_Count;
             }
         }
-    
     }
 }
