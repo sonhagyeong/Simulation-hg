@@ -34,12 +34,12 @@ namespace TrafficSimulation{
         private float arrivalTime;
         private float stationArrivalTime;
 
-        public List<Vector3> pickupPositions;
-        public List<Vector3> dropPositions;
+        // public List<Vector3> pickupPositions;
+        // public List<Vector3> dropPositions;
 
         public Vector3 destinationPos;
 
-        private static List<CreateTruckData> truckData_List = CreateTruck.truckDataList;
+        // private static List<CreateTruckData> truckData_List = CreateTruck.truckDataList;
         
         public int processStatus;
         private Vector3 nowPosition;
@@ -54,7 +54,7 @@ namespace TrafficSimulation{
             totalWatch.Start();
             stationWatch.Start();
 
-            GetTruckInformation(truckData_List);
+            // GetTruckInformation(truckData_List);
             processStatus = 0;
         }
 
@@ -68,16 +68,16 @@ namespace TrafficSimulation{
         }
 
 
-        private void GetTruckInformation(List<CreateTruckData> dataList)
-        {
-            // Find the CreateTruckData object with the specific name
-            CreateTruckData truckData = dataList.FirstOrDefault(data => data.Name == this.name);
+        // private void GetTruckInformation(List<CreateTruckData> dataList)
+        // {
+        //     // Find the CreateTruckData object with the specific name
+        //     CreateTruckData truckData = dataList.FirstOrDefault(data => data.Name == this.name);
 
-            pickupPositions = truckData.PickupStations;
-            dropPositions = truckData.DropStations;
+        //     pickupPositions = truckData.PickupStations;
+        //     dropPositions = truckData.DropStations;
 
-            destinationPos = dropPositions.Last();
-        }
+        //     destinationPos = dropPositions.Last();
+        // }
         
        
 
