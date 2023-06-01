@@ -50,10 +50,10 @@ namespace TrafficSimulation {
         public int raysNumber = 6;
 
         [Tooltip("If detected vehicle is below this distance, ego vehicle will stop")]
-        public float emergencyBrakeThresh = 2f;
+        public float emergencyBrakeThresh = 5f;
 
         [Tooltip("If detected vehicle is below this distance (and above, above distance), ego vehicle will slow down")]
-        public float slowDownThresh = 4f;
+        public float slowDownThresh = 10f;
 
         [HideInInspector] public Status vehicleStatus = Status.GO;
 
@@ -165,6 +165,7 @@ namespace TrafficSimulation {
                         
                         //If the two vehicles are too close, and facing the same direction, brake the ego vehicle
                         if(hitDist < emergencyBrakeThresh && dotFront > .8f){
+                            // Debug.Log("brake the ego vehicle");
                             acc = 0;
                             brake = 1;
                             wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
@@ -172,6 +173,7 @@ namespace TrafficSimulation {
 
                         //If the two vehicles are too close, and not facing same direction, slight make the ego vehicle go backward
                         else if(hitDist < emergencyBrakeThresh && dotFront <= .8f){
+                            // Debug.Log(" ego vehicle go backward");
                             acc = -.3f;
                             brake = 0f;
                             wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
@@ -188,6 +190,7 @@ namespace TrafficSimulation {
 
                         //If the two vehicles are getting close, slow down their speed
                         else if(hitDist < slowDownThresh){
+                            // Debug.Log("slowDownThresh");
                             acc = .5f;
                             brake = 0f;
                             //wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 1.5f, wheelDrive.minSpeed);
