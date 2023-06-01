@@ -678,7 +678,7 @@ MonoBehaviour:
   raycastLength: 5
   raySpacing: 8
   raysNumber: 20
-  emergencyBrakeThresh: 2
+  emergencyBrakeThresh: 5
   slowDownThresh: 10
   vehicleStatus: 0
 --- !u!114 &1427013506811726926
@@ -740,6 +740,7 @@ MonoBehaviour:
   truckWorkStations: []
   destination: {x: 0, y: 0, z: 0}
   truckStatus: 0
-  slowingTime: 5
+  short_slowingTime: 2
+  long_slowingTime: 5
   moveDelay: 1
   processTime: 10
