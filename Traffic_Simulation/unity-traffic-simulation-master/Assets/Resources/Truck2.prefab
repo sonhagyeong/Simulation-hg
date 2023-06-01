@@ -606,6 +606,7 @@ GameObject:
   - component: {fileID: 1855387197945060477}
   - component: {fileID: 1427013506811726926}
   - component: {fileID: -8684771820379342308}
+  - component: {fileID: -8459849227491025130}
   m_Layer: 9
   m_Name: Truck2
   m_TagString: AutonomousVehicle
@@ -720,9 +721,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disappearDelay: 3
-  processTime: 8
-  slowingTime: 2
   speedTime: 4
   maxSpeed: 20
-  filePath: Assets/result.csv
   destinationPos: {x: 0, y: 0, z: 0}
+  processStatus: 0
+--- !u!114 &-8459849227491025130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6065543447552222051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c007891c76323204fb7395b57da7f58c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  truckWorkStations: []
+  destination: {x: 0, y: 0, z: 0}
+  truckStatus: 0
+  short_slowingTime: 2
+  long_slowingTime: 5
+  moveDelay: 1
+  processTime: 10
