@@ -91,7 +91,7 @@ namespace TrafficSimulation{
             string[] lines = File.ReadAllLines(_filePath);
             // Append the new data to the content
             string newLine = string.Format("{0},{1},{2},{3},{4}",
-                _truckName, _routeName, _destination, _departureTime, _arrivalTime);
+                _truckName, _routeName, _origin, _destination, _arrivalTimeList);
             string updatedContent = string.Join("\n", lines) + "\n" + newLine;
 
             // Write the updated content back to the CSV file
