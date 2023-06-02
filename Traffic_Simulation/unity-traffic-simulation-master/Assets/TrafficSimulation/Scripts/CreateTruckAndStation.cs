@@ -346,8 +346,9 @@ namespace TrafficSimulation{
                 truckInfo.truckWorkStations = _workStaions;
 
                 int workStationCount = _workStaions.Count;
-                truckInfo.origin = _workStaions[0];
-                truckInfo.destination = _workStaions[workStationCount - 1];
+                truckInfo.truckOrigin = _workStaions[0];
+                truckInfo.truckDestination = _workStaions[workStationCount - 1];
+                truckInfo.truckRouteName = _routeName;
             }
 
             else
