@@ -9090,13 +9090,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 790543889}
-  m_LocalRotation: {x: 0.3825004, y: -0, z: -0, w: 0.9239553}
-  m_LocalPosition: {x: 150, y: 275, z: -125}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 675, y: 684, z: 300}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 44.977, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &799696251
 GameObject:
   m_ObjectHideFlags: 0
@@ -10719,7 +10719,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 4
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 91654759}
+  - {fileID: 1004277650}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -13736,7 +13738,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 1
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 1521660072}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -16600,7 +16603,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 7
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 1889862257}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -17070,7 +17074,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 12
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 91654759}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -19540,7 +19545,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 0
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 91654759}
+  - {fileID: 1521660072}
+  - {fileID: 1004277650}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -20337,7 +20345,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 3
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 1889862257}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -20812,7 +20821,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 11
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 1889862257}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -22030,7 +22040,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 8
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 91654759}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
@@ -22890,11 +22901,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2079801199}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 376a224f169aaeb408ded970c552e231, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nowTruckCount: 0
+  totalTruckCount: 0
 --- !u!1 &2097480180
 GameObject:
   m_ObjectHideFlags: 0
@@ -22927,7 +22940,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intersectionType: 0
   id: 15
-  prioritySegments: []
+  prioritySegments:
+  - {fileID: 1889862257}
   lightsDuration: 8
   orangeLightDuration: 2
   lightsNbr1: []
