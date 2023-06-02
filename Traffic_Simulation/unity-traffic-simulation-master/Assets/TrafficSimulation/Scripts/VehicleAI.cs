@@ -44,10 +44,14 @@ namespace TrafficSimulation {
         public float raycastLength = 5;
 
         [Tooltip("Spacing between each rays")]
-        public int raySpacing = 2;
+        public int raySpacing = 8;
+        // public int raySpacing = 2;
+
 
         [Tooltip("Number of rays to be casted")]
-        public int raysNumber = 6;
+        public int raysNumber = 20;
+        // public int raysNumber = 6;
+        
 
         [Tooltip("If detected vehicle is below this distance, ego vehicle will stop")]
         public float emergencyBrakeThresh = 5f;
@@ -111,7 +115,8 @@ namespace TrafficSimulation {
         void MoveVehicle(){
 
             //Default, full acceleration, no break and no steering
-            float acc = 1;
+            // float acc = 1;
+            float acc = 15;
             float brake = 0;
             float steering = 0;
             wheelDrive.maxSpeed = initMaxSpeed;
@@ -127,13 +132,17 @@ namespace TrafficSimulation {
                 acc = 0;
                 brake = 1;
                 wheelDrive.maxSpeed = Mathf.Min(wheelDrive.maxSpeed / 2f, 5f);
+                // Debug.Log(this.name + " STOP");
             }
             else{
                 
                 //Not full acceleration if have to slow down
                 if(vehicleStatus == Status.SLOW_DOWN){
-                    acc = .3f;
+                    // acc = .3f;
+                    // acc가 클수록 속도는 더 적게 줄어듬
+                    acc = 2.5f;
                     brake = 0f;
+                    // Debug.Log(this.name+ " SLOW DOWN");
                 }
 
                 //If planned to steer, decrease the speed
@@ -193,7 +202,7 @@ namespace TrafficSimulation {
                             // Debug.Log("slowDownThresh");
                             acc = .5f;
                             brake = 0f;
-                            //wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 1.5f, wheelDrive.minSpeed);
+                            wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 1.5f, wheelDrive.minSpeed);
                         }
                     }
 

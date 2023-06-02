@@ -19,7 +19,7 @@ namespace TrafficSimulation{
 
         
         public float short_slowingTime = 2f;
-        public float long_slowingTime = 5f;
+        public float long_slowingTime = 3f;
 
         public float moveDelay = 1f;
         public float processTime = 10f;
@@ -52,6 +52,10 @@ namespace TrafficSimulation{
             thisVehicleAI = vehicle.GetComponent<VehicleAI>();
             truckTimer = vehicle.GetComponent<Timer>();
             exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
+
+            WheelDrive thisVehicleDr = vehicle.GetComponent<WheelDrive>();
+            Debug.Log(vehicle.name + " streeing Speed Max : " + thisVehicleDr.steeringSpeedMax);
+            Debug.Log(vehicle.name + " minSpeed : " + thisVehicleDr.minSpeed);
         }
 
         void OnTriggerEnter(Collider _other)
@@ -124,7 +128,12 @@ namespace TrafficSimulation{
                                             float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, float _checkRange_1, float _checkRange_2, float _processTime, Timer _truckTimer)
         {
             // 감속
+            Debug.Log(_vehicle.name + " SLOW_DOWN");
+            _vehicleAI.vehicleStatus = Status.SLOW_DOWN;
             yield return StartCoroutine(ReduceSpeed(_vehicle, _slowingTime));
+
+            // yield return new WaitForSeconds(3f);
+            Debug.Log(_vehicle.name + " STOP");
             _vehicleAI.vehicleStatus = Status.STOP;
 
             if(_truckTimer != null)
