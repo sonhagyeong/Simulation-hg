@@ -8,8 +8,9 @@ namespace TrafficSimulation{
     {
 
         public List<Vector3> truckWorkStations;
-        public Vector3 origin;
-        public Vector3 destination;
+        public Vector3 truckOrigin;
+        public Vector3 truckDestination;
+        public string truckRouteName;
         public int truckStatus;
 
         
@@ -40,7 +41,8 @@ namespace TrafficSimulation{
         private float checkDelay = 0.1f; 
 
         private Timer truckTimer;
-        // public float truckTotalTime;
+
+        private ExitPlayMode exitPlayMode;
 
         // Start is called before the first frame update
         void Start()
@@ -49,6 +51,7 @@ namespace TrafficSimulation{
             vehicle = this.gameObject;
             thisVehicleAI = vehicle.GetComponent<VehicleAI>();
             truckTimer = vehicle.GetComponent<Timer>();
+            exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
         }
 
         void OnTriggerEnter(Collider _other)
@@ -97,18 +100,21 @@ namespace TrafficSimulation{
                     truckStatus += 1;
 
                     // 도착지인 경우
-                    if(IsDestination(toWorkStation_Name, destination))
+                    if(IsDestination(toWorkStation_Name, truckDestination))
                     {
-                        StartCoroutine(LastWorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, moveDelay, checkDelay, checkRange_1, checkRange_2, processTime, truckTimer));
+                        Debug.Log(vehicle.name +" arrives destination!!!");
+                        StartCoroutine(LastWorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, 
+                                                            moveDelay, checkDelay, checkRange_1, checkRange_2, processTime, truckTimer, exitPlayMode, truckRouteName, truckOrigin, truckDestination));
                     }
                     
                     // 도착지가 아닌 경우
                     else
                     {  
-                        StartCoroutine(WorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, moveDelay, checkDelay, checkRange_1, checkRange_2, processTime, truckTimer));
+                        StartCoroutine(WorkingProcess(vehicle, thisVehicleAI, nowStation, nowStationInfo, long_slowingTime, toRightNum, toLeftNum, 
+                                                                moveDelay, checkDelay, checkRange_1, checkRange_2, processTime, truckTimer));
                     }
 
-                    Debug.Log(vehicle.name + " truckTimer.stationWatchList.Count : " + truckTimer.stationWatchList.Count);
+                    // Debug.Log(vehicle.name + " truckTimer.stationWatchList.Count : " + truckTimer.stationWatchList.Count);
                 }
             }
         }
@@ -121,8 +127,6 @@ namespace TrafficSimulation{
             yield return StartCoroutine(ReduceSpeed(_vehicle, _slowingTime));
             _vehicleAI.vehicleStatus = Status.STOP;
 
-            originalPos = _vehicle.transform.position;
-
             if(_truckTimer != null)
             {
                 if(_truckTimer.stationWatch != null)
@@ -132,15 +136,17 @@ namespace TrafficSimulation{
                 }
                 else
                 {
-                    Debug.LogError("Timer 컴포넌트를 찾을 수 없습니다.");
+                    Debug.LogError("_truckTimer.stationWatch 컴포넌트를 찾을 수 없습니다.");
                 }
         
             }
 
             else
             {
-                Debug.LogError("Timer 컴포넌트를 찾을 수 없습니다.");
+                Debug.LogError("_truckTimer 컴포넌트를 찾을 수 없습니다.");
             }
+
+            originalPos = _vehicle.transform.position;
 
             yield return StartCoroutine(MoveToProcess(_vehicle, _station, _stationInfo, _moveDelay, _toRigthNum, _toLeftNum, originalPos));
 
@@ -152,11 +158,12 @@ namespace TrafficSimulation{
             {
                 _truckTimer.stationWatch.Reset();
                 Debug.Log( vehicle.name + " stationWatch reset");
+                _truckTimer.stationWatch.Start();
             }
         }
 
-        private IEnumerator LastWorkingProcess(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, float _slowingTime, 
-                                            float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, float _checkRange_1, float _checkRange_2, float _processTime, Timer _truckTimer)
+        private IEnumerator LastWorkingProcess(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, float _slowingTime, float _toRigthNum, float _toLeftNum, float _moveDelay, float _checkDelay, 
+                                                        float _checkRange_1, float _checkRange_2, float _processTime, Timer _truckTimer, ExitPlayMode _exitPlayMode, string _routeName, Vector3 _origin, Vector3 _destination)
         {
             // 감속
             yield return StartCoroutine(ReduceSpeed(_vehicle, _slowingTime));
@@ -167,6 +174,7 @@ namespace TrafficSimulation{
                 if(_truckTimer.stationWatch != null)
                 {   
                     float stationArrivalTime = _truckTimer.TimerStop(_truckTimer.stationWatch);
+                    Debug.Log(_vehicle.name + " stationArrivalTime : " + stationArrivalTime);
                     _truckTimer.stationWatchList.Add(stationArrivalTime);
                 }
                 else
@@ -185,13 +193,7 @@ namespace TrafficSimulation{
 
             yield return StartCoroutine(MoveToProcess(_vehicle, _station, _stationInfo, _moveDelay, _toRigthNum, _toLeftNum, originalPos));
 
-            yield return StartCoroutine(LastProcessing(_processTime, _station, _stationInfo, _vehicle, _checkDelay));
-
-            if(_truckTimer != null)
-            {
-                truckTimer.totalTime = truckTimer.TimerStop(truckTimer.totalWatch);
-                Debug.Log( vehicle.name + " totalTime is done");
-            }
+            yield return StartCoroutine(LastProcessing(_processTime, _station, _stationInfo, _vehicle, _checkDelay, _truckTimer, _exitPlayMode, _routeName, _origin, _destination));
         }
 
         private IEnumerator MoveToProcess(GameObject _vehicle, GameObject _station, StationsInfo _stationInfo, float _delay, float _toRigthNum, float _toLeftNum, Vector3 _originalPos)
@@ -238,7 +240,8 @@ namespace TrafficSimulation{
         }
 
 
-        private IEnumerator LastProcessing(float _processTime, GameObject _station, StationsInfo _stationInfo, GameObject _vehicle, float _checkDelay)
+        private IEnumerator LastProcessing(float _processTime, GameObject _station, StationsInfo _stationInfo, GameObject _vehicle, float _checkDelay, 
+                                                        Timer _truckTimer, ExitPlayMode _exitPlayMode, string _routeName, Vector3 _origin, Vector3 _destination)
         {   
             // station이 작업 처리 할 수 있는 지 확인
             while(!IsStationAvailable(_station))
@@ -254,6 +257,19 @@ namespace TrafficSimulation{
             yield return new WaitForSeconds(_processTime);
 
             _stationInfo.stationStatus -= 1;
+
+            if(_truckTimer != null)
+            {
+                float totalTime = _truckTimer.TimerStop(_truckTimer.totalWatch);
+                Debug.Log( _vehicle.name + " totalTime is " + totalTime);
+                _exitPlayMode.nowTruckCount += 1;
+                _truckTimer.SaveToCSV(_truckTimer.filePath, _vehicle.name, _routeName, _origin, _destination, totalTime, _truckTimer.stationWatchList);
+            }
+
+            else
+            {
+                Debug.LogError("Timer 컴포넌트를 찾을 수 없습니다.");
+            }
 
             _vehicle.SetActive(false);
         }
