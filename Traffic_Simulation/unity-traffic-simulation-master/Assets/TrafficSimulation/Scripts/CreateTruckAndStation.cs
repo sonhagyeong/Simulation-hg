@@ -20,6 +20,8 @@ namespace TrafficSimulation{
         // Station Parameters
         private static Vector3 stationSize = new Vector3(50,10,30);
         private static float stationPos_y = stationSize.y/2;
+        private string stationTagName = "Station";
+
 
         private static Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> startPositionDict;
 
@@ -27,7 +29,7 @@ namespace TrafficSimulation{
         void Start()
         {
             ReadFile(truckFilePath);
-            CreateStations(truckDataList);
+            CreateStations(truckDataList, stationTagName);
             if(ExistRoute(truckDataList))
             {   
                 IsDuplicateStartPosition(truckDataList);
@@ -152,7 +154,7 @@ namespace TrafficSimulation{
         }
 
         
-        public static void CreateStations(List<CreateTruckData> dataList)
+        public void CreateStations(List<CreateTruckData> dataList, string _stationTagName)
         {   
             GameObject stationsOB = GameObject.Find("Stations");
 
@@ -179,6 +181,16 @@ namespace TrafficSimulation{
                             GameObject workStationOB = new GameObject(workStationName);
                             workStationOB.transform.parent = stationsOB.transform;
                             workStationOB.transform.position = workStation;
+                            if(ExistTag(_stationTagName))
+                            {
+                                workStationOB.tag = _stationTagName;
+                            }
+
+                            else
+                            {
+                                Debug.LogError("Tag does not exist: " + _stationTagName);
+                            }
+                            
                             workStationOB.AddComponent<StationsInfo>();
                             AddCollider(workStationOB);
                         }
@@ -358,6 +370,19 @@ namespace TrafficSimulation{
                 yield return new WaitForSeconds(_createDelay);
             }
         }
-    
+
+        // Tag 존재하는지 확인하는 함수
+        private bool ExistTag(string _tagName)
+        {
+            foreach(string existingTag in UnityEditorInternal.InternalEditorUtility.tags)
+            {
+                if(existingTag == _tagName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
