@@ -12,7 +12,7 @@ namespace TrafficSimulation{
     public class Timer : MonoBehaviour
     {
         // 파일 저장 위치
-        [SerializeField] private string filePath = "Assets/result.csv";
+        public string filePath = "Assets/result.csv";
 
         // StopWatch
         public Stopwatch totalWatch;
@@ -22,10 +22,10 @@ namespace TrafficSimulation{
         public float totalTime;
 
 
-        // Truck Information
-        private TruckInfo truckInfo;
-        private Vector3 truckOrigin;
-        private Vector3 truckDestination;
+        // // Truck Information
+        // private TruckInfo truckInfo;
+        // private Vector3 truckOrigin;
+        // private Vector3 truckDestination;
         
         
     
@@ -33,24 +33,16 @@ namespace TrafficSimulation{
         {
             totalWatch = new Stopwatch();
             stationWatch = new Stopwatch();
-            // TimerStart(totalWatch);
-            // TimerStart(stationWatch);
             
             stationWatchList = new List<float>();
 
             // Get truck origin and destination
-            truckInfo = this.gameObject.GetComponent<TruckInfo>();
-            GetTruckInformation(truckInfo);
+            // truckInfo = this.gameObject.GetComponent<TruckInfo>();
+            // GetTruckInformation(truckInfo);
             // departureTime = totalWatch.ElapsedMilliseconds / 1000f;
 
             totalWatch.Start();
             stationWatch.Start();
-        }
-
-        public void TimerStart(Stopwatch _watch)
-        {
-            _watch = new Stopwatch();
-            _watch.Start();
         }
 
         public float TimerStop(Stopwatch _watch)
@@ -63,15 +55,15 @@ namespace TrafficSimulation{
         }
 
 
-        private void GetTruckInformation(TruckInfo _truckInfo)
-        {
-            truckOrigin = _truckInfo.origin;
-            truckDestination = _truckInfo.destination;
-        }
+        // private void GetTruckInformation(TruckInfo _truckInfo)
+        // {
+        //     truckOrigin = _truckInfo.origin;
+        //     truckDestination = _truckInfo.destination;
+        // }
         
        
 
-        private void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _origin, Vector3 _destination, List<float> _arrivalTimeList)
+        public void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _origin, Vector3 _destination, float _totalTime, List<float> _arrivalTimeList)
         {
             // Check if the CSV file exists
             if(!File.Exists(_filePath))
@@ -89,13 +81,27 @@ namespace TrafficSimulation{
 
             // Read the existing content of the CSV file
             string[] lines = File.ReadAllLines(_filePath);
-            // Append the new data to the content
-            string newLine = string.Format("{0},{1},{2},{3},{4}",
-                _truckName, _routeName, _origin, _destination, _arrivalTimeList);
-            string updatedContent = string.Join("\n", lines) + "\n" + newLine;
 
-            // Write the updated content back to the CSV file
-            File.WriteAllText(_filePath, updatedContent);
+            // Convert the List<float> to a comma-separated string
+            string arrivalTimeValues = string.Join(",", _arrivalTimeList);
+            UnityEngine.Debug.Log("arrivalTimeValues: " + arrivalTimeValues);
+
+            // Convert the Vector3 values to strings without including commas
+            string originValue = _origin.ToString().Replace(",", string.Empty);
+            string destinationValue = _destination.ToString().Replace(",", string.Empty);
+            // string originValue = $"({_origin.x},{_origin.y},{_origin.z})";
+            // string destinationValue = $"({_destination.x},{_destination.y},{_destination.z})";
+
+            // Append the new data to the content
+            string newLine = string.Format("{0},{1},{2},{3},{4},{5}", _truckName, _routeName, originValue, destinationValue, _totalTime, arrivalTimeValues);
+
+            // Append the new line to the CSV file
+            File.AppendAllText(_filePath, newLine + "\n");
+            
+            // string updatedContent = string.Join("\n", lines) + "\n" + newLine;
+
+            // // Write the updated content back to the CSV file
+            // File.WriteAllText(_filePath, updatedContent);
 
         }
 
