@@ -346,6 +346,7 @@ namespace TrafficSimulation{
                 truckInfo.truckWorkStations = _workStaions;
 
                 int workStationCount = _workStaions.Count;
+                truckInfo.origin = _workStaions[0];
                 truckInfo.destination = _workStaions[workStationCount - 1];
             }
 
@@ -365,7 +366,7 @@ namespace TrafficSimulation{
                 string routeName = value.Item2;
                 List<Vector3> truckWorkStations = value.Item3;
 
-                Debug.Log("Create Duplicate Position Truck: " + truckName + ", " + routeName);
+                // Debug.Log("Create Duplicate Position Truck: " + truckName + ", " + routeName);
                 CreateTruck(truckName, routeName, truckWorkStations);
 
                 yield return new WaitForSeconds(_createDelay);
