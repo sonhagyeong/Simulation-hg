@@ -1,32 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
+// #if UNITY_EDITOR
 using UnityEditor;
-#endif
+// #endif
 
-public class ExitPlayMode : MonoBehaviour
-{
-    // Update is called once per frame
-    private void Update()
+namespace TrafficSimulation{
+    public class ExitPlayMode : MonoBehaviour
     {
-#if UNITY_EDITOR
-        // Check if there are no objects in the hierarchy starting with "Truck"
-        bool noTruckObjects = true;
-        foreach (Transform obj in GameObject.FindObjectsOfType<Transform>())
+        public int nowTruckCount;
+        [SerializeField] private int totalTruckCount;
+
+        // private CreateTruckAndStation createTruckAndStation;
+
+        void Start()
         {
-            if (obj.name.StartsWith("Truck"))
-            {
-                noTruckObjects = false;
-                break;
-            }
+            nowTruckCount = 0;
+            totalTruckCount = CreateTruckAndStation.truckDataList.Count;
+            
         }
 
-        // Exit play mode if there are no Truck objects
-        if (noTruckObjects)
+        // Update is called once per frame
+        private void Update()
         {
-            EditorApplication.ExitPlaymode();
+    // #if UNITY_EDITOR
+            if(CompareTruckCount(nowTruckCount, totalTruckCount))
+            {
+                Debug.Log("Exit Play Mode");
+                EditorApplication.ExitPlaymode();
+            }
+    // #endif
         }
-#endif
+
+        private bool CompareTruckCount(int _nowTruckCount, int _totalTruckCount)
+        {
+            return _nowTruckCount == _totalTruckCount;
+        }
+
+        
     }
 }
