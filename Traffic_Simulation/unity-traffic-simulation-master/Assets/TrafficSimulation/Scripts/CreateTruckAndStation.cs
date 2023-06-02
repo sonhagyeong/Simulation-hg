@@ -11,8 +11,6 @@ namespace TrafficSimulation{
 
         [SerializeField] private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks.csv";
 
-
-        // private List<string> truckDataList = new List<string>();
         public static List<CreateTruckData> truckDataList = new List<CreateTruckData>();
 
         private static float truckRotation_y;
@@ -22,10 +20,10 @@ namespace TrafficSimulation{
         private static float stationPos_y = stationSize.y/2;
         private string stationTagName = "Station";
 
-
+        // 동일한 시작 위치를 가진 트럭들을 포함하는 딕셔너리
         private static Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> startPositionDict;
 
-        // Start is called before the first frame update
+  
         void Start()
         {
             ReadFile(truckFilePath);
@@ -99,6 +97,8 @@ namespace TrafficSimulation{
 
         }
 
+
+        // 경로 유무 확인 함수
         public static bool ExistRoute(List<CreateTruckData> dataList)
         {
             // Print the truck data
@@ -114,7 +114,8 @@ namespace TrafficSimulation{
             return true;
         }
 
-
+       
+        // 트럭 시작 위치에 따른 회전 방향 설정 함수
         public static float GetTruckRotation(Transform routeTransform, string routeName)
         {
             Vector3 position_1 = routeTransform.Find(routeName + "/Waypoint-0").transform.position;
@@ -153,7 +154,8 @@ namespace TrafficSimulation{
             return truckRotation_y;
         }
 
-        
+
+        // Station 생성 함수
         public void CreateStations(List<CreateTruckData> dataList, string _stationTagName)
         {   
             GameObject stationsOB = GameObject.Find("Stations");
@@ -205,7 +207,8 @@ namespace TrafficSimulation{
             }
         }
 
-        
+
+        // Station 유무 확인 함수
         public static bool ExistStation(string parentOBName, string stationName)
         {   
             bool isExist = true;
@@ -218,6 +221,7 @@ namespace TrafficSimulation{
         }
 
         
+        // 콜라이더 추가 함수
         public static void AddCollider(GameObject obj)
         {
             BoxCollider bc = obj.AddComponent<BoxCollider>();
@@ -229,9 +233,9 @@ namespace TrafficSimulation{
         }
         
         
+        // 딕셔너리 생성 함수
         private static void IsDuplicateStartPosition(List<CreateTruckData> dataList)
         {
-            // startPositionDict = new Dictionary<Vector3, List<List<string>>>();
             startPositionDict = new Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>>();
 
             foreach(CreateTruckData data in dataList)
@@ -249,24 +253,16 @@ namespace TrafficSimulation{
                     {
                         Vector3 startPoint = childTransform.position;
 
-                        // List<string> nameAndRoute = new List<string> {data.Name, parentName};
                         Tuple<string, string, List<Vector3>> _truckData = Tuple.Create(data.Name, parentName, data.WorkStations);
 
                         if(startPositionDict.ContainsKey(startPoint))
-                        {
-                            // startPositionDict[startPoint].Add(data.Route);
-                            
+                        {  
                             startPositionDict[startPoint].Add(_truckData);
-
-                            // startPositionDict[startPoint].Add(data.Name);
-
                         }
 
                         else
                         {
                             startPositionDict[startPoint] = new List<Tuple<string, string, List<Vector3>>> { _truckData };
-
-                            // startPositionDict[startPoint] = new List<string> { data.Name };
                         }
                     }
 
@@ -284,6 +280,7 @@ namespace TrafficSimulation{
         }
 
         
+        // 출발 위치가 동일한 트럭이 있는지 확인한 후 트럭 생성하는 함수
         private void CreateTrucks(Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> _dictionary)
         {
             // Print the duplicate start positions
@@ -316,14 +313,14 @@ namespace TrafficSimulation{
             }
         }
         
-        
+
+        // 트럭 생성 함수
         private void CreateTruck(string _truckName, string _routeName, List<Vector3> _workStaions)
         {
             // Generate a random number between 1 and 4 (inclusive)
             int randomNumber = UnityEngine.Random.Range(1, 5);
             string truckPrefabName = "Truck" + randomNumber.ToString();
-            // string truckPrefabName = "Truck1";
-            // string routeName = "Route-" + data.Route;
+   
             GameObject truckPrefab = Resources.Load(truckPrefabName) as GameObject;
 
             if (truckPrefab != null)
@@ -339,10 +336,13 @@ namespace TrafficSimulation{
                 // Set the truck's route
                 truck.GetComponent<VehicleAI>().trafficSystem = GameObject.Find(_routeName).GetComponent<TrafficSystem>();
 
-                // Set the truck's work stations
-                // TruckInfo truckInfo = truck.AddComponent<TruckInfo>();
-                TruckInfo truckInfo = truck.GetComponent<TruckInfo>();
+                // Set the truck's work stations and destination
+                if(truck.GetComponent<TruckInfo>() == null)
+                {   
+                    truck.AddComponent<TruckInfo>();
+                }
 
+                TruckInfo truckInfo = truck.GetComponent<TruckInfo>();
                 truckInfo.truckWorkStations = _workStaions;
 
                 int workStationCount = _workStaions.Count;
@@ -356,6 +356,7 @@ namespace TrafficSimulation{
         }
 
         
+        // 출발 위치가 동일한 트럭이 있는 경우 트럭 생성 함수
         private IEnumerator DuplicatePositionCreateTruck(List<Tuple<string, string, List<Vector3>>> _values, float _createDelay)
         {
             foreach (Tuple<string, string, List<Vector3>> value in _values)
@@ -371,6 +372,7 @@ namespace TrafficSimulation{
             }
         }
 
+        
         // Tag 존재하는지 확인하는 함수
         private bool ExistTag(string _tagName)
         {
@@ -384,5 +386,6 @@ namespace TrafficSimulation{
 
             return false;
         }
+    
     }
 }
