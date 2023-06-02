@@ -11,77 +11,67 @@ using System.Linq;
 namespace TrafficSimulation{
     public class Timer : MonoBehaviour
     {
-        public float disappearDelay = 3f;
-        // public float processTime = 8f;
-        // public float slowingTime = 3f; 
-        public float speedTime = 10f;
-        public float maxSpeed = 20f;
-        
-        // private GameObject vehicle;
-        // private VehicleAI thisVehicleAI;
+        // 파일 저장 위치
+        [SerializeField] private string filePath = "Assets/result.csv";
 
+        // StopWatch
         public Stopwatch totalWatch;
         public Stopwatch stationWatch;
 
-        // 파일 저장 위치
-        // [SerializeField] private string filePath = "Assets/result.csv";
+        public List<float> stationWatchList;
+        public float totalTime;
 
-        private string truckName;
-        private string routeName;
 
+        // Truck Information
+        private TruckInfo truckInfo;
+        private Vector3 truckOrigin;
+        private Vector3 truckDestination;
         
-        private float departureTime;
-        private float arrivalTime;
-        private float stationArrivalTime;
-
-        // public List<Vector3> pickupPositions;
-        // public List<Vector3> dropPositions;
-
-        public Vector3 destinationPos;
-
-        // private static List<CreateTruckData> truckData_List = CreateTruck.truckDataList;
         
-        public int processStatus;
-        private Vector3 nowPosition;
-
+    
         void Start()
         {
             totalWatch = new Stopwatch();
             stationWatch = new Stopwatch();
+            // TimerStart(totalWatch);
+            // TimerStart(stationWatch);
+            
+            stationWatchList = new List<float>();
 
-            departureTime = totalWatch.ElapsedMilliseconds / 1000f;
+            // Get truck origin and destination
+            truckInfo = this.gameObject.GetComponent<TruckInfo>();
+            GetTruckInformation(truckInfo);
+            // departureTime = totalWatch.ElapsedMilliseconds / 1000f;
 
             totalWatch.Start();
             stationWatch.Start();
-
-            // GetTruckInformation(truckData_List);
-            processStatus = 0;
         }
 
+        public void TimerStart(Stopwatch _watch)
+        {
+            _watch = new Stopwatch();
+            _watch.Start();
+        }
 
-        public void TimerStop(Stopwatch _watch)
+        public float TimerStop(Stopwatch _watch)
         {
             _watch.Stop();
             // Convert milliseconds to minutes
-            arrivalTime = _watch.ElapsedMilliseconds / 60000f; 
-            // UnityEngine.Debug.Log(vehicle + "Time elapsed: " + arrivalTime + " min");
+            // arrivalTime = _watch.ElapsedMilliseconds / 60000f; 
+
+            return _watch.ElapsedMilliseconds / 1000f;
         }
 
 
-        // private void GetTruckInformation(List<CreateTruckData> dataList)
-        // {
-        //     // Find the CreateTruckData object with the specific name
-        //     CreateTruckData truckData = dataList.FirstOrDefault(data => data.Name == this.name);
-
-        //     pickupPositions = truckData.PickupStations;
-        //     dropPositions = truckData.DropStations;
-
-        //     destinationPos = dropPositions.Last();
-        // }
+        private void GetTruckInformation(TruckInfo _truckInfo)
+        {
+            truckOrigin = _truckInfo.origin;
+            truckDestination = _truckInfo.destination;
+        }
         
        
 
-        private void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _destination, float _departureTime, float _arrivalTime)
+        private void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _origin, Vector3 _destination, List<float> _arrivalTimeList)
         {
             // Check if the CSV file exists
             if(!File.Exists(_filePath))
@@ -89,7 +79,7 @@ namespace TrafficSimulation{
                 // Create a new CSV file and write the data
                 using (StreamWriter sw = File.CreateText(_filePath))
                 {
-                    string header = "Truck Name, Route, Destination, Departure Time, Arrival Time";
+                    string header = "Truck_id, Route_id, Origin, Destination, Arrival Time";
 
                     // Write the header and data to the CSV file
                     sw.WriteLine(header);
