@@ -16,7 +16,7 @@ namespace TrafficSimulation{
         private static float truckRotation_y;
 
         // Station Parameters
-        private static Vector3 stationSize = new Vector3(50,10,30);
+        private static Vector3 stationSize = new Vector3(75,10,30);
         private static float stationPos_y = stationSize.y/2;
         private string stationTagName = "Station";
 
@@ -320,6 +320,7 @@ namespace TrafficSimulation{
             // Generate a random number between 1 and 4 (inclusive)
             int randomNumber = UnityEngine.Random.Range(1, 5);
             string truckPrefabName = "Truck" + randomNumber.ToString();
+            // string truckPrefabName = "Truck1";
    
             GameObject truckPrefab = Resources.Load(truckPrefabName) as GameObject;
 
