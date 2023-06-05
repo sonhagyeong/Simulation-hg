@@ -41,23 +41,23 @@ namespace TrafficSimulation {
         public Transform raycastAnchor;
 
         [Tooltip("Length of the casted rays")]
-        public float raycastLength = 5;
+        public float raycastLength = 7;
 
         [Tooltip("Spacing between each rays")]
-        public int raySpacing = 8;
-        // public int raySpacing = 2;
+        // public int raySpacing = 8;
+        public int raySpacing = 2;
 
 
         [Tooltip("Number of rays to be casted")]
-        public int raysNumber = 20;
+        public int raysNumber = 10;
         // public int raysNumber = 6;
         
 
         [Tooltip("If detected vehicle is below this distance, ego vehicle will stop")]
-        public float emergencyBrakeThresh = 5f;
+        public float emergencyBrakeThresh = 5.5f;
 
         [Tooltip("If detected vehicle is below this distance (and above, above distance), ego vehicle will slow down")]
-        public float slowDownThresh = 10f;
+        public float slowDownThresh = 7f;
 
         [HideInInspector] public Status vehicleStatus = Status.GO;
 
@@ -66,6 +66,8 @@ namespace TrafficSimulation {
         private int pastTargetSegment = -1;
         private Target currentTarget;
         private Target futureTarget;
+        private TruckInfo truckInfo;
+
 
         void Start()
         {
@@ -140,88 +142,112 @@ namespace TrafficSimulation {
                 if(vehicleStatus == Status.SLOW_DOWN){
                     // acc = .3f;
                     // acc가 클수록 속도는 더 적게 줄어듬
-                    acc = 2.5f;
+                    acc = 2f;
                     brake = 0f;
                     // Debug.Log(this.name+ " SLOW DOWN");
                 }
 
                 //If planned to steer, decrease the speed
-                if(futureSteering > .3f || futureSteering < -.3f){
+                // if(futureSteering > .3f || futureSteering < -.3f){
+                if(futureSteering > acc || futureSteering < -acc){
                     wheelDrive.maxSpeed = Mathf.Min(wheelDrive.maxSpeed, wheelDrive.steeringSpeedMax);
                 }
 
                 //2. Check if there are obstacles which are detected by the radar
                 float hitDist;
                 GameObject obstacle = GetDetectedObstacles(out hitDist);
-
+                // Debug.Log(this.name + "hitDist : " + hitDist);
                 //Check if we hit something
                 if(obstacle != null){
 
                     WheelDrive otherVehicle = null;
                     otherVehicle = obstacle.GetComponent<WheelDrive>();
-
+                    // Debug.Log(this.name + " otherVehicle : " + otherVehicle);
                     ///////////////////////////////////////////////////////////////
                     //Differenciate between other vehicles AI and generic obstacles (including controlled vehicle, if any)
                     if(otherVehicle != null){
                         //Check if it's front vehicle
                         float dotFront = Vector3.Dot(this.transform.forward, otherVehicle.transform.forward);
+                        // Debug.Log(this.name + " dotFront : " + dotFront);
 
+                        float betweenDistance = 0.8f;
                         //If detected front vehicle max speed is lower than ego vehicle, then decrease ego vehicle max speed
-                        if(otherVehicle.maxSpeed < wheelDrive.maxSpeed && dotFront > .8f){
-                            float ms = Mathf.Max(wheelDrive.GetSpeedMS(otherVehicle.maxSpeed) - .5f, .1f);
+                        // if(otherVehicle.maxSpeed < wheelDrive.maxSpeed && dotFront > .8f){
+                        if(otherVehicle.maxSpeed < wheelDrive.maxSpeed && dotFront > betweenDistance){
+                            Debug.Log(this.name + " decrease ego vehicle max speed");
+                            // float ms = Mathf.Max(wheelDrive.GetSpeedMS(otherVehicle.maxSpeed) - .5f, .1f);
+                            float ms = Mathf.Max(wheelDrive.GetSpeedMS(otherVehicle.maxSpeed) - 40f, 0.1f);
+                            // Debug.Log(this.name + " ms : " + ms);
                             wheelDrive.maxSpeed = wheelDrive.GetSpeedUnit(ms);
+                            Debug.Log(this.name + " wheelDrive.maxSpeed : " + wheelDrive.maxSpeed);
                         }
                         
                         //If the two vehicles are too close, and facing the same direction, brake the ego vehicle
-                        if(hitDist < emergencyBrakeThresh && dotFront > .8f){
-                            // Debug.Log("brake the ego vehicle");
+                        // if(hitDist < emergencyBrakeThresh && dotFront > .8f){
+                        if(hitDist <= emergencyBrakeThresh && dotFront > betweenDistance){
+                            Debug.Log(this.name +" " + hitDist + " brake the ego vehicle");
+
                             acc = 0;
                             brake = 1;
-                            wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
+                            // wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
+
+                            wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 10f, wheelDrive.minSpeed / 3f);
                         }
+                        
 
                         //If the two vehicles are too close, and not facing same direction, slight make the ego vehicle go backward
-                        else if(hitDist < emergencyBrakeThresh && dotFront <= .8f){
-                            // Debug.Log(" ego vehicle go backward");
+                        // else if(hitDist < emergencyBrakeThresh && dotFront <= .8f){
+                        else if(hitDist <= emergencyBrakeThresh && dotFront <= betweenDistance){
+                            Debug.Log(this.name + " " + hitDist + " ego vehicle go backward");
                             acc = -.3f;
+                            // acc = -0.005f;
                             brake = 0f;
                             wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
 
                             //Check if the vehicle we are close to is located on the right or left then apply according steering to try to make it move
                             float dotRight = Vector3.Dot(this.transform.forward, otherVehicle.transform.right);
+                            // Debug.Log(this.name + " dotRight : " + dotRight);
                             //Right
                             if(dotRight > 0.1f) steering = -.3f;
+                            // if(dotRight > 0.1f) steering = -0.001f;
+
                             //Left
                             else if(dotRight < -0.1f) steering = .3f;
+                            // else if(dotRight < -0.1f) steering = 0.001f;
+
                             //Middle
                             else steering = -.7f;
                         }
 
                         //If the two vehicles are getting close, slow down their speed
                         else if(hitDist < slowDownThresh){
-                            // Debug.Log("slowDownThresh");
+                            Debug.Log(this.name +" slowDownThresh");
                             acc = .5f;
+                            // acc = 0f;
                             brake = 0f;
                             wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 1.5f, wheelDrive.minSpeed);
                         }
                     }
 
+
                     ///////////////////////////////////////////////////////////////////
                     // Generic obstacles
-                    else{
-                        //Emergency brake if getting too close
-                        if(hitDist < emergencyBrakeThresh){
-                            acc = 0;
-                            brake = 1;
-                            wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
-                        }
+                    // else{
+                    //     //Emergency brake if getting too close
+                    //     if(hitDist < emergencyBrakeThresh){
+                    //         // Debug.Log(this.name +" emergencyBrakeThresh");
+                    //         acc = 0;
+                    //         brake = 1;
+                    //         wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
+                    //     }
 
-                        //Otherwise if getting relatively close decrease speed
-                         else if(hitDist < slowDownThresh){
-                            acc = .5f;
-                            brake = 0f;
-                        }
-                    }
+                    //     //Otherwise if getting relatively close decrease speed
+                    //     else if(hitDist < slowDownThresh){
+                    //         // Debug.Log(this.name +" Otherwise if getting relatively close decrease speed");
+                    //         acc = .5f;
+                    //         brake = 0f;
+                    //     }
+                    // }
                 }
 
                 //Check if we need to steer to follow path
@@ -229,6 +255,8 @@ namespace TrafficSimulation {
                     Vector3 desiredVel = trafficSystem.segments[currentTarget.segment].waypoints[currentTarget.waypoint].transform.position - this.transform.position;
                     steering = Mathf.Clamp(this.transform.InverseTransformDirection(desiredVel.normalized).x, -1f, 1f);
                 }
+
+                
 
             }
 
