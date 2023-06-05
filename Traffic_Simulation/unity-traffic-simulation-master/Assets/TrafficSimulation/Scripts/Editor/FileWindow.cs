@@ -160,16 +160,6 @@ namespace TrafficSimulation {
         }
 
 
-        // public static void AddCollider(GameObject obj)
-        // {
-        //     BoxCollider bc = obj.AddComponent<BoxCollider>();
-        //     bc.size = placeSize;
-        //     Vector3 center = bc.center;
-        //     center.y = placePos_y;
-        //     bc.center = center;
-        //     bc.isTrigger = true;
-        // }
-
         private static bool RotatePosition(Vector3 prePosition, Vector3 nowPosition, Vector3 nextPosition, List<Vector3> coordinateList)
         {   
             isRotate = CheckIfCoordinateExists(prePosition, nowPosition, nextPosition, coordinateList);
@@ -214,8 +204,6 @@ namespace TrafficSimulation {
                     // Down Right (ㄴ 모양)
                     if(axis_x_next_now < 0)
                     {
-                        Debug.Log("Down Right (ㄴ 반대 모양)");
-             
                         x2 = nowPoint_x - Num_1;
                         x3 = nowPoint_x - Num_2;
                         x4 = nowPoint_x - Num_3;
@@ -224,9 +212,7 @@ namespace TrafficSimulation {
 
                     // Down Left (ㄴ 모양)
                     else if(axis_x_next_now > 0)
-                    {
-                        Debug.Log("Down Left (ㄴ 모양)");
-                        
+                    {                        
                         x2 = nowPoint_x + Num_1;
                         x3 = nowPoint_x + Num_2;
                         x4 = nowPoint_x + Num_3;
@@ -246,8 +232,6 @@ namespace TrafficSimulation {
                     // Up left 2 (ㄱ 모양)
                     if(axis_x_next_now < 0)
                     {
-                        Debug.Log("Up left 2 (ㄱ 모양)");
-                    
                         x2 = nowPoint_x - Num_1;
                         x3 = nowPoint_x - Num_2;
                         x4 = nowPoint_x - Num_3;
@@ -257,8 +241,6 @@ namespace TrafficSimulation {
                     // Up right 2(ㄱ 반대모양)
                     else if(axis_x_next_now > 0)
                     {
-                        Debug.Log("Up right 2(ㄱ 반대모양)");
-         
                         x2 = nowPoint_x + Num_1;
                         x3 = nowPoint_x + Num_2;
                         x4 = nowPoint_x + Num_3;
@@ -281,7 +263,6 @@ namespace TrafficSimulation {
                     // Up left (ㄴ 반대 모양)
                     if(axis_x_pre_now < 0)
                     {
-                        Debug.Log("Up left (ㄴ 반대 모양)");
                         x1 = nowPoint_x - Num_3;
                         x2 = nowPoint_x - Num_2;
                         x3 = nowPoint_x - Num_1;
@@ -291,7 +272,6 @@ namespace TrafficSimulation {
                     // Up right (ㄴ 모양)
                     else if(axis_x_pre_now > 0)
                     {
-                        Debug.Log("Up right (ㄴ 모양)");
                         x1 = nowPoint_x + Num_3;
                         x2 = nowPoint_x + Num_2;
                         x3 = nowPoint_x + Num_1;
@@ -312,7 +292,6 @@ namespace TrafficSimulation {
                     // Down right 2 (ㄱ 모양)
                     if(axis_x_pre_now < 0)
                     {
-                        Debug.Log("Down right 2 (ㄱ 모양)");
                         x1 = nowPoint_x - Num_3;
                         x2 = nowPoint_x - Num_2;
                         x3 = nowPoint_x - Num_1;
@@ -322,7 +301,6 @@ namespace TrafficSimulation {
                     // Down left 2 (ㄱ 반대 모양)
                     else if(axis_x_pre_now > 0)
                     {
-                        Debug.Log("Down left 2 (ㄱ 반대 모양)");
                         x1 = nowPoint_x + Num_3;
                         x2 = nowPoint_x + Num_2;
                         x3 = nowPoint_x + Num_1;
@@ -345,7 +323,6 @@ namespace TrafficSimulation {
             rotatePoints.Add(new Vector3(x3, 0f, z3));
             rotatePoints.Add(new Vector3(x4, 0f, z4));
 
-            Debug.Log( "rotatePoints: " + rotatePoints[0] + " " + rotatePoints[1] + " " + rotatePoints[2] + " " + rotatePoints[3]);
             return rotatePoints;
         }
 
@@ -426,7 +403,6 @@ namespace TrafficSimulation {
 
                         Vector3 point = new Vector3(x, y, z);                        
                         routes[currentRoute].Add(point);
-                        // Debug.Log("currentRoute : "+ currentRoute + " point : " + point);
                     }
 
                     line = reader.ReadLine();
@@ -460,20 +436,12 @@ namespace TrafficSimulation {
 
                     if(fields.Length == 3)
                     {
-                        // int intersectionNum = int.Parse(fields[3]);
-
-                        // if(intersectionNum != currentIntersection)
-                        // {
-                        //     currentIntersection = intersectionNum;
-                        // }
-
                         float x = float.Parse(fields[0]);
                         float y = float.Parse(fields[1]);
                         float z = float.Parse(fields[2]);
 
                         Vector3 point = new Vector3(x, y, z);                        
                         intersections.Add(point);
-                        // Debug.Log("currentIntersection : "+ currentIntersection + " point : " + point);
                     }
 
                     line = reader.ReadLine();
@@ -494,9 +462,6 @@ namespace TrafficSimulation {
         private static void CreateRoutes(List<List<Vector3>> routes, List<Vector3> corners, List<Vector3> intersections)
         {
             EditorHelper.SetUndoGroup("Create Routes");
-
-            // GameObject places = EditorHelper.CreateGameObject("Places");
-            // places.transform.position = Vector3.zero;
 
             if(corners.Count > 0 && intersections.Count > 0)
             {
@@ -519,9 +484,6 @@ namespace TrafficSimulation {
                 mainGo.transform.position = Vector3.zero;
                 EditorHelper.AddComponent<TrafficSystem>(mainGo);
 
-                // GameObject segmentsGo = EditorHelper.CreateGameObject("Segments", mainGo.transform);
-                // segmentsGo.transform.position = Vector3.zero;
-
                 Selection.activeGameObject = mainGo;
                 wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
 
@@ -539,12 +501,12 @@ namespace TrafficSimulation {
                         // 회전하는 위치인 경우
                         if(RotatePosition(route[p-1], route[p], route[p+1], checkingRotateList))
                         {
-                            Debug.Log(">>> Rotate nowPosition : "+  route[p]);
+                            // Debug.Log(">>> Rotate nowPosition : "+  route[p]);
                             newRotationPoints = ChangeToRotate(route[p-1], route[p], route[p+1]);
                             
                             List<Vector3> rPoints = new List<Vector3>();
 
-                            Debug.Log("newRotationPoints.Count : "+ newRotationPoints.Count);
+                            // Debug.Log("newRotationPoints.Count : "+ newRotationPoints.Count);
                             for(int rPoint = 0; rPoint <newRotationPoints.Count; rPoint++)
                             {   
                                 if(rPoint+1 < newRotationPoints.Count)
@@ -558,13 +520,10 @@ namespace TrafficSimulation {
 
                                 else
                                 {
-                                    Debug.Log("rotation last point!");
                                     newRoPoint = rPoints[1];
                                     newRoPoint.y = route_Pos_y;
                                     AddWaypoint(newRoPoint);
                                 }
-
-                                Debug.Log("newRoPoint : " + newRoPoint);
                             }
                         }
 
@@ -593,19 +552,11 @@ namespace TrafficSimulation {
 
                         if(p+1 == route.Count)
                         {   
-                            Debug.Log("last point of path!");
                             paths = EditPathPoints(route[p-1], route[p]);
 
                             newPoint = paths[1];
                             newPoint.y = route_Pos_y;
                             AddWaypoint(newPoint);
-
-                            // GameObject place = EditorHelper.CreateGameObject("place-" + i, places.transform);
-                            // place.transform.position = paths[1];
-                            // if(place.GetComponent<Collider>() == null)
-                            // {
-                            //     AddCollider(place);
-                            // }   
                         }
                     }
                 }
