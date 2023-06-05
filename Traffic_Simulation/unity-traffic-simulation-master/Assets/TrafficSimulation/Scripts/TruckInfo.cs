@@ -18,16 +18,16 @@ namespace TrafficSimulation{
         private VehicleAI thisVehicleAI;
 
         
-        public float short_slowingTime = 2f;
-        public float long_slowingTime = 3f;
+        public float short_slowingTime = 1.5f;
+        public float long_slowingTime = 5f;
 
         public float moveDelay = 1f;
         public float processTime = 10f;
 
 
         private Vector3 originalPos;
-        private float toRightNum = 15f;
-        private float toLeftNum = 30f;
+        private float toRightNum = 30f;
+        private float toLeftNum = 15f;
         private float checkRange_1 = 20f;
         private float checkRange_2 = 1f;
 
@@ -52,10 +52,6 @@ namespace TrafficSimulation{
             thisVehicleAI = vehicle.GetComponent<VehicleAI>();
             truckTimer = vehicle.GetComponent<Timer>();
             exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
-
-            WheelDrive thisVehicleDr = vehicle.GetComponent<WheelDrive>();
-            Debug.Log(vehicle.name + " streeing Speed Max : " + thisVehicleDr.steeringSpeedMax);
-            Debug.Log(vehicle.name + " minSpeed : " + thisVehicleDr.minSpeed);
         }
 
         void OnTriggerEnter(Collider _other)
@@ -71,27 +67,49 @@ namespace TrafficSimulation{
 
                 // vehicle이 어느 방향으로 가는지 확인
                 // 오른쪽 방향으로 가는 경우
-                if(CheckRotation_IsToRight(vehicle))
+                if(vehicle == null)
                 {
+                    vehicle = this.gameObject;
+                    thisVehicleAI = vehicle.GetComponent<VehicleAI>();
+                }
+
+                if(CheckRotation_IsToRight(vehicle))
+                {   
+                    Debug.Log(this.name + " is going to right");
                     // 작업이 완료된 트럭이 있는지 확인
                     if(nowStation_FinishedVehicle_toRight > 0)
                     {   
-                        UnityEngine.Debug.Log("there is finished vehicle to right");
+                        UnityEngine.Debug.Log(vehicle.name +" have to wait, there is finished vehicle to right");
                         // 작업이 완료된 트럭이 있다면 도착한 vehicle 감속 및 멈춤
                         StartCoroutine(ReduceSpeed(vehicle, short_slowingTime));
                         thisVehicleAI.vehicleStatus = Status.STOP;
+                    }
+
+                    // else if(nowStation_FinishedVehicle_toRight == 0 && thisVehicleAI.vehicleStatus == Status.STOP)
+                    else
+                    {
+                        // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
+                        thisVehicleAI.vehicleStatus = Status.GO;
                     }
                 }
 
                 // 왼쪽 방향으로 가는 경우
                 else
-                {
+                {   
+                    Debug.Log(this.name + " is going to left");
                     if(nowStation_FinishedVehicle_toLeft > 0)
                     {
-                        UnityEngine.Debug.Log("there is finished vehicle to left");
+                        UnityEngine.Debug.Log(vehicle.name + " have to wait, there is finished vehicle to left");
                         // 작업이 완료된 트럭이 있다면 도착한 vehicle 감속 및 멈춤
                         StartCoroutine(ReduceSpeed(vehicle, short_slowingTime));
                         thisVehicleAI.vehicleStatus = Status.STOP;
+                    }
+
+                    // else if(nowStation_FinishedVehicle_toLeft == 0 && thisVehicleAI.vehicleStatus == Status.STOP)
+                    else
+                    {
+                        // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
+                        thisVehicleAI.vehicleStatus = Status.GO;
                     }
                 }
 
@@ -216,11 +234,13 @@ namespace TrafficSimulation{
 
             if(CheckRotation_IsToRight(_vehicle))
             {
+                // Debug.Log(_vehicle.name + " move to Right station");
                 _vehicle.transform.position = _originalPos + new Vector3(0, 0, _toRigthNum);
             }
 
             else
             {
+                // Debug.Log(_vehicle.name + " move to Left station");
                 _vehicle.transform.position = _originalPos + new Vector3(0, 0, _toLeftNum);
             }
 
@@ -316,14 +336,23 @@ namespace TrafficSimulation{
 
         private bool CheckRotation_IsToRight(GameObject _vehicle)
         {
-            bool isToRight = false;
-
-            if(_vehicle.transform.rotation.y == 90)
+            if (_vehicle == null)
             {
-                isToRight = true;
+                Debug.LogError(this.name + " --> The _vehicle object is null. Make sure it is properly initialized before calling this method.");
+                return false;
             }
 
-            return isToRight;
+            float _rotationY = _vehicle.transform.rotation.eulerAngles.y;
+            // Debug.Log(_vehicle.name + " _rotationY : " + _rotationY);
+            if(_rotationY >= 85 && _rotationY <= 95)
+            {
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
         }
 
 
@@ -345,7 +374,7 @@ namespace TrafficSimulation{
         }
 
 
-        private IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
+        public IEnumerator ReduceSpeed(GameObject _vehicle, float _slowingTime)
         {   
             // UnityEngine.Debug.Log(vehicle.name + " reduces Speed");
             Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
