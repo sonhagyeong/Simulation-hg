@@ -9,7 +9,7 @@ namespace TrafficSimulation{
     public class CreateTruckAndStation : MonoBehaviour
     {
 
-        [SerializeField] private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks.csv";
+        private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks.csv";
 
         public static List<CreateTruckData> truckDataList = new List<CreateTruckData>();
 
@@ -350,6 +350,7 @@ namespace TrafficSimulation{
                 truckInfo.truckOrigin = _workStaions[0];
                 truckInfo.truckDestination = _workStaions[workStationCount - 1];
                 truckInfo.truckRouteName = _routeName;
+                truckInfo.turnNum = GameObject.Find(_routeName).GetComponent<RouteInfo>().uTurnNum;
             }
 
             else
