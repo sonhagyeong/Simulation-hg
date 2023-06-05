@@ -232,22 +232,22 @@ namespace TrafficSimulation {
 
                     ///////////////////////////////////////////////////////////////////
                     // Generic obstacles
-                    // else{
-                    //     //Emergency brake if getting too close
-                    //     if(hitDist < emergencyBrakeThresh){
-                    //         // Debug.Log(this.name +" emergencyBrakeThresh");
-                    //         acc = 0;
-                    //         brake = 1;
-                    //         wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
-                    //     }
+                    else{
+                        //Emergency brake if getting too close
+                        if(hitDist < emergencyBrakeThresh){
+                            // Debug.Log(this.name +" emergencyBrakeThresh");
+                            acc = 0;
+                            brake = 1;
+                            wheelDrive.maxSpeed = Mathf.Max(wheelDrive.maxSpeed / 2f, wheelDrive.minSpeed);
+                        }
 
-                    //     //Otherwise if getting relatively close decrease speed
-                    //     else if(hitDist < slowDownThresh){
-                    //         // Debug.Log(this.name +" Otherwise if getting relatively close decrease speed");
-                    //         acc = .5f;
-                    //         brake = 0f;
-                    //     }
-                    // }
+                        //Otherwise if getting relatively close decrease speed
+                        else if(hitDist < slowDownThresh){
+                            // Debug.Log(this.name +" Otherwise if getting relatively close decrease speed");
+                            acc = .5f;
+                            brake = 0f;
+                        }
+                    }
                 }
 
                 //Check if we need to steer to follow path
