@@ -79,7 +79,7 @@ namespace TrafficSimulation{
             {
                 if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0)
                 {   
-                    vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+                    // vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                     vehiclesQueue.Add(_vehicle);
 
                     StartCoroutine(ReduceSpeed(_vehicle));
