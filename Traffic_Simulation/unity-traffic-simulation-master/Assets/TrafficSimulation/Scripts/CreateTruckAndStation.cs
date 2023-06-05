@@ -23,7 +23,8 @@ namespace TrafficSimulation{
         // 동일한 시작 위치를 가진 트럭들을 포함하는 딕셔너리
         private static Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> startPositionDict;
 
-  
+        // 동일한 시작 위치를 가진 트럭들의 생성 주기
+        private float createDelay = 2f;
         void Start()
         {
             ReadFile(truckFilePath);
@@ -31,7 +32,7 @@ namespace TrafficSimulation{
             if(ExistRoute(truckDataList))
             {   
                 IsDuplicateStartPosition(truckDataList);
-                CreateTrucks(startPositionDict);
+                CreateTrucks(startPositionDict, createDelay);
                 Debug.Log("All routes exist");
                 // CreateTrucks(truckDataList);
             }
@@ -281,7 +282,7 @@ namespace TrafficSimulation{
 
         
         // 출발 위치가 동일한 트럭이 있는지 확인한 후 트럭 생성하는 함수
-        private void CreateTrucks(Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> _dictionary)
+        private void CreateTrucks(Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> _dictionary, float _createDelay)
         {
             // Print the duplicate start positions
             foreach (KeyValuePair<Vector3, List<Tuple<string, string, List<Vector3>>>> kvp in _dictionary)
@@ -293,9 +294,8 @@ namespace TrafficSimulation{
 
                 // 출발 위치가 동일한 트럭이 있는 경우
                 if(values.Count > 1)
-                {
-                    float createDelay = 5f;
-                    StartCoroutine(DuplicatePositionCreateTruck(values, createDelay));
+                {   
+                    StartCoroutine(DuplicatePositionCreateTruck(values, _createDelay));
                 }
 
                 // 출발 위치가 동일한 트럭이 없는 경우
