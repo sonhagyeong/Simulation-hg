@@ -8,13 +8,13 @@ using System;
 namespace TrafficSimulation {    
     public class FileWindow : EditorWindow
     {   
-        private string routefilePath;
-        private string intersectionfilePath;
+        private static string routefilePath;
+        private static string intersectionfilePath;
 
         private static TrafficSystem wps;
 
         // Intersection Collider Parameters
-        private List<Vector3> intersections = new List<Vector3>();
+        private static List<Vector3> intersections = new List<Vector3>();
         private static Vector3 intersectionSize = new Vector3(110,10,110);
         private static float intersectionPos_y = intersectionSize.y/2;
 
@@ -23,7 +23,7 @@ namespace TrafficSimulation {
         private static float placePos_y = placeSize.y/2;
         
         // Route Parameters
-        private List<List<Vector3>> routes = new List<List<Vector3>>();
+        private static List<List<Vector3>> routes = new List<List<Vector3>>();
         private static float route_Pos_y = 1.5f;
         private static Vector3 newPoint;
         
@@ -43,6 +43,7 @@ namespace TrafficSimulation {
         private static float z2;
         private static float z3;
         private static float z4;
+
 
         
         
@@ -374,39 +375,57 @@ namespace TrafficSimulation {
             }
 
             using (StreamReader reader = new StreamReader(routefilePath))
-            {   
+            {
                 // Skip the first line
-                reader.ReadLine(); 
+                reader.ReadLine();
 
-                string line = reader.ReadLine();
+                // string line = reader.ReadLine();
                 string[] fields;
 
-                int currentRoute = -1;
-                
-                while(line != null)
+                // routeNum과 리스트를 매핑할 딕셔너리
+                Dictionary<int, List<Vector3>> routeDictionary = new Dictionary<int, List<Vector3>>();
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
                     fields = line.Split(',');
 
-                    if(fields.Length == 4)
+                    if (fields.Length == 4)
                     {
                         int routeNum = int.Parse(fields[0]);
 
-                        if(routeNum != currentRoute)
+                        // if (!routeDictionary.ContainsKey(routeNum))
+                        // {
+                        //     // routeNum에 해당하는 리스트가 없으면 새로 생성하여 딕셔너리에 추가
+                        //     routeDictionary[routeNum] = new List<Vector3>();
+                        // }
+
+                        if (!routeDictionary.TryGetValue(routeNum, out List<Vector3> routePoints))
                         {
-                            currentRoute = routeNum;
-                            routes.Add(new List<Vector3>());
+                            routePoints = new List<Vector3>();
+                            routeDictionary.Add(routeNum, routePoints);
                         }
 
                         float x = float.Parse(fields[1]);
                         float y = float.Parse(fields[2]);
                         float z = float.Parse(fields[3]);
 
-                        Vector3 point = new Vector3(x, y, z);                        
-                        routes[currentRoute].Add(point);
+                        Vector3 point = new Vector3(x, y, z);
+                        // routeDictionary[routeNum].Add(point);
+                        routePoints.Add(point);
+
                     }
 
-                    line = reader.ReadLine();
+                    // line = reader.ReadLine();
                 }
+
+                routes.AddRange(routeDictionary.Values);
+
+                // // 딕셔너리에 있는 리스트들을 routes 리스트에 추가
+                // foreach (var kvp in routeDictionary)
+                // {
+                //     routes.Add(kvp.Value);
+                // }
+
             }
 
             return routes;
@@ -456,6 +475,7 @@ namespace TrafficSimulation {
             intersections = CreateIntersectionList(intersectionfilePath, intersections);
             CreateIntersections(intersections);
             routes = CreateRouteList(routefilePath, routes);
+            if(routes == null) Debug.LogError("routes is null");
             CreateRoutes(routes, cornerPositions, intersections);
         }
 
@@ -475,17 +495,23 @@ namespace TrafficSimulation {
                 Debug.LogError("There is no corners or intersections");
             }
 
+            Debug.Log("routes.Count = " + routes.Count);
             for(int i=0; i<routes.Count; i++)
             {   
                 List<Vector3> route = routes[i];
-                string routeName = "Route-" + i;
+                if(route == null)
+                Debug.LogError("route is null");
 
+                string routeName = "Route-" + i;
+                
                 GameObject mainGo = EditorHelper.CreateGameObject(routeName);
                 mainGo.transform.position = Vector3.zero;
                 EditorHelper.AddComponent<TrafficSystem>(mainGo);
+                EditorHelper.AddComponent<RouteInfo>(mainGo);
 
                 Selection.activeGameObject = mainGo;
                 wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
+                RouteInfo routeInfo = Selection.activeGameObject.GetComponent<RouteInfo>();
 
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
 
@@ -529,11 +555,22 @@ namespace TrafficSimulation {
 
                         // 회전구간 아닌 경우
                         else
-                        {
+                        {   
+                            // 다시 돌아가는 길인 경우
+                            if(p-1 >= 0 && route[p-1] == route[p+1])
+                            {   
+                                routeInfo.uTurnNum ++;
+                                paths = EditPathPoints(route[p-1], route[p]);
+                                newPoint = paths[1];
+                                newPoint.y = route_Pos_y;
+                                AddWaypoint(newPoint);
+                            }
+
                             paths = EditPathPoints(route[p], route[p+1]);
                             newPoint = paths[0];
                             newPoint.y = route_Pos_y;
                             AddWaypoint(newPoint);
+                            
                         }
                     }
 
@@ -645,6 +682,7 @@ namespace TrafficSimulation {
             Undo.RecordObject(wps, "");
             wps.intersections.Add(intersection);   
         }
+
 
     }
 }
