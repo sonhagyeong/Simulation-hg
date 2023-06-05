@@ -24,7 +24,7 @@ namespace TrafficSimulation{
         private static Dictionary<Vector3, List<Tuple<string, string, List<Vector3>>>> startPositionDict;
 
         // 동일한 시작 위치를 가진 트럭들의 생성 주기
-        private float createDelay = 2f;
+        private float createDelay = 2.5f;
         void Start()
         {
             ReadFile(truckFilePath);
