@@ -603,10 +603,10 @@ GameObject:
   - component: {fileID: 6874449121000569305}
   - component: {fileID: 6157378396416738181}
   - component: {fileID: 6494037355815411564}
-  - component: {fileID: 1855387197945060477}
-  - component: {fileID: 1427013506811726926}
   - component: {fileID: -7561371496001162169}
   - component: {fileID: -1166252254186998076}
+  - component: {fileID: 316929663746792069}
+  - component: {fileID: 4361289201312489867}
   m_Layer: 9
   m_Name: Truck3
   m_TagString: AutonomousVehicle
@@ -658,56 +658,8 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 4
   m_CollisionDetection: 0
---- !u!114 &1855387197945060477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6065543447552222051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cde2d72bdb21e8542bfb0a4516cc158b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trafficSystem: {fileID: 0}
-  waypointThresh: 6
-  raycastAnchor: {fileID: 4617705441392776722}
-  raycastLength: 5
-  raySpacing: 8
-  raysNumber: 20
-  emergencyBrakeThresh: 5
-  slowDownThresh: 10
-  vehicleStatus: 0
---- !u!114 &1427013506811726926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6065543447552222051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5021f9004f348d74abb4f0ae3ed02375, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  downForce: 100
-  maxAngle: 80
-  steeringLerp: 40
-  steeringSpeedMax: 60
-  maxTorque: 300
-  brakeTorque: 10000
-  unitType: 0
-  minSpeed: 30
-  maxSpeed: 70
-  leftWheelShape: {fileID: 6238161387211472396, guid: ccfaa9eec1c4f654d9224b3d6382e480,
-    type: 3}
-  rightWheelShape: {fileID: 1677003440194013298, guid: 3cef6b64b7157ee499c0487f1ba44903,
-    type: 3}
-  animateWheels: 1
-  driveType: 2
 --- !u!114 &-7561371496001162169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,7 +692,55 @@ MonoBehaviour:
   truckDestination: {x: 0, y: 0, z: 0}
   truckRouteName: 
   truckStatus: 0
-  short_slowingTime: 2
+  short_slowingTime: 1.5
   long_slowingTime: 5
   moveDelay: 1
   processTime: 10
+--- !u!114 &316929663746792069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6065543447552222051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cde2d72bdb21e8542bfb0a4516cc158b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trafficSystem: {fileID: 0}
+  waypointThresh: 6
+  raycastAnchor: {fileID: 4617705441392776722}
+  raycastLength: 7
+  raySpacing: 2
+  raysNumber: 10
+  emergencyBrakeThresh: 5.5
+  slowDownThresh: 7
+  vehicleStatus: 0
+--- !u!114 &4361289201312489867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6065543447552222051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5021f9004f348d74abb4f0ae3ed02375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  downForce: 100
+  maxAngle: 78
+  steeringLerp: 5
+  steeringSpeedMax: 40
+  maxTorque: 300
+  brakeTorque: 10000
+  unitType: 0
+  minSpeed: 30
+  maxSpeed: 70
+  leftWheelShape: {fileID: 6238161387211472396, guid: ccfaa9eec1c4f654d9224b3d6382e480,
+    type: 3}
+  rightWheelShape: {fileID: 1677003440194013298, guid: 3cef6b64b7157ee499c0487f1ba44903,
+    type: 3}
+  animateWheels: 1
+  driveType: 0
