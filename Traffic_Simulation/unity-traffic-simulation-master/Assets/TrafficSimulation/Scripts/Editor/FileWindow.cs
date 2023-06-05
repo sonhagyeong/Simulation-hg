@@ -24,13 +24,15 @@ namespace TrafficSimulation {
         
         // Route Parameters
         private static List<List<Vector3>> routes = new List<List<Vector3>>();
+        private static Dictionary<int, List<Vector3>> routeDictionary = new Dictionary<int, List<Vector3>>();
+        
         private static float route_Pos_y = 1.5f;
         private static Vector3 newPoint;
         
         // Corner Positions
         private static List<Vector3> cornerPositions = new List<Vector3>{new Vector3(0,0,0), new Vector3(1350,0,0), new Vector3(1350,0,600), new Vector3(0,0,600)};
         
-        private static List<Vector3> checkingRotateList;
+        // private static List<Vector3> checkingRotateList;
         private static bool isRotate;        
         private static Vector3 newRoPoint;
         // ChangeToRotate Parameters
@@ -99,8 +101,12 @@ namespace TrafficSimulation {
             {   
                 if(routefilePath != null)
                 {
-                    routes = CreateRouteList(routefilePath, routes);
-                    CreateRoutes(routes, cornerPositions, intersections);
+                    // routes = CreateRouteList(routefilePath, routes, routeDictionary);
+                    routeDictionary = CreateRouteList(routefilePath);
+
+                    // CreateRoutes(routes, cornerPositions, intersections);
+                    CreateRoutes(routeDictionary, cornerPositions, intersections);
+
                 }
                 
                 else
@@ -365,16 +371,17 @@ namespace TrafficSimulation {
         }
 
 
-        //Create a list by route
-        private static List<List<Vector3>> CreateRouteList(string routefilePath, List<List<Vector3>> routes)
+        private static Dictionary<int, List<Vector3>> CreateRouteList(string _routefilePath)
         {   
-            if (!File.Exists(routefilePath))
+            if (!File.Exists(_routefilePath))
             {
-                Debug.LogError("File does not exist: " + routefilePath);
-                return null;
+                Debug.LogError("File does not exist: " + _routefilePath);
+                // return null;
             }
 
-            using (StreamReader reader = new StreamReader(routefilePath))
+            Dictionary<int, List<Vector3>> _routeDictionary = new Dictionary<int, List<Vector3>>();
+
+            using (StreamReader reader = new StreamReader(_routefilePath))
             {
                 // Skip the first line
                 reader.ReadLine();
@@ -383,7 +390,6 @@ namespace TrafficSimulation {
                 string[] fields;
 
                 // routeNum과 리스트를 매핑할 딕셔너리
-                Dictionary<int, List<Vector3>> routeDictionary = new Dictionary<int, List<Vector3>>();
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -393,16 +399,10 @@ namespace TrafficSimulation {
                     {
                         int routeNum = int.Parse(fields[0]);
 
-                        // if (!routeDictionary.ContainsKey(routeNum))
-                        // {
-                        //     // routeNum에 해당하는 리스트가 없으면 새로 생성하여 딕셔너리에 추가
-                        //     routeDictionary[routeNum] = new List<Vector3>();
-                        // }
-
-                        if (!routeDictionary.TryGetValue(routeNum, out List<Vector3> routePoints))
+                        if (!_routeDictionary.TryGetValue(routeNum, out List<Vector3> routePoints))
                         {
                             routePoints = new List<Vector3>();
-                            routeDictionary.Add(routeNum, routePoints);
+                            _routeDictionary.Add(routeNum, routePoints);
                         }
 
                         float x = float.Parse(fields[1]);
@@ -410,25 +410,15 @@ namespace TrafficSimulation {
                         float z = float.Parse(fields[3]);
 
                         Vector3 point = new Vector3(x, y, z);
-                        // routeDictionary[routeNum].Add(point);
                         routePoints.Add(point);
 
                     }
-
-                    // line = reader.ReadLine();
                 }
 
-                routes.AddRange(routeDictionary.Values);
-
-                // // 딕셔너리에 있는 리스트들을 routes 리스트에 추가
-                // foreach (var kvp in routeDictionary)
-                // {
-                //     routes.Add(kvp.Value);
-                // }
-
+                // _routes.AddRange(_routeDictionary.Values);
             }
 
-            return routes;
+            return _routeDictionary;
         }
         
         private static List<Vector3> CreateIntersectionList(string intersectionfilePath, List<Vector3> intersections)
@@ -474,36 +464,40 @@ namespace TrafficSimulation {
         {   
             intersections = CreateIntersectionList(intersectionfilePath, intersections);
             CreateIntersections(intersections);
-            routes = CreateRouteList(routefilePath, routes);
-            if(routes == null) Debug.LogError("routes is null");
-            CreateRoutes(routes, cornerPositions, intersections);
+            // routes = CreateRouteList(routefilePath, routes, routeDictionary);
+            routeDictionary = CreateRouteList(routefilePath);
+            // if(routes == null) Debug.LogError("routes is null");
+            CreateRoutes(routeDictionary, cornerPositions, intersections);
         }
 
-        private static void CreateRoutes(List<List<Vector3>> routes, List<Vector3> corners, List<Vector3> intersections)
+        // private static void CreateRoutes(List<List<Vector3>> routes, List<Vector3> corners, List<Vector3> intersections)
+        private static void CreateRoutes(Dictionary<int, List<Vector3>> _routeDictionary, List<Vector3> _corners, List<Vector3> _intersections)
         {
             EditorHelper.SetUndoGroup("Create Routes");
 
-            if(corners.Count > 0 && intersections.Count > 0)
+            List<Vector3> checkingRotateList = new List<Vector3>();
+            if(_corners.Count > 0 && _intersections.Count > 0)
             {
-                checkingRotateList = new List<Vector3>();
-                checkingRotateList.AddRange(corners);
-                checkingRotateList.AddRange(intersections);
+                checkingRotateList.AddRange(_corners);
+                checkingRotateList.AddRange(_intersections);
             }
             
             else
             {
                 Debug.LogError("There is no corners or intersections");
             }
+            if(_routeDictionary == null) Debug.Log("routeDictionary is null");
 
-            Debug.Log("routes.Count = " + routes.Count);
-            for(int i=0; i<routes.Count; i++)
+            Debug.Log("_routeDictionary.Keys.Count : " + _routeDictionary.Keys.Count);
+            foreach(int dict_key in _routeDictionary.Keys)
             {   
-                List<Vector3> route = routes[i];
-                if(route == null)
-                Debug.LogError("route is null");
+                Debug.Log("dict_key : " + dict_key);
+                List<Vector3> route = _routeDictionary[dict_key];
+                Debug.Log("route.Count : " + route.Count);
+                if(route == null) Debug.LogError("route is null");
 
-                string routeName = "Route-" + i;
-                
+                string routeName = "Route-" + dict_key.ToString();
+
                 GameObject mainGo = EditorHelper.CreateGameObject(routeName);
                 mainGo.transform.position = Vector3.zero;
                 EditorHelper.AddComponent<TrafficSystem>(mainGo);
@@ -516,23 +510,21 @@ namespace TrafficSimulation {
                 EditorHelper.BeginUndoGroup("Add Segment", wps);
 
                 AddSegment(route[0], routeName);
-                List<Vector3> paths = new List<Vector3>();
-
+                
                 for(int p=0; p <route.Count; p++)
                 {  
                     List<Vector3> newRotationPoints = new List<Vector3>();
+                    List<Vector3> paths = new List<Vector3>();
          
                     if(p > 0 && p+1 < route.Count)
                     {   
                         // 회전하는 위치인 경우
                         if(RotatePosition(route[p-1], route[p], route[p+1], checkingRotateList))
                         {
-                            // Debug.Log(">>> Rotate nowPosition : "+  route[p]);
                             newRotationPoints = ChangeToRotate(route[p-1], route[p], route[p+1]);
                             
                             List<Vector3> rPoints = new List<Vector3>();
 
-                            // Debug.Log("newRotationPoints.Count : "+ newRotationPoints.Count);
                             for(int rPoint = 0; rPoint <newRotationPoints.Count; rPoint++)
                             {   
                                 if(rPoint+1 < newRotationPoints.Count)
@@ -597,8 +589,114 @@ namespace TrafficSimulation {
                         }
                     }
                 }
+            
 
+                Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
             }
+            
+            // for(int i=0; i<routes.Count; i++)
+            // {   
+            //     List<Vector3> route = routes[i];
+            //     if(route == null)
+            //     Debug.LogError("route is null");
+
+            //     string routeName = "Route-" + i;
+                
+            //     GameObject mainGo = EditorHelper.CreateGameObject(routeName);
+            //     mainGo.transform.position = Vector3.zero;
+            //     EditorHelper.AddComponent<TrafficSystem>(mainGo);
+            //     EditorHelper.AddComponent<RouteInfo>(mainGo);
+
+            //     Selection.activeGameObject = mainGo;
+            //     wps = Selection.activeGameObject.GetComponent<TrafficSystem>();
+            //     RouteInfo routeInfo = Selection.activeGameObject.GetComponent<RouteInfo>();
+
+            //     EditorHelper.BeginUndoGroup("Add Segment", wps);
+
+            //     AddSegment(route[0], routeName);
+            //     List<Vector3> paths = new List<Vector3>();
+
+            //     for(int p=0; p <route.Count; p++)
+            //     {  
+            //         List<Vector3> newRotationPoints = new List<Vector3>();
+         
+            //         if(p > 0 && p+1 < route.Count)
+            //         {   
+            //             // 회전하는 위치인 경우
+            //             if(RotatePosition(route[p-1], route[p], route[p+1], checkingRotateList))
+            //             {
+            //                 // Debug.Log(">>> Rotate nowPosition : "+  route[p]);
+            //                 newRotationPoints = ChangeToRotate(route[p-1], route[p], route[p+1]);
+                            
+            //                 List<Vector3> rPoints = new List<Vector3>();
+
+            //                 // Debug.Log("newRotationPoints.Count : "+ newRotationPoints.Count);
+            //                 for(int rPoint = 0; rPoint <newRotationPoints.Count; rPoint++)
+            //                 {   
+            //                     if(rPoint+1 < newRotationPoints.Count)
+            //                     {
+            //                         rPoints = EditPathPoints(newRotationPoints[rPoint], newRotationPoints[rPoint+1]);
+
+            //                         newRoPoint = rPoints[0];
+            //                         newRoPoint.y = route_Pos_y;
+            //                         AddWaypoint(newRoPoint);
+            //                     }
+
+            //                     else
+            //                     {
+            //                         newRoPoint = rPoints[1];
+            //                         newRoPoint.y = route_Pos_y;
+            //                         AddWaypoint(newRoPoint);
+            //                     }
+            //                 }
+            //             }
+
+            //             // 회전구간 아닌 경우
+            //             else
+            //             {   
+            //                 // 다시 돌아가는 길인 경우
+            //                 if(p-1 >= 0 && route[p-1] == route[p+1])
+            //                 {   
+            //                     routeInfo.uTurnNum ++;
+            //                     paths = EditPathPoints(route[p-1], route[p]);
+            //                     newPoint = paths[1];
+            //                     newPoint.y = route_Pos_y;
+            //                     AddWaypoint(newPoint);
+            //                 }
+
+            //                 paths = EditPathPoints(route[p], route[p+1]);
+            //                 newPoint = paths[0];
+            //                 newPoint.y = route_Pos_y;
+            //                 AddWaypoint(newPoint);
+                            
+            //             }
+            //         }
+
+            //         // p = 0 or p+1 = route.Count
+            //         else
+            //         {   
+            //             if(p == 0)
+            //             {
+            //                 paths = EditPathPoints(route[p], route[p+1]);
+
+            //                 newPoint = paths[0];
+            //                 newPoint.y = route_Pos_y;
+            //                 AddWaypoint(newPoint);
+            //             }
+                        
+
+            //             if(p+1 == route.Count)
+            //             {   
+            //                 paths = EditPathPoints(route[p-1], route[p]);
+
+            //                 newPoint = paths[1];
+            //                 newPoint.y = route_Pos_y;
+            //                 AddWaypoint(newPoint);
+            //             }
+            //         }
+            //     }
+
+            // }
             //Close Undo Operation
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
