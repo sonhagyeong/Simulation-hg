@@ -696,6 +696,7 @@ MonoBehaviour:
   long_slowingTime: 5
   moveDelay: 1
   processTime: 10
+  turnNum: 0
 --- !u!114 &6307610683011075250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -711,11 +712,11 @@ MonoBehaviour:
   trafficSystem: {fileID: 0}
   waypointThresh: 6
   raycastAnchor: {fileID: 4617705441392776722}
-  raycastLength: 7
+  raycastLength: 8
   raySpacing: 2
   raysNumber: 10
-  emergencyBrakeThresh: 5.5
-  slowDownThresh: 7
+  emergencyBrakeThresh: 6
+  slowDownThresh: 8
   vehicleStatus: 0
 --- !u!114 &6191599503789027035
 MonoBehaviour:
@@ -730,8 +731,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   downForce: 100
-  maxAngle: 78
-  steeringLerp: 5
+  maxAngle: 90
+  steeringLerp: 10
   steeringSpeedMax: 40
   maxTorque: 300
   brakeTorque: 10000
@@ -743,4 +744,4 @@ MonoBehaviour:
   rightWheelShape: {fileID: 1677003440194013298, guid: 3cef6b64b7157ee499c0487f1ba44903,
     type: 3}
   animateWheels: 1
-  driveType: 0
+  driveType: 2

@@ -9,13 +9,13 @@ namespace TrafficSimulation {
     public class FileWindow : EditorWindow
     {   
         private static string routefilePath;
-        private static string intersectionfilePath;
+        private static string intersectionfilePath = "C:\\Users\\USER\\workspace\\intersectionPoints.csv";
 
         private static TrafficSystem wps;
 
         // Intersection Collider Parameters
         private static List<Vector3> intersections = new List<Vector3>();
-        private static Vector3 intersectionSize = new Vector3(110,10,110);
+        private static Vector3 intersectionSize = new Vector3(80,10,80);
         private static float intersectionPos_y = intersectionSize.y/2;
 
         // Station Collider Parameters
@@ -551,11 +551,12 @@ namespace TrafficSimulation {
                             // 다시 돌아가는 길인 경우
                             if(p-1 >= 0 && route[p-1] == route[p+1])
                             {   
-                                routeInfo.uTurnNum ++;
+                                // routeInfo.uTurnNum ++;
                                 paths = EditPathPoints(route[p-1], route[p]);
                                 newPoint = paths[1];
                                 newPoint.y = route_Pos_y;
                                 AddWaypoint(newPoint);
+                                routeInfo.uTurnStations.Add(route[p]);
                             }
 
                             paths = EditPathPoints(route[p], route[p+1]);

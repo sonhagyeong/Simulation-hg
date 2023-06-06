@@ -33,7 +33,7 @@ namespace TrafficSimulation{
         private Target currentTarget;
 
         // Time to slow down to zero speed
-        public float slowingTime = 2f; 
+        public float slowingTime = 1f; 
         
         void Start(){
             vehiclesQueue = new List<GameObject>();
@@ -79,10 +79,10 @@ namespace TrafficSimulation{
             {
                 if(vehiclesQueue.Count > 0 || vehiclesInIntersection.Count > 0)
                 {   
-                    // vehicleAI.vehicleStatus = Status.SLOW_DOWN;
+                    vehicleAI.vehicleStatus = Status.SLOW_DOWN;
                     vehiclesQueue.Add(_vehicle);
 
-                    StartCoroutine(ReduceSpeed(_vehicle));
+                    // StartCoroutine(ReduceSpeed(_vehicle));
                     vehicleAI.vehicleStatus = Status.STOP;
                 }
 

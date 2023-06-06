@@ -30,7 +30,7 @@ namespace TrafficSimulation{
 
         [Tooltip("Speed at which we will reach the above steering angle (lerp)")]
         // public float steeringLerp = 20f;
-        public float steeringLerp = 5f;
+        public float steeringLerp = 10f;
 
         
         [Tooltip("Max speed (in unit choosen below) when the vehicle is about to steer")]

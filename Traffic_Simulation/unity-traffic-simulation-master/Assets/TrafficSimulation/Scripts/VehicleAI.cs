@@ -41,7 +41,7 @@ namespace TrafficSimulation {
         public Transform raycastAnchor;
 
         [Tooltip("Length of the casted rays")]
-        public float raycastLength = 7;
+        public float raycastLength = 8;
 
         [Tooltip("Spacing between each rays")]
         // public int raySpacing = 8;
@@ -54,12 +54,14 @@ namespace TrafficSimulation {
         
 
         [Tooltip("If detected vehicle is below this distance, ego vehicle will stop")]
-        public float emergencyBrakeThresh = 5.5f;
+        public float emergencyBrakeThresh = 6f;
 
         [Tooltip("If detected vehicle is below this distance (and above, above distance), ego vehicle will slow down")]
-        public float slowDownThresh = 7f;
+        public float slowDownThresh = 8f;
 
-        [HideInInspector] public Status vehicleStatus = Status.GO;
+        // [HideInInspector] public Status vehicleStatus = Status.GO;
+        public Status vehicleStatus = Status.GO;
+
 
         private WheelDrive wheelDrive;
         private float initMaxSpeed = 0;
@@ -68,11 +70,13 @@ namespace TrafficSimulation {
         private Target futureTarget;
         private TruckInfo truckInfo;
 
+        private Rigidbody rb;
+        // private float speedUpTime = 2f;
 
         void Start()
         {
             wheelDrive = this.GetComponent<WheelDrive>();
-
+            rb = this.GetComponent<Rigidbody>();
             if(trafficSystem == null)
                 return;
 
@@ -86,9 +90,32 @@ namespace TrafficSimulation {
 
             WaypointChecker();
             MoveVehicle();
+            
+            
+            // if(vehicleStatus == Status.GO && rb.velocity.magnitude < 1f)
+            // {   
+            //     Debug.Log(this.name + "아무이유 없이 멈춰서 다시 가속");
+            //     StartCoroutine(SpeedUp(this.gameObject, speedUpTime));
+            // }
         }
 
+        private System.Collections.IEnumerator SpeedUp(GameObject _vehicle, float _speedUpTime)
+        {
+            Rigidbody rb = _vehicle.GetComponent<Rigidbody>();
+            
+            Vector3 initialVelocity = rb.velocity;
+            float elapsedTime = 0f;
 
+            while (elapsedTime < _speedUpTime)
+            {
+                rb.velocity = Vector3.Lerp(initialVelocity, initialVelocity.normalized * 20f, elapsedTime / _speedUpTime);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            rb.velocity = initialVelocity.normalized * 20f; // Ensure velocity is set to the target speed
+        }
+        
         void WaypointChecker(){
             GameObject waypoint = trafficSystem.segments[currentTarget.segment].waypoints[currentTarget.waypoint].gameObject;
             //Position of next waypoint relative to the car
@@ -142,7 +169,7 @@ namespace TrafficSimulation {
                 if(vehicleStatus == Status.SLOW_DOWN){
                     // acc = .3f;
                     // acc가 클수록 속도는 더 적게 줄어듬
-                    acc = 2f;
+                    acc = 1f;
                     brake = 0f;
                     // Debug.Log(this.name+ " SLOW DOWN");
                 }
@@ -174,18 +201,18 @@ namespace TrafficSimulation {
                         //If detected front vehicle max speed is lower than ego vehicle, then decrease ego vehicle max speed
                         // if(otherVehicle.maxSpeed < wheelDrive.maxSpeed && dotFront > .8f){
                         if(otherVehicle.maxSpeed < wheelDrive.maxSpeed && dotFront > betweenDistance){
-                            Debug.Log(this.name + " decrease ego vehicle max speed");
+                            // Debug.Log(this.name + " decrease ego vehicle max speed");
                             // float ms = Mathf.Max(wheelDrive.GetSpeedMS(otherVehicle.maxSpeed) - .5f, .1f);
                             float ms = Mathf.Max(wheelDrive.GetSpeedMS(otherVehicle.maxSpeed) - 40f, 0.1f);
                             // Debug.Log(this.name + " ms : " + ms);
                             wheelDrive.maxSpeed = wheelDrive.GetSpeedUnit(ms);
-                            Debug.Log(this.name + " wheelDrive.maxSpeed : " + wheelDrive.maxSpeed);
+                            // Debug.Log(this.name + " wheelDrive.maxSpeed : " + wheelDrive.maxSpeed);
                         }
                         
                         //If the two vehicles are too close, and facing the same direction, brake the ego vehicle
                         // if(hitDist < emergencyBrakeThresh && dotFront > .8f){
                         if(hitDist <= emergencyBrakeThresh && dotFront > betweenDistance){
-                            Debug.Log(this.name +" " + hitDist + " brake the ego vehicle");
+                            // Debug.Log(this.name +" " + hitDist + " brake the ego vehicle");
 
                             acc = 0;
                             brake = 1;
@@ -198,7 +225,7 @@ namespace TrafficSimulation {
                         //If the two vehicles are too close, and not facing same direction, slight make the ego vehicle go backward
                         // else if(hitDist < emergencyBrakeThresh && dotFront <= .8f){
                         else if(hitDist <= emergencyBrakeThresh && dotFront <= betweenDistance){
-                            Debug.Log(this.name + " " + hitDist + " ego vehicle go backward");
+                            // Debug.Log(this.name + " " + hitDist + " ego vehicle go backward");
                             acc = -.3f;
                             // acc = -0.005f;
                             brake = 0f;
@@ -221,7 +248,7 @@ namespace TrafficSimulation {
 
                         //If the two vehicles are getting close, slow down their speed
                         else if(hitDist < slowDownThresh){
-                            Debug.Log(this.name +" slowDownThresh");
+                            // Debug.Log(this.name +" slowDownThresh");
                             acc = .5f;
                             // acc = 0f;
                             brake = 0f;

@@ -12,7 +12,7 @@ public class CoordinateLabeler : MonoBehaviour
     {
         label = GetComponent<TextMeshPro>();
         DisplayCoordinates();
-        // label.enabled = false;
+        label.enabled = false;
     }
     // Update is called once per frame
     void Update()
