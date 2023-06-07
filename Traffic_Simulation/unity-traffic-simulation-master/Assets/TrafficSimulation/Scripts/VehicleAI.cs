@@ -41,23 +41,21 @@ namespace TrafficSimulation {
         public Transform raycastAnchor;
 
         [Tooltip("Length of the casted rays")]
-        public float raycastLength = 8;
+        public float raycastLength = 10;
 
         [Tooltip("Spacing between each rays")]
-        // public int raySpacing = 8;
-        public int raySpacing = 2;
+        public int raySpacing = 3;
 
 
         [Tooltip("Number of rays to be casted")]
         public int raysNumber = 10;
-        // public int raysNumber = 6;
         
 
         [Tooltip("If detected vehicle is below this distance, ego vehicle will stop")]
-        public float emergencyBrakeThresh = 6f;
+        public float emergencyBrakeThresh = 5f;
 
         [Tooltip("If detected vehicle is below this distance (and above, above distance), ego vehicle will slow down")]
-        public float slowDownThresh = 8f;
+        public float slowDownThresh = 10f;
 
         // [HideInInspector] public Status vehicleStatus = Status.GO;
         public Status vehicleStatus = Status.GO;
@@ -71,7 +69,6 @@ namespace TrafficSimulation {
         private TruckInfo truckInfo;
 
         private Rigidbody rb;
-        // private float speedUpTime = 2f;
 
         void Start()
         {
@@ -91,12 +88,6 @@ namespace TrafficSimulation {
             WaypointChecker();
             MoveVehicle();
             
-            
-            // if(vehicleStatus == Status.GO && rb.velocity.magnitude < 1f)
-            // {   
-            //     Debug.Log(this.name + "아무이유 없이 멈춰서 다시 가속");
-            //     StartCoroutine(SpeedUp(this.gameObject, speedUpTime));
-            // }
         }
 
         private System.Collections.IEnumerator SpeedUp(GameObject _vehicle, float _speedUpTime)
@@ -193,6 +184,9 @@ namespace TrafficSimulation {
                     ///////////////////////////////////////////////////////////////
                     //Differenciate between other vehicles AI and generic obstacles (including controlled vehicle, if any)
                     if(otherVehicle != null){
+                        
+                        this.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
+
                         //Check if it's front vehicle
                         float dotFront = Vector3.Dot(this.transform.forward, otherVehicle.transform.forward);
                         // Debug.Log(this.name + " dotFront : " + dotFront);
@@ -277,6 +271,11 @@ namespace TrafficSimulation {
                     }
                 }
 
+                else
+                {
+                    this.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.NONE;
+                }
+                
                 //Check if we need to steer to follow path
                 if(acc > 0f){
                     Vector3 desiredVel = trafficSystem.segments[currentTarget.segment].waypoints[currentTarget.waypoint].transform.position - this.transform.position;
