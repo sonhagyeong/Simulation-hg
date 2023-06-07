@@ -348,7 +348,7 @@ namespace TrafficSimulation{
 
                 int workStationCount = _workStaions.Count;
                 truckInfo.truckOrigin = _workStaions[0];
-                truckInfo.truckDestination = _workStaions[workStationCount - 1];
+                // truckInfo.truckDestination = _workStaions[workStationCount - 1];
                 truckInfo.truckRouteName = _routeName;
                 truckInfo.turnStations = GameObject.Find(_routeName).GetComponent<RouteInfo>().uTurnStations;
                 // truckInfo.turnNum = GameObject.Find(_routeName).GetComponent<RouteInfo>().uTurnNum;
