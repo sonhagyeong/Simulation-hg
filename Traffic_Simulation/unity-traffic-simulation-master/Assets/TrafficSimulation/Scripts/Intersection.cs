@@ -55,6 +55,8 @@ namespace TrafficSimulation{
             //Check if vehicle is already in the list if yes abort
             //Also abort if we just started the scene (if vehicles inside colliders at start)
             if(IsAlreadyInIntersection(_other.gameObject) || Time.timeSinceLevelLoad < .5f) return;
+            
+            _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
 
             if(_other.tag == "AutonomousVehicle" && intersectionType == IntersectionType.STOP)
                 TriggerStop(_other.gameObject);
@@ -63,6 +65,8 @@ namespace TrafficSimulation{
         }
 
         void OnTriggerExit(Collider _other) {
+            _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.NONE;
+
             if(_other.tag == "AutonomousVehicle" && intersectionType == IntersectionType.STOP)
                 ExitStop(_other.gameObject);
             else if(_other.tag == "AutonomousVehicle" && intersectionType == IntersectionType.TRAFFIC_LIGHT)
@@ -127,6 +131,7 @@ namespace TrafficSimulation{
 
             if(vehiclesQueue.Count > 0 && vehiclesInIntersection.Count == 0){
                 vehiclesQueue[0].GetComponent<VehicleAI>().vehicleStatus = Status.GO;
+                vehiclesQueue[0].GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
             }
         }
 
