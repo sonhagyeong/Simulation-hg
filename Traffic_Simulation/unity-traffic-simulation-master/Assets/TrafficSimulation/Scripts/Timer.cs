@@ -15,6 +15,7 @@ public class Timer : MonoBehaviour
     // StopWatch
     public Stopwatch totalWatch;
     public Stopwatch stationWatch;
+    // public Stopwatch noReasonStopWatch;
 
     public List<float> stationWatchList;
     public float totalTime;
@@ -24,13 +25,9 @@ public class Timer : MonoBehaviour
     {
         totalWatch = new Stopwatch();
         stationWatch = new Stopwatch();
-        
-        stationWatchList = new List<float>();
+        // noReasonStopWatch = new Stopwatch();
 
-        // Get truck origin and destination
-        // truckInfo = this.gameObject.GetComponent<TruckInfo>();
-        // GetTruckInformation(truckInfo);
-        // departureTime = totalWatch.ElapsedMilliseconds / 1000f;
+        stationWatchList = new List<float>();
 
         totalWatch.Start();
         stationWatch.Start();
