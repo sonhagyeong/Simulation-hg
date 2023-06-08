@@ -91,31 +91,32 @@ namespace TrafficSimulation{
                 float vehicleRotationY = vehicle.transform.rotation.eulerAngles.y;
 
                 // 0도
-                if(vehicleRotationY >= -5 && vehicleRotationY <= 5)
+                float bias = 45f;
+                if((vehicleRotationY >= 0 - bias && vehicleRotationY <= 0 + bias)|| (vehicleRotationY >= 360 - bias && vehicleRotationY <= 360 + bias))
                 {
                     vehicle.transform.position = nowPos + new Vector3(0f, 0f, 0.001f);
-                    Debug.LogError(vehicle.name + " Move up side");
+                    Debug.Log(vehicle.name + " Move up side");
                 }
 
                 // 180도
-                else if(vehicleRotationY >= 175 && vehicleRotationY <= 200)
+                else if((vehicleRotationY >= 180 - bias && vehicleRotationY <= 180 + bias) || (vehicleRotationY >= -180 - bias && vehicleRotationY <= -180 + bias))
                 {
                     vehicle.transform.position = nowPos + new Vector3(0f, 0f, -0.001f);
-                    Debug.LogError(vehicle.name + " Move down side");
+                    Debug.Log(vehicle.name + " Move down side");
                 }
 
                 // 90도 _rotationY >= 85 && _rotationY <= 95
-                else if(vehicleRotationY >= 70 && vehicleRotationY <= 110)
+                else if((vehicleRotationY >= 90 - bias && vehicleRotationY <= 90 + bias) || (vehicleRotationY >= -270 - bias && vehicleRotationY <= -270 + bias))
                 {
                     vehicle.transform.position = nowPos + new Vector3(0.001f, 0f, 0f);
-                    Debug.LogError(vehicle.name + " Move right side");
+                    Debug.Log(vehicle.name + " Move right side");
                 }
 
                 // 270도
-                else if(vehicleRotationY >= 265 && vehicleRotationY <= 275)
+                else if((vehicleRotationY >= -90 - bias && vehicleRotationY <= -90 + bias) || (vehicleRotationY >= 270 - bias && vehicleRotationY <= 270 + bias))
                 {
                     vehicle.transform.position = nowPos + new Vector3(-0.001f, 0f, 0f);
-                    Debug.LogError(vehicle.name + " Move left side");
+                    Debug.Log(vehicle.name + " Move left side");
                 }
 
                 else
@@ -199,7 +200,6 @@ namespace TrafficSimulation{
 
                 // 작업하는 곳인지 확인
                 Vector3 toWorkStationPos= truckWorkStations[truckStatus];
-                Debug.Log(this.name + "--->  truckStatus : "+ truckStatus + ",  nowStationPos : " + nowStationPos + " , toWorkStationPos : " + toWorkStationPos);
                 // 트럭이 작업해야하는 곳인 경우
                 if(nowStationPos == toWorkStationPos)
                 {   
@@ -221,10 +221,13 @@ namespace TrafficSimulation{
                 }
 
                 rb.velocity = Vector3.zero;
+                Debug.Log(vehicle.name + " 's startPos and nowStationPos are same !!!");
             }
 
             else
             {
+                Debug.Log(vehicle.name + " arrive working station !!! ---> station : " + nowStationPos);
+                
                 // 감속
                 thisVehicleAI.vehicleStatus = Status.SLOW_DOWN;
                 yield return StartCoroutine(ReduceSpeed(vehicle, long_slowingTime));
@@ -238,33 +241,47 @@ namespace TrafficSimulation{
                 Debug.Log(this.name + " assign _truckTimer Component !!!");
             }
 
-            // 시작 위치와 첫번째 작업장이 같은 경우
-            if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus))
+            if(truckTimer.stationWatch == null)
             {
-                truckTimer.stationWatchList.Add(0f);
-                Debug.Log(this.name + " stationWatch Stop !!!");
+                truckTimer.stationWatch = vehicle.GetComponent<Timer>().stationWatch;
+                Debug.LogError(this.name + " assign  _truckTimer.stationWatch Component !!!");
             }
 
             else
             {
-                if(truckTimer.stationWatch != null)
-                {   
-                    float stationArrivalTime = truckTimer.TimerStop(truckTimer.stationWatch);
-                    truckTimer.stationWatchList.Add(stationArrivalTime);
+                Debug.Log(this.name + " already has _truckTimer.stationWatch Component !!!");
+            }
+        
+            if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus))
+            {
+                if(truckTimer.stationWatchList == null)
+                {
+                    Debug.LogError(this.name + " _truckTimer.stationWatchList is null !!!");
                 }
 
                 else
                 {
-                    Debug.LogError(this.name + " _truckTimer.stationWatch 컴포넌트를 찾을 수 없습니다.");
+                    truckTimer.stationWatchList.Add(0f);
+                    Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + 0f);
                 }
+                
             }
+
+            else
+            {
+                float stationArrivalTime = truckTimer.TimerStop(truckTimer.stationWatch);
+                truckTimer.stationWatchList.Add(stationArrivalTime);
+                Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + stationArrivalTime);
+            }
+
+            Debug.Log(this.name + " truckTimer.stationWatchList.Count : " + truckTimer.stationWatchList.Count);
             
             originalPos = vehicle.transform.position;
 
             yield return StartCoroutine(MoveToProcess());
     
             // destination이 아닌 경우
-            if(!IsDestination(truckStatus, truckWorkStationsNum))
+            if(!IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
             {
                 Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
                 yield return StartCoroutine(Processing());
@@ -280,18 +297,24 @@ namespace TrafficSimulation{
             }
             
             // destination인 경우
-            else
+            else if(IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
             {
                 Debug.Log(this.name + " arrives destination");
                 Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
 
                 yield return StartCoroutine(LastProcessing());
             }
-            Debug.Log(vehicle.name + " second nowStatus : " + nowStatus);
+            
+            else
+            {
+                Debug.LogError(this.name + " has to check truckStatus --> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
+            }
+            truckStatus++;
+            
+            Debug.Log(this.name + " truckStatus : " + truckStatus);
+            // Debug.Log(vehicle.name + " updated nowStatus : " + nowStatus);
 
             nowStatus = NowStatus.NONE;
-
-            truckStatus++;
         }
 
         private IEnumerator MoveToProcess()
@@ -566,9 +589,9 @@ namespace TrafficSimulation{
         }
 
 
-        private bool IsDestination(int _truckStatus, int _truckWorkStationsNum)
+        private bool IsDestination(Vector3 _nowStationPos, List<Vector3> _truckWorkStations, int _truckStatus, int _truckWorkStationsNum)
         {
-            return _truckStatus == _truckWorkStationsNum - 1;
+            return _nowStationPos == _truckWorkStations[_truckWorkStationsNum-1] && _truckStatus == _truckWorkStationsNum - 1;
         }
 
         private bool IsStartPosEqualNowStation(Vector3 _startPos, Vector3 _nowStaitonPos, int _truckStatus)

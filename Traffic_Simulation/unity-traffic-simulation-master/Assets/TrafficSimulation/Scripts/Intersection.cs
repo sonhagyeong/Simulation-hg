@@ -56,7 +56,7 @@ namespace TrafficSimulation{
             //Also abort if we just started the scene (if vehicles inside colliders at start)
             if(IsAlreadyInIntersection(_other.gameObject) || Time.timeSinceLevelLoad < .5f) return;
             
-            _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
+            // _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
 
             if(_other.tag == "AutonomousVehicle" && intersectionType == IntersectionType.STOP)
                 TriggerStop(_other.gameObject);
@@ -65,7 +65,7 @@ namespace TrafficSimulation{
         }
 
         void OnTriggerExit(Collider _other) {
-            _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.NONE;
+            // _other.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.NONE;
 
             if(_other.tag == "AutonomousVehicle" && intersectionType == IntersectionType.STOP)
                 ExitStop(_other.gameObject);
@@ -78,6 +78,7 @@ namespace TrafficSimulation{
             // Debug.Log("vehicleAI : "+ vehicleAI);
             string vehicleAIRouteName = vehicleAI.trafficSystem.name;
             // Debug.Log("vehicleAIRouteName : "+ vehicleAIRouteName);
+            _vehicle.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
             
             if(!IsPrioritySegment(vehicleAIRouteName))
             {
@@ -128,6 +129,8 @@ namespace TrafficSimulation{
             _vehicle.GetComponent<VehicleAI>().vehicleStatus = Status.GO;
             vehiclesInIntersection.Remove(_vehicle);
             vehiclesQueue.Remove(_vehicle);
+
+            _vehicle.GetComponent<TruckInfo>().nowStatus = NowStatus.NONE;
 
             if(vehiclesQueue.Count > 0 && vehiclesInIntersection.Count == 0){
                 vehiclesQueue[0].GetComponent<VehicleAI>().vehicleStatus = Status.GO;

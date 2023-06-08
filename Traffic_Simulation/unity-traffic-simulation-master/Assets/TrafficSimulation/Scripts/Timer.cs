@@ -71,6 +71,7 @@ public class Timer : MonoBehaviour
         string[] lines = File.ReadAllLines(_filePath);
 
         // Convert the List<float> to a comma-separated string
+        UnityEngine.Debug.Log(this.name + "_arrivalTimeList.Count: " + _arrivalTimeList.Count);
         string arrivalTimeValues = string.Join(",", _arrivalTimeList);
         UnityEngine.Debug.Log("arrivalTimeValues: " + arrivalTimeValues);
 
