@@ -92,30 +92,31 @@ namespace TrafficSimulation{
 
                 // 0도
                 float bias = 45f;
+                float move = 0.01f;
                 if((vehicleRotationY >= 0 - bias && vehicleRotationY <= 0 + bias)|| (vehicleRotationY >= 360 - bias && vehicleRotationY <= 360 + bias))
                 {
-                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, 0.001f);
+                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, move);
                     Debug.Log(vehicle.name + " Move up side");
                 }
 
                 // 180도
                 else if((vehicleRotationY >= 180 - bias && vehicleRotationY <= 180 + bias) || (vehicleRotationY >= -180 - bias && vehicleRotationY <= -180 + bias))
                 {
-                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, -0.001f);
+                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, -move);
                     Debug.Log(vehicle.name + " Move down side");
                 }
 
                 // 90도 _rotationY >= 85 && _rotationY <= 95
                 else if((vehicleRotationY >= 90 - bias && vehicleRotationY <= 90 + bias) || (vehicleRotationY >= -270 - bias && vehicleRotationY <= -270 + bias))
                 {
-                    vehicle.transform.position = nowPos + new Vector3(0.001f, 0f, 0f);
+                    vehicle.transform.position = nowPos + new Vector3(move, 0f, 0f);
                     Debug.Log(vehicle.name + " Move right side");
                 }
 
                 // 270도
                 else if((vehicleRotationY >= -90 - bias && vehicleRotationY <= -90 + bias) || (vehicleRotationY >= 270 - bias && vehicleRotationY <= 270 + bias))
                 {
-                    vehicle.transform.position = nowPos + new Vector3(-0.001f, 0f, 0f);
+                    vehicle.transform.position = nowPos + new Vector3(-move, 0f, 0f);
                     Debug.Log(vehicle.name + " Move left side");
                 }
 

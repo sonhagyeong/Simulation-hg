@@ -15,7 +15,6 @@ public class Timer : MonoBehaviour
     // StopWatch
     public Stopwatch totalWatch;
     public Stopwatch stationWatch;
-    // public Stopwatch noReasonStopWatch;
 
     public List<float> stationWatchList;
     public float totalTime;
@@ -25,7 +24,6 @@ public class Timer : MonoBehaviour
     {
         totalWatch = new Stopwatch();
         stationWatch = new Stopwatch();
-        // noReasonStopWatch = new Stopwatch();
 
         stationWatchList = new List<float>();
 
@@ -41,15 +39,6 @@ public class Timer : MonoBehaviour
 
         return _watch.ElapsedMilliseconds / 1000f;
     }
-
-
-    // private void GetTruckInformation(TruckInfo _truckInfo)
-    // {
-    //     truckOrigin = _truckInfo.origin;
-    //     truckDestination = _truckInfo.destination;
-    // }
-    
-    
 
     public void SaveToCSV(string _filePath, string _truckName, string _routeName, Vector3 _origin, Vector3 _destination, float _totalTime, List<float> _arrivalTimeList)
     {

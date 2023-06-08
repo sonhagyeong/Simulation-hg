@@ -160,7 +160,7 @@ namespace TrafficSimulation {
                 if(vehicleStatus == Status.SLOW_DOWN){
                     // acc = .3f;
                     // acc가 클수록 속도는 더 적게 줄어듬
-                    acc = 1f;
+                    acc = 2f;
                     brake = 0f;
                     // Debug.Log(this.name+ " SLOW DOWN");
                 }
