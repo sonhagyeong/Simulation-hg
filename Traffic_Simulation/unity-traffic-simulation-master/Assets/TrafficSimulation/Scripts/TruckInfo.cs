@@ -57,6 +57,8 @@ namespace TrafficSimulation{
         private Timer truckTimer;
         private Stopwatch truckTotalWatch;
         private Stopwatch truckStationWatch;
+        private Stopwatch noReasonStopWatch;
+        [SerializeField]private List<float> truckStationWatchList = new List<float>();
 
         private ExitPlayMode exitPlayMode;
         private Vector3 startPos;
@@ -73,16 +75,24 @@ namespace TrafficSimulation{
             thisVehicleAI = vehicle.GetComponent<VehicleAI>();
 
             truckTimer = vehicle.GetComponent<Timer>();
-            truckStationWatch = truckTimer.stationWatch;
-            truckTotalWatch = truckTimer.totalWatch;
+
+            truckTotalWatch = new Stopwatch();
+            truckStationWatch = new Stopwatch();
+            noReasonStopWatch = new Stopwatch();
+            
         }
 
         void Start()
         {
             truckStatus = 0;
             nowTurnNum = 0;
-            
-            
+
+            truckTotalWatch.Start();
+            truckStationWatch.Start();
+            // truckStationWatch = truckTimer.stationWatch;
+            // truckTotalWatch = truckTimer.totalWatch;
+            // truckStationWatchList = truckTimer.stationWatchList;
+
             exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
             truckWorkStationsNum = truckWorkStations.Count;
             rb = vehicle.GetComponent<Rigidbody>();
@@ -96,6 +106,20 @@ namespace TrafficSimulation{
             if(thisVehicleAI.vehicleStatus == Status.GO && rb.velocity.magnitude < 1f && nowStatus == NowStatus.NONE)
             {  
                 // Debug.Log(this.name + "  아무이유없이 멈췄음!,  vehicleStatus : " + thisVehicleAI.vehicleStatus + " , rb.velocity.magnitude : " + rb.velocity.magnitude + " , nowStatus : " + nowStatus);
+                if(!noReasonStopWatch.IsRunning)
+                {
+                    noReasonStopWatch.Start();
+                }
+                
+                else
+                {
+                    if(noReasonStopWatch.Elapsed.Seconds > 0.5f)
+                    {
+                        UnityEngine.Debug.LogError(this.name + "  아무이유없이 멈췄음!");
+                        
+                    }
+                }
+                UnityEngine.Debug.Log("noReasonStopWatch.ElapsedMilliseconds : " + noReasonStopWatch.ElapsedMilliseconds);
                 
                 Vector3 nowPos = vehicle.transform.position;
                 
@@ -223,7 +247,6 @@ namespace TrafficSimulation{
 
         private IEnumerator WorkingProcess()
         {
-            UnityEngine.Debug.Log(vehicle.name + " nowStatus : " + nowStatus);
             // 시작 위치와 첫번째 작업장이 같은 경우
             if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus))
             {
@@ -233,7 +256,7 @@ namespace TrafficSimulation{
                 }
 
                 rb.velocity = Vector3.zero;
-                UnityEngine.Debug.Log(vehicle.name + " 's startPos and nowStationPos are same !!!");
+                UnityEngine.Debug.Log(vehicle.name + " 's startPos and nowStationPos are same !!! ---> station : " + nowStationPos);
             }
 
             else
@@ -247,84 +270,56 @@ namespace TrafficSimulation{
             
             thisVehicleAI.vehicleStatus = Status.STOP;
 
-            if(truckTimer == null)
+            // if(truckTimer.stationWatch == null)
+            if(truckStationWatch == null)
             {
-                truckTimer = vehicle.GetComponent<Timer>();
-                UnityEngine.Debug.LogError(this.name + " assign _truckTimer Component !!!");
+                UnityEngine.Debug.LogError(this.name + "  stationWatch Component is null !!!");
+            }
+            
+            // if(truckTimer.stationWatchList == null)
+            if(truckStationWatchList == null)
+            {
+                UnityEngine.Debug.LogError(this.name + " truck Station Watch List is null !!!");
             }
 
-            if(truckTimer.stationWatch == null)
-            {
-                truckTimer.stationWatch = vehicle.GetComponent<Timer>().stationWatch;
-                UnityEngine.Debug.LogError(this.name + " assign  _truckTimer.stationWatch Component !!!");
-            }
+            // float stationArrivalTime = truckTimer.TimerStop(truckStationWatch);
+            
+            float stationArrivalTime = truckStationWatch.ElapsedMilliseconds / 1000f;
 
-            else
-            {
-                UnityEngine.Debug.LogError(this.name + " already has _truckTimer.stationWatch Component !!!");
-            }
-        
-            if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus))
-            {
-                if(truckTimer.stationWatchList == null)
-                {
-                    UnityEngine.Debug.Log(this.name + " _truckTimer.stationWatchList is null !!!");
-                }
-
-                else
-                {
-                    truckTimer.stationWatchList.Add(0f);
-                    UnityEngine.Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + 0f);
-                }
-                
-            }
-
-            else
-            {
-                float stationArrivalTime = truckTimer.TimerStop(truckTimer.stationWatch);
-                truckTimer.stationWatchList.Add(stationArrivalTime);
-                UnityEngine.Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + stationArrivalTime);
-            }
-
-            UnityEngine.Debug.Log(this.name + " truckTimer.stationWatchList.Count : " + truckTimer.stationWatchList.Count);
+            truckStationWatchList.Add(stationArrivalTime);
+            UnityEngine.Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + stationArrivalTime);
             
             originalPos = vehicle.transform.position;
-
+            
+            truckStationWatch.Stop();
             yield return StartCoroutine(MoveToProcess());
-    
+            
+            truckStationWatch.Reset();
+            UnityEngine.Debug.Log( vehicle.name + " stationWatch reset");
+            
             // destination이 아닌 경우
             if(!IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
             {
                 UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
+                truckStatus++;
                 yield return StartCoroutine(Processing());
                 yield return StartCoroutine(MoveToOriginalPos());     
-                
-                if(truckTimer != null)
-                {
-                    truckTimer.stationWatch.Reset();
-                    UnityEngine.Debug.Log( vehicle.name + " stationWatch reset");
-                    truckTimer.stationWatch.Start();
-                }
-
             }
             
             // destination인 경우
-            else if(IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
+            else
             {
                 UnityEngine.Debug.Log(this.name + " arrives destination");
                 UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
-
+                truckStatus++;
                 yield return StartCoroutine(LastProcessing());
             }
             
-            else
-            {
-                UnityEngine.Debug.LogError(this.name + " has to check truckStatus --> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
-            }
-            truckStatus++;
+            UnityEngine.Debug.Log(vehicle.name + " nowStatus : " + nowStatus);
             
+            truckStationWatch.Start();
             UnityEngine.Debug.Log(this.name + " truckStatus : " + truckStatus);
-            // Debug.Log(vehicle.name + " updated nowStatus : " + nowStatus);
+            UnityEngine.Debug.Log(this.name + "truckTotalWatch.ElapsedMilliseconds / 1000f : " + truckTotalWatch.ElapsedMilliseconds / 1000f);
 
             nowStatus = NowStatus.NONE;
         }
@@ -427,8 +422,15 @@ namespace TrafficSimulation{
 
             if(truckTimer != null)
             {
-                float totalTime = truckTimer.TimerStop(truckTimer.totalWatch);
-                UnityEngine.Debug.Log(vehicle.name + " totalTime is " + totalTime);
+                if(truckTotalWatch == null)
+                {
+                    UnityEngine.Debug.LogError(this.name + " _truckTimer.totalWatch is null !!!");
+                }
+                truckTotalWatch.Stop();
+                float truckTotalTime = truckTotalWatch.ElapsedMilliseconds / 1000f;
+
+                // float totalTime = truckTimer.TimerStop(truckTimer.totalWatch);
+                UnityEngine.Debug.Log(vehicle.name + " totalTime is " + truckTotalTime);
                 if(exitPlayMode == null)
                 {
                     exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
@@ -436,7 +438,9 @@ namespace TrafficSimulation{
 
                 exitPlayMode.nowTruckCount += 1;
                 truckDestination = nowStationPos;
-                truckTimer.SaveToCSV(truckTimer.filePath, vehicle.name, truckRouteName, truckOrigin, truckDestination, totalTime, truckTimer.stationWatchList);
+                // truckTimer.SaveToCSV(truckTimer.filePath, vehicle.name, truckRouteName, truckOrigin, truckDestination, totalTime, truckTimer.stationWatchList);
+                truckTimer.SaveToCSV(truckTimer.filePath, vehicle.name, truckRouteName, truckOrigin, truckDestination, truckTotalTime, truckStationWatchList);
+
             }
 
             else
@@ -446,41 +450,6 @@ namespace TrafficSimulation{
 
             vehicle.SetActive(false);
         }
-
-        
-
-        // private IEnumerator LastWorkingProcessing(GameObject _vehicle, VehicleAI _vehicleAI, GameObject _station, StationsInfo _stationInfo, Vector3 _nowStationPos, List<Vector3> _turnStations, float _slowingTime, float _toStationNum, float _moveDelay, float _checkDelay, 
-        //                                                 float _checkRange_1, float _checkRange_2, float _processTime, Timer _truckTimer, ExitPlayMode _exitPlayMode, string _routeName, Vector3 _origin, Vector3 _destination)
-        // {
-        //     // 감속
-        //     yield return StartCoroutine(ReduceSpeed(_vehicle, _slowingTime));
-        //     _vehicleAI.vehicleStatus = Status.STOP;
-
-        //     if(_truckTimer == null)
-        //     {
-        //         _truckTimer = _vehicle.GetComponent<Timer>();
-        //         Debug.Log(this.name + " assign _truckTimer Component !!!");
-        //     }
-
-          
-        //     if(_truckTimer.stationWatch != null)
-        //     {   
-        //         float stationArrivalTime = _truckTimer.TimerStop(_truckTimer.stationWatch);
-        //         Debug.Log(_vehicle.name + " stationArrivalTime : " + stationArrivalTime);
-        //         _truckTimer.stationWatchList.Add(stationArrivalTime);
-        //     }
-        //     else
-        //     {
-        //         Debug.LogError(this.name + " LastWorkingProcess _truckTimer.stationWatch 컴포넌트를 찾을 수 없습니다.");
-        //     }
-
-        //     // yield return StartCoroutine(MoveToProcess(_vehicle, _stationInfo, _nowStationPos, _turnStations, _nowTurnNum, _moveDelay, _toStationNum));
-        //     yield return StartCoroutine(MoveToProcess(_vehicle, _stationInfo, _nowStationPos, _turnStations, _moveDelay, _toStationNum));
-
-
-        //     yield return StartCoroutine(LastProcessing(_processTime, _station, _stationInfo, _vehicle, _checkDelay, _truckTimer, _exitPlayMode, _routeName, _origin, _destination));
-        // }
-
         
 
         private bool CheckRotation_IsToRight(GameObject _vehicle)
