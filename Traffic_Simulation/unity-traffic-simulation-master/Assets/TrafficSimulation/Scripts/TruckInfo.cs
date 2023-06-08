@@ -113,53 +113,56 @@ namespace TrafficSimulation{
                 
                 else
                 {
-                    if(noReasonStopWatch.Elapsed.Seconds > 0.5f)
+                    if(noReasonStopWatch.Elapsed.Seconds > 1f)
                     {
+                        UnityEngine.Debug.Log(this.name + " --> noReasonStopWatch.ElapsedMilliseconds : " + noReasonStopWatch.ElapsedMilliseconds);
+
                         UnityEngine.Debug.LogError(this.name + "  아무이유없이 멈췄음!");
+                        noReasonStopWatch.Stop();
+
+                        Vector3 nowPos = vehicle.transform.position;
+
+                        
+                
+                        float vehicleRotationY = vehicle.transform.rotation.eulerAngles.y;
+
+                        // 0도
+                        float bias = 45f;
+                        float move = 0.01f;
+                        if((vehicleRotationY >= 0 - bias && vehicleRotationY <= 0 + bias)|| (vehicleRotationY >= 360 - bias && vehicleRotationY <= 360 + bias))
+                        {
+                            vehicle.transform.position = nowPos + new Vector3(0f, 0f, move);
+                            UnityEngine.Debug.Log(vehicle.name + " Move up side");
+                        }
+
+                        // 180도
+                        else if((vehicleRotationY >= 180 - bias && vehicleRotationY <= 180 + bias) || (vehicleRotationY >= -180 - bias && vehicleRotationY <= -180 + bias))
+                        {
+                            vehicle.transform.position = nowPos + new Vector3(0f, 0f, -move);
+                            UnityEngine.Debug.Log(vehicle.name + " Move down side");
+                        }
+
+                        // 90도 _rotationY >= 85 && _rotationY <= 95
+                        else if((vehicleRotationY >= 90 - bias && vehicleRotationY <= 90 + bias) || (vehicleRotationY >= -270 - bias && vehicleRotationY <= -270 + bias))
+                        {
+                            vehicle.transform.position = nowPos + new Vector3(move, 0f, 0f);
+                            UnityEngine.Debug.Log(vehicle.name + " Move right side");
+                        }
+
+                        // 270도
+                        else if((vehicleRotationY >= -90 - bias && vehicleRotationY <= -90 + bias) || (vehicleRotationY >= 270 - bias && vehicleRotationY <= 270 + bias))
+                        {
+                            vehicle.transform.position = nowPos + new Vector3(-move, 0f, 0f);
+                            UnityEngine.Debug.Log(vehicle.name + " Move left side");
+                        }
+
+                        else
+                        {
+                        UnityEngine.Debug.LogError("You have to again check vehicle's rotationY");
+                        }
                         
                     }
-                }
-                UnityEngine.Debug.Log("noReasonStopWatch.ElapsedMilliseconds : " + noReasonStopWatch.ElapsedMilliseconds);
-                
-                Vector3 nowPos = vehicle.transform.position;
-                
-                float vehicleRotationY = vehicle.transform.rotation.eulerAngles.y;
-
-                // 0도
-                float bias = 45f;
-                float move = 0.01f;
-                if((vehicleRotationY >= 0 - bias && vehicleRotationY <= 0 + bias)|| (vehicleRotationY >= 360 - bias && vehicleRotationY <= 360 + bias))
-                {
-                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, move);
-                    UnityEngine.Debug.Log(vehicle.name + " Move up side");
-                }
-
-                // 180도
-                else if((vehicleRotationY >= 180 - bias && vehicleRotationY <= 180 + bias) || (vehicleRotationY >= -180 - bias && vehicleRotationY <= -180 + bias))
-                {
-                    vehicle.transform.position = nowPos + new Vector3(0f, 0f, -move);
-                    UnityEngine.Debug.Log(vehicle.name + " Move down side");
-                }
-
-                // 90도 _rotationY >= 85 && _rotationY <= 95
-                else if((vehicleRotationY >= 90 - bias && vehicleRotationY <= 90 + bias) || (vehicleRotationY >= -270 - bias && vehicleRotationY <= -270 + bias))
-                {
-                    vehicle.transform.position = nowPos + new Vector3(move, 0f, 0f);
-                    UnityEngine.Debug.Log(vehicle.name + " Move right side");
-                }
-
-                // 270도
-                else if((vehicleRotationY >= -90 - bias && vehicleRotationY <= -90 + bias) || (vehicleRotationY >= 270 - bias && vehicleRotationY <= 270 + bias))
-                {
-                    vehicle.transform.position = nowPos + new Vector3(-move, 0f, 0f);
-                    UnityEngine.Debug.Log(vehicle.name + " Move left side");
-                }
-
-                else
-                {
-                   UnityEngine.Debug.LogError("You have to again check vehicle's rotationY");
-                }
-               
+                }         
             }
         }
 
@@ -290,7 +293,7 @@ namespace TrafficSimulation{
             UnityEngine.Debug.Log(vehicle.name + " stationWatch Stop !!! ---> now station : " + nowStation.name + " arrival time : " + stationArrivalTime);
             
             originalPos = vehicle.transform.position;
-            
+
             truckStationWatch.Stop();
             yield return StartCoroutine(MoveToProcess());
             
