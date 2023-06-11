@@ -10,24 +10,21 @@ public class StationsInfo : MonoBehaviour
     // 작업 가능한 Max 트럭 개수
     public int stationCapacity;
 
-    
-    // 작업이 완료된 트럭 중 왼쪽으로 가는 트럭 리스트
-    public int finishedVehicle_toLeft_Count;
-    
-    // 작업이 완료된 트럭 중 오른쪽으로 가는 트럭 리스트
-    public int finishedVehicle_toRight_Count;
-
     // 작업 대기 중인 트럭 리스트
-    public List<GameObject> queueList;
+    public List<GameObject> processQueueList;
+
+    // 작업 끝난 트럭 리스트
+    public List<GameObject> finishedQueueList_toLeft;
+    public List<GameObject> finishedQueueList_toRight;
 
     void Start()
     {
         stationStatus = 0;
         stationCapacity = 2;
-        finishedVehicle_toLeft_Count = 0;
-        finishedVehicle_toRight_Count = 0;
     
-        queueList = new List<GameObject>();
+        processQueueList = new List<GameObject>();
+        finishedQueueList_toLeft = new List<GameObject>();
+        finishedQueueList_toRight = new List<GameObject>();
     }
 
     
