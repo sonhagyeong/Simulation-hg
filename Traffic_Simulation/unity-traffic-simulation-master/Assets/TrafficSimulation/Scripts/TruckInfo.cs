@@ -37,7 +37,7 @@ namespace TrafficSimulation{
         private Vector3 originalPos;
         
         private float toStationNum = 25f;
-        private float checkRange_1 = 20f;
+        private float checkRange_1 = 15f;
         private float checkRange_2 = 1f;
         // 현재 유턴 횟수
         [SerializeField] private int nowTurnNum;
@@ -89,9 +89,7 @@ namespace TrafficSimulation{
 
             truckTotalWatch.Start();
             truckStationWatch.Start();
-            // truckStationWatch = truckTimer.stationWatch;
-            // truckTotalWatch = truckTimer.totalWatch;
-            // truckStationWatchList = truckTimer.stationWatchList;
+  
 
             exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
             truckWorkStationsNum = truckWorkStations.Count;
@@ -113,11 +111,11 @@ namespace TrafficSimulation{
                 
                 else
                 {
-                    if(noReasonStopWatch.Elapsed.Seconds > 1f)
+                    if(noReasonStopWatch.ElapsedMilliseconds/1000f > 2f)
                     {
-                        UnityEngine.Debug.Log(this.name + " --> noReasonStopWatch.ElapsedMilliseconds : " + noReasonStopWatch.ElapsedMilliseconds);
+                        UnityEngine.Debug.Log(this.name + "  아무이유없이 멈췄음! --> noReasonStopWatch.ElapsedMilliseconds/1000f : " + noReasonStopWatch.ElapsedMilliseconds/1000f);
+                        // UnityEngine.Debug.LogError(this.name + "  아무이유없이 멈췄음! --> noReasonStopWatch.Elapsed.Seconds : " + noReasonStopWatch.Elapsed.Seconds);
 
-                        UnityEngine.Debug.LogError(this.name + "  아무이유없이 멈췄음!");
                         noReasonStopWatch.Stop();
 
                         Vector3 nowPos = vehicle.transform.position;
@@ -175,10 +173,9 @@ namespace TrafficSimulation{
                 nowStationPos = nowStation.transform.position;
                 nowStationInfo = nowStation.GetComponent<StationsInfo>();
 
-                nowStation_FinishedVehicle_toLeft = nowStationInfo.finishedVehicle_toLeft_Count;
-                nowStation_FinishedVehicle_toRight = nowStationInfo.finishedVehicle_toRight_Count;
+                nowStation_FinishedVehicle_toLeft = nowStationInfo.finishedQueueList_toLeft != null ? nowStationInfo.finishedQueueList_toLeft.Count : 0;
+                nowStation_FinishedVehicle_toRight = nowStationInfo.finishedQueueList_toRight != null ? nowStationInfo.finishedQueueList_toRight.Count : 0;
 
-                
                 if(vehicle == null)
                 {
                     vehicle = this.gameObject;
@@ -210,6 +207,23 @@ namespace TrafficSimulation{
                         // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
                         thisVehicleAI.vehicleStatus = Status.GO;
                         nowStatus = NowStatus.NONE;
+
+                        if(truckStatus < truckWorkStations.Count)
+                        {
+                            // 작업하는 곳인지 확인
+                            Vector3 toWorkStationPos= truckWorkStations[truckStatus];
+                            // 트럭이 작업해야하는 곳인 경우
+                            if(nowStationPos == toWorkStationPos)
+                            {   
+                                nowStatus = NowStatus.PROCESSING;
+                                StartCoroutine(WorkingProcess());
+                            }
+                        }
+
+                        else
+                        {
+                            UnityEngine.Debug.LogError("truckStatus is index out of range");
+                        }
                     }
                 }
 
@@ -234,24 +248,38 @@ namespace TrafficSimulation{
                         // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
                         thisVehicleAI.vehicleStatus = Status.GO;
                         nowStatus = NowStatus.NONE;
+
+                        if(truckStatus < truckWorkStations.Count)
+                        {
+                            // 작업하는 곳인지 확인
+                            Vector3 toWorkStationPos= truckWorkStations[truckStatus];
+                            // 트럭이 작업해야하는 곳인 경우
+                            if(nowStationPos == toWorkStationPos)
+                            {   
+                                nowStatus = NowStatus.PROCESSING;
+                                StartCoroutine(WorkingProcess());
+                            }
+                        }
+
+                        else
+                        {
+                            UnityEngine.Debug.LogError("truckStatus is index out of range");
+                        }
                     }
                 }
-
-                // 작업하는 곳인지 확인
-                Vector3 toWorkStationPos= truckWorkStations[truckStatus];
-                // 트럭이 작업해야하는 곳인 경우
-                if(nowStationPos == toWorkStationPos)
-                {   
-                    nowStatus = NowStatus.PROCESSING;
-                    StartCoroutine(WorkingProcess());
-                }
             }
+
+            else if(_other.gameObject.tag == "AutonomousVehicle")
+            {
+                UnityEngine.Debug.LogError(this.name + " is crashed with " + _other.gameObject.name);
+            }
+
         }
 
         private IEnumerator WorkingProcess()
         {
             // 시작 위치와 첫번째 작업장이 같은 경우
-            if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus))
+            if(IsStartPosEqualNowStation(startPos, nowStationPos, truckStatus) || truckStatus > 0 && truckWorkStations[truckStatus -1] == truckWorkStations[truckStatus])
             {
                 if(rb == null)
                 {
@@ -264,28 +292,24 @@ namespace TrafficSimulation{
 
             else
             {
-                UnityEngine.Debug.Log(vehicle.name + " arrive working station !!! ---> station : " + nowStationPos);
-                
                 // 감속
                 thisVehicleAI.vehicleStatus = Status.SLOW_DOWN;
-                yield return StartCoroutine(ReduceSpeed(vehicle, long_slowingTime));
+                yield return StartCoroutine(ReduceSpeed(vehicle, long_slowingTime));   
             }
+
             
             thisVehicleAI.vehicleStatus = Status.STOP;
 
-            // if(truckTimer.stationWatch == null)
             if(truckStationWatch == null)
             {
                 UnityEngine.Debug.LogError(this.name + "  stationWatch Component is null !!!");
             }
             
-            // if(truckTimer.stationWatchList == null)
             if(truckStationWatchList == null)
             {
                 UnityEngine.Debug.LogError(this.name + " truck Station Watch List is null !!!");
             }
 
-            // float stationArrivalTime = truckTimer.TimerStop(truckStationWatch);
             
             float stationArrivalTime = truckStationWatch.ElapsedMilliseconds / 1000f;
 
@@ -304,7 +328,6 @@ namespace TrafficSimulation{
             if(!IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
             {
                 UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
-                truckStatus++;
                 yield return StartCoroutine(Processing());
                 yield return StartCoroutine(MoveToOriginalPos());     
             }
@@ -314,14 +337,13 @@ namespace TrafficSimulation{
             {
                 UnityEngine.Debug.Log(this.name + " arrives destination");
                 UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
-                truckStatus++;
                 yield return StartCoroutine(LastProcessing());
             }
             
             UnityEngine.Debug.Log(vehicle.name + " nowStatus : " + nowStatus);
             
             truckStationWatch.Start();
-            UnityEngine.Debug.Log(this.name + " truckStatus : " + truckStatus);
+            UnityEngine.Debug.Log(this.name + " updated truckStatus : " + truckStatus);
             UnityEngine.Debug.Log(this.name + "truckTotalWatch.ElapsedMilliseconds / 1000f : " + truckTotalWatch.ElapsedMilliseconds / 1000f);
 
             nowStatus = NowStatus.NONE;
@@ -332,9 +354,13 @@ namespace TrafficSimulation{
             yield return new WaitForSeconds(moveDelay);
 
             bc.enabled = false;
+            
+            UnityEngine.Debug.Log(this.name + " turnStationS.Count : " + turnStations.Count + " nowTurnNum : " + nowTurnNum);
 
-            if(turnStations.Count > 0  && nowStationPos == turnStations[nowTurnNum])
+            if(turnStations.Count > 0 && nowTurnNum < turnStations.Count && nowStationPos == turnStations[nowTurnNum])
             {
+                UnityEngine.Debug.Log(this.name + " turn station !!! ---> station : " + nowStationPos);
+                
                 if(CheckRotation_IsToRight(vehicle))
                 {   
                     vehicle.transform.rotation = Quaternion.Euler(0, 270f, 0);
@@ -343,18 +369,18 @@ namespace TrafficSimulation{
                 else
                 {
                     vehicle.transform.rotation = Quaternion.Euler(0, 90f, 0);
-                }
-            }
-            
+                }           
+            }   
 
             vehicle.transform.position = nowStationPos + new Vector3(0, 0, toStationNum);
-        
-            nowStationInfo.queueList.Add(vehicle);
+            nowStationInfo.processQueueList.Add(vehicle);
+            UnityEngine.Debug.Log(this.name + " move to process position !!! ---> station : " + nowStationPos + "vehicle.transform.position : " + vehicle.transform.position);
 
         }
 
         private IEnumerator Processing()
         {   
+            UnityEngine.Debug.Log(this.name + " processing ---> station : " + nowStationPos);
             // station이 작업 처리 할 수 있는 지 확인
             while(!IsStationAvailable(nowStation))
             {
@@ -363,8 +389,9 @@ namespace TrafficSimulation{
 
             // Get Station information
             nowStationInfo.stationStatus += 1;
+            truckStatus+= 1;
 
-            nowStationInfo.queueList.Remove(vehicle);
+            nowStationInfo.processQueueList.Remove(vehicle);
 
             yield return new WaitForSeconds(processTime);
 
@@ -375,15 +402,8 @@ namespace TrafficSimulation{
 
         private IEnumerator MoveToOriginalPos()
         {
-            // 작업이 끝나면 주변에 트럭이 있는지 확인
-            while(ExistAnyTruck(originalPos, checkRange_1, checkRange_2))
-            {   
-                // UnityEngine.Debug.Log("there is vehicle near original position");
-                yield return new WaitForSeconds(checkDelay);
-            }
-
             // 유턴해야하는 곳인지 확인
-            if(turnStations.Count > 0  && nowStationPos == turnStations[nowTurnNum])
+            if(turnStations.Count > 0 && nowTurnNum < turnStations.Count && nowStationPos == turnStations[nowTurnNum])
             {
                 if(CheckRotation_IsToRight(vehicle))
                 {   
@@ -398,11 +418,20 @@ namespace TrafficSimulation{
                 nowTurnNum += 1;
             }
 
+            // 작업이 끝나면 주변에 트럭이 있는지 확인
+            while(ExistAnyTruck(originalPos, checkRange_1, checkRange_2))
+            {   
+                // UnityEngine.Debug.Log("there is vehicle near original position");
+                yield return new WaitForSeconds(checkDelay);
+            }
+
+            UnityEngine.Debug.Log(this.name + " can go to next station ! ");
+            bc.enabled = true;
+
             vehicle.transform.position = originalPos;
         
             MinusFinishedVehicle(nowStationInfo, vehicle);
 
-            bc.enabled = true;
             thisVehicleAI.vehicleStatus = Status.GO;
         }
         
@@ -417,7 +446,7 @@ namespace TrafficSimulation{
             // Get Station information
             nowStationInfo.stationStatus += 1;
 
-            nowStationInfo.queueList.Remove(vehicle);
+            nowStationInfo.processQueueList.Remove(vehicle);
 
             yield return new WaitForSeconds(processTime);
 
@@ -547,14 +576,14 @@ namespace TrafficSimulation{
 
         private void PlusFinishedVehicle(StationsInfo _stationInfo, GameObject _vehicle)
         {   
-            if(CheckRotation_IsToRight(_vehicle))
+            if(CheckRotation_IsToRight(vehicle))
             {
-                _stationInfo.finishedVehicle_toRight_Count += 1;
+                _stationInfo.finishedQueueList_toRight.Add(_vehicle);
             }
 
             else
             {
-                _stationInfo.finishedVehicle_toLeft_Count += 1;
+                _stationInfo.finishedQueueList_toLeft.Add(_vehicle);
             }
         }
 
@@ -563,12 +592,12 @@ namespace TrafficSimulation{
         {   
             if(CheckRotation_IsToRight(_vehicle))
             {
-                _stationInfo.finishedVehicle_toRight_Count -= 1;
+                _stationInfo.finishedQueueList_toRight.Remove(_vehicle);
             }
 
             else
             {
-                _stationInfo.finishedVehicle_toLeft_Count -= 1;
+                _stationInfo.finishedQueueList_toLeft.Remove(_vehicle);
             }
         }
 
