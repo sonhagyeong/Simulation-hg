@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// #if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
-// #endif
+#endif
 
 namespace TrafficSimulation{
     public class ExitPlayMode : MonoBehaviour
     {
         public int nowTruckCount;
         [SerializeField] private int totalTruckCount;
-
-        // private CreateTruckAndStation createTruckAndStation;
 
         void Start()
         {
@@ -23,13 +21,17 @@ namespace TrafficSimulation{
         // Update is called once per frame
         private void Update()
         {
-    // #if UNITY_EDITOR
+
             if(CompareTruckCount(nowTruckCount, totalTruckCount))
             {
                 Debug.Log("Exit Play Mode");
                 EditorApplication.ExitPlaymode();
+
+#if UNITY_EDITOR
+                AssetDatabase.Refresh();
+#endif
             }
-    // #endif
+
         }
 
         private bool CompareTruckCount(int _nowTruckCount, int _totalTruckCount)
