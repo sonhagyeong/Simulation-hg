@@ -9,7 +9,7 @@ namespace TrafficSimulation{
     public class CreateTruckAndStation : MonoBehaviour
     {
 
-        private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks_same_alphas_20.csv";
+        private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks_shortest_20.csv";
 
         public static List<CreateTruckData> truckDataList = new List<CreateTruckData>();
 
