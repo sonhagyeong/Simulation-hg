@@ -17,7 +17,7 @@ public class StationsInfo : MonoBehaviour
     public List<GameObject> finishedQueueList_toLeft;
     public List<GameObject> finishedQueueList_toRight;
 
-    void Start()
+    void Awake()
     {
         stationStatus = 0;
         stationCapacity = 2;
