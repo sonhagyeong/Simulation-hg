@@ -365,16 +365,35 @@ namespace TrafficSimulation{
         // 출발 위치가 동일한 트럭이 있는 경우 트럭 생성 함수
         private IEnumerator DuplicatePositionCreateTruck(List<Tuple<string, string, List<Vector3>>> _values, float _createDelay)
         {
+            int duplivatedTruckCount = 0;
+
             foreach (Tuple<string, string, List<Vector3>> value in _values)
             {
                 string truckName = value.Item1;
                 string routeName = value.Item2;
                 List<Vector3> truckWorkStations = value.Item3;
-
-                // Debug.Log("Create Duplicate Position Truck: " + truckName + ", " + routeName);
                 CreateTruck(truckName, routeName, truckWorkStations);
 
-                yield return new WaitForSeconds(_createDelay);
+                if(duplivatedTruckCount > 0)
+                {
+                    GameObject waitedTruck = GameObject.Find(truckName);
+
+                    if(waitedTruck != null)
+                    {
+                        waitedTruck.GetComponent<BoxCollider>().enabled = false;
+                        waitedTruck.GetComponent<VehicleAI>().vehicleStatus = Status.STOP;
+
+                        yield return new WaitForSeconds(_createDelay);
+                        waitedTruck.GetComponent<BoxCollider>().enabled = true;
+                        waitedTruck.GetComponent<VehicleAI>().vehicleStatus = Status.GO;
+                    }
+
+                    else
+                    {
+                        Debug.LogError("Waited truck not found: " + truckName);
+                    }
+                }
+                duplivatedTruckCount++;
             }
         }
 
