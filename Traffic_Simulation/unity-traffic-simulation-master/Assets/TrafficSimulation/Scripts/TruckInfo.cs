@@ -16,7 +16,7 @@ namespace TrafficSimulation{
     {
 
         public List<Vector3> truckWorkStations;
-        private int truckWorkStationsNum;
+        public int truckWorkStationsNum;
         public Vector3 truckOrigin;
         public Vector3 truckDestination;
         public string truckRouteName;
@@ -67,7 +67,7 @@ namespace TrafficSimulation{
         private Rigidbody rb;
         private BoxCollider bc;
         public NowStatus nowStatus;
-        
+
         // Start is called before the first frame update
         void Awake()
         {   
@@ -92,7 +92,7 @@ namespace TrafficSimulation{
   
 
             exitPlayMode = GameObject.Find("Roads").GetComponent<ExitPlayMode>();
-            truckWorkStationsNum = truckWorkStations.Count;
+            // truckWorkStationsNum = truckWorkStations.Count;
             rb = vehicle.GetComponent<Rigidbody>();
             bc = vehicle.GetComponent<BoxCollider>();
             nowStatus = NowStatus.NONE;
@@ -101,7 +101,7 @@ namespace TrafficSimulation{
         
         void Update()
         {
-            if(thisVehicleAI.vehicleStatus == Status.GO && rb.velocity.magnitude < 1f && nowStatus == NowStatus.NONE)
+            if((thisVehicleAI.vehicleStatus == Status.GO || thisVehicleAI.vehicleStatus == Status.SLOW_DOWN) && rb.velocity.magnitude < 0.02f && nowStatus == NowStatus.NONE)
             {  
                 // Debug.Log(this.name + "  아무이유없이 멈췄음!,  vehicleStatus : " + thisVehicleAI.vehicleStatus + " , rb.velocity.magnitude : " + rb.velocity.magnitude + " , nowStatus : " + nowStatus);
                 if(!noReasonStopWatch.IsRunning)
@@ -206,7 +206,6 @@ namespace TrafficSimulation{
                         UnityEngine.Debug.Log(this.name + " can go");
                         // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
                         thisVehicleAI.vehicleStatus = Status.GO;
-                        nowStatus = NowStatus.NONE;
 
                         if(truckStatus < truckWorkStations.Count)
                         {
@@ -218,11 +217,6 @@ namespace TrafficSimulation{
                                 nowStatus = NowStatus.PROCESSING;
                                 StartCoroutine(WorkingProcess());
                             }
-                        }
-
-                        else
-                        {
-                            UnityEngine.Debug.LogError("truckStatus is index out of range");
                         }
                     }
                 }
@@ -247,7 +241,6 @@ namespace TrafficSimulation{
 
                         // // 작업이 완료된 트럭이 없다면 도착한 vehicle 출발
                         thisVehicleAI.vehicleStatus = Status.GO;
-                        nowStatus = NowStatus.NONE;
 
                         if(truckStatus < truckWorkStations.Count)
                         {
@@ -259,11 +252,6 @@ namespace TrafficSimulation{
                                 nowStatus = NowStatus.PROCESSING;
                                 StartCoroutine(WorkingProcess());
                             }
-                        }
-
-                        else
-                        {
-                            UnityEngine.Debug.LogError("truckStatus is index out of range");
                         }
                     }
                 }
@@ -319,15 +307,18 @@ namespace TrafficSimulation{
             originalPos = vehicle.transform.position;
 
             truckStationWatch.Stop();
-            yield return StartCoroutine(MoveToProcess());
-            
+            // yield return StartCoroutine(MoveToProcess());
+            MoveToProcess();
             truckStationWatch.Reset();
             UnityEngine.Debug.Log( vehicle.name + " stationWatch reset");
             
             // destination이 아닌 경우
+            UnityEngine.Debug.Log(vehicle.name + " nowStationPos : " + nowStationPos + ", truckStatus : " + truckStatus + ", truckWorkStations[truckStatus] : " + truckWorkStations[truckStatus]);
+       
             if(!IsDestination(nowStationPos, truckWorkStations, truckStatus, truckWorkStationsNum))
             {
-                UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
+                UnityEngine.Debug.Log(this.name + " doesn't arrives destination");
+                // UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
                 yield return StartCoroutine(Processing());
                 yield return StartCoroutine(MoveToOriginalPos());     
             }
@@ -336,9 +327,10 @@ namespace TrafficSimulation{
             else
             {
                 UnityEngine.Debug.Log(this.name + " arrives destination");
-                UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
+                // UnityEngine.Debug.Log(this.name + "--> truckStatus : "+ truckStatus + ", truckWorkStationsNum : "+ truckWorkStationsNum);
                 yield return StartCoroutine(LastProcessing());
             }
+            
             
             UnityEngine.Debug.Log(vehicle.name + " nowStatus : " + nowStatus);
             
@@ -349,9 +341,16 @@ namespace TrafficSimulation{
             nowStatus = NowStatus.NONE;
         }
 
-        private IEnumerator MoveToProcess()
+        // private IEnumerator MoveToProcess()
+        private void MoveToProcess()
         {
-            yield return new WaitForSeconds(moveDelay);
+            // yield return new WaitForSeconds(moveDelay);
+            nowStatus = NowStatus.PROCESSING;
+
+            if(bc == null)
+            {
+                bc = vehicle.GetComponent<BoxCollider>();
+            }
 
             bc.enabled = false;
             
@@ -389,7 +388,6 @@ namespace TrafficSimulation{
 
             // Get Station information
             nowStationInfo.stationStatus += 1;
-            truckStatus+= 1;
 
             nowStationInfo.processQueueList.Remove(vehicle);
 
@@ -398,6 +396,8 @@ namespace TrafficSimulation{
             nowStationInfo.stationStatus -= 1;
 
             PlusFinishedVehicle(nowStationInfo, vehicle);
+
+            truckStatus+= 1;
         }
 
         private IEnumerator MoveToOriginalPos()
