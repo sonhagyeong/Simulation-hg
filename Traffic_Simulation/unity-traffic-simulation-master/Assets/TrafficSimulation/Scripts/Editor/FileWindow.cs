@@ -128,6 +128,21 @@ namespace TrafficSimulation {
                     Debug.LogError("Check intersection file Path");
                 }
             }
+            // EditorGUILayout.EndHorizontal();
+            GUILayout.Space(10);
+
+            if (GUILayout.Button("Create Corners in Scene", GUILayout.Width(200)))
+            {   
+                if(intersectionfilePath != null)
+                {
+                    CreateCorners(cornerPositions);
+                }
+                
+                else
+                {
+                    Debug.LogError("Check Corners List");
+                }
+            }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(10);
 
@@ -143,6 +158,8 @@ namespace TrafficSimulation {
             {
                 intersections.Clear();
             }
+            GUILayout.Space(10);
+            
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(10);
 
@@ -625,6 +642,22 @@ namespace TrafficSimulation {
             Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
         }
 
+        private static void CreateCorners(List<Vector3> cornersList)
+        {
+            EditorHelper.SetUndoGroup("Create Corner System");
+
+            GameObject cornersGo = EditorHelper.CreateGameObject("Corners");
+            cornersGo.transform.position = Vector3.zero;
+
+            int intId = 0;
+            foreach(Vector3 point in cornersList)
+            {   
+                AddCorners(point, intId);
+                intId ++;
+            }
+
+            Undo.CollapseUndoOperations(Undo.GetCurrentGroup());
+        }
         private static void AddWaypoint(Vector3 position) 
         {
             GameObject go = EditorHelper.CreateGameObject("Waypoint-" + wps.curSegment.waypoints.Count, wps.curSegment.transform);
@@ -680,6 +713,27 @@ namespace TrafficSimulation {
             wps.intersections.Add(intersection);   
         }
 
+        private static void AddCorners(Vector3 position, int _intId)
+        {
+            GameObject parentGO = GameObject.Find("Corners");
+            string cornerName = "Corner-" + _intId;
+            GameObject cornerGo = EditorHelper.CreateGameObject(cornerName, parentGO.transform);
+            cornerGo.transform.position = position;
+            cornerGo.name = cornerName;
+
+            BoxCollider bc = EditorHelper.AddComponent<BoxCollider>(cornerGo);
+
+            // change the size of the box collider to fit the intersection
+            bc.size = intersectionSize;
+            // change the center of the box collider to fit the intersection
+            Vector3 center = bc.center;
+            center.y = intersectionPos_y;
+            bc.center = center;
+            bc.isTrigger = true;
+
+            EditorHelper.AddComponent<Corner>(cornerGo);
+            
+        }
 
     }
 }
