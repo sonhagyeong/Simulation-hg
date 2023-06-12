@@ -113,7 +113,7 @@ namespace TrafficSimulation{
                 {
                     if(noReasonStopWatch.ElapsedMilliseconds/1000f > 2f)
                     {
-                        UnityEngine.Debug.Log(this.name + "  아무이유없이 멈췄음! --> noReasonStopWatch.ElapsedMilliseconds/1000f : " + noReasonStopWatch.ElapsedMilliseconds/1000f);
+                        // UnityEngine.Debug.Log(this.name + "  아무이유없이 멈췄음! --> noReasonStopWatch.ElapsedMilliseconds/1000f : " + noReasonStopWatch.ElapsedMilliseconds/1000f);
                         // UnityEngine.Debug.LogError(this.name + "  아무이유없이 멈췄음! --> noReasonStopWatch.Elapsed.Seconds : " + noReasonStopWatch.Elapsed.Seconds);
 
                         noReasonStopWatch.Stop();
