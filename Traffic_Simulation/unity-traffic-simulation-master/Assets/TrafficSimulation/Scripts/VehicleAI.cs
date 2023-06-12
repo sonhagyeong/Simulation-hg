@@ -152,6 +152,8 @@ namespace TrafficSimulation {
                 acc = 0;
                 brake = 1;
                 wheelDrive.maxSpeed = Mathf.Min(wheelDrive.maxSpeed / 2f, 5f);
+                this.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
+
                 // Debug.Log(this.name + " STOP");
             }
             else{
@@ -162,6 +164,7 @@ namespace TrafficSimulation {
                     // acc가 클수록 속도는 더 적게 줄어듬
                     acc = 2f;
                     brake = 0f;
+                    this.gameObject.GetComponent<TruckInfo>().nowStatus = NowStatus.WAITING;
                     // Debug.Log(this.name+ " SLOW DOWN");
                 }
 
