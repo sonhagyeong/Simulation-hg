@@ -9,7 +9,7 @@ namespace TrafficSimulation{
     public class CreateTruckAndStation : MonoBehaviour
     {
 
-        private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks_shortest_20.csv";
+        private string truckFilePath = "C:\\Users\\USER\\workspace\\Trucks_LP_20.csv";
 
         public static List<CreateTruckData> truckDataList = new List<CreateTruckData>();
 
@@ -345,6 +345,7 @@ namespace TrafficSimulation{
 
                 TruckInfo truckInfo = truck.GetComponent<TruckInfo>();
                 truckInfo.truckWorkStations = _workStaions;
+                truckInfo.truckWorkStationsNum = _workStaions.Count;
 
                 int workStationCount = _workStaions.Count;
                 // truckInfo.truckOrigin = _workStaions[0];
