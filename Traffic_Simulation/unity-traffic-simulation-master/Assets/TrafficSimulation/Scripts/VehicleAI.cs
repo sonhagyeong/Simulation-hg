@@ -136,7 +136,7 @@ namespace TrafficSimulation {
 
             //Default, full acceleration, no break and no steering
             // float acc = 1;
-            float acc = 15;
+            float acc = 7;
             float brake = 0;
             float steering = 0;
             wheelDrive.maxSpeed = initMaxSpeed;
