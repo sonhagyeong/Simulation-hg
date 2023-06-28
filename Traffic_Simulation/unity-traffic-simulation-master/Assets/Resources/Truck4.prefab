@@ -673,8 +673,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   filePath: Assets/result.csv
-  stationWatchList: []
-  totalTime: 0
 --- !u!114 &-5933206037062719183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,6 +686,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   truckWorkStations: []
+  truckWorkStationsNum: 0
   truckOrigin: {x: 0, y: 0, z: 0}
   truckDestination: {x: 0, y: 0, z: 0}
   truckRouteName: 
@@ -698,6 +697,7 @@ MonoBehaviour:
   processTime: 10
   nowTurnNum: 0
   turnStations: []
+  truckStationWatchList: []
   nowStatus: 2
 --- !u!114 &2287627267192853579
 MonoBehaviour:
@@ -733,14 +733,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   downForce: 150
-  maxAngle: 90
+  maxAngle: 95
   steeringLerp: 10
   steeringSpeedMax: 40
   maxTorque: 300
   brakeTorque: 10000
   unitType: 0
-  minSpeed: 30
-  maxSpeed: 70
+  minSpeed: 35
+  maxSpeed: 75
   leftWheelShape: {fileID: 6238161387211472396, guid: ccfaa9eec1c4f654d9224b3d6382e480,
     type: 3}
   rightWheelShape: {fileID: 1677003440194013298, guid: 3cef6b64b7157ee499c0487f1ba44903,
