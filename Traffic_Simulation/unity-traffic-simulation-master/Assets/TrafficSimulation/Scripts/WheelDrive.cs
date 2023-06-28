@@ -22,11 +22,10 @@ namespace TrafficSimulation{
     public class WheelDrive : MonoBehaviour
     {
         [Tooltip("Downforce applied to the vehicle")]
-        // public float downForce = 1000f;
-        public float downForce = 100f;
+        public float downForce = 150f;
 
         [Tooltip("Maximum steering angle of the wheels")]
-        public float maxAngle = 78f;
+        public float maxAngle = 95f;
 
         [Tooltip("Speed at which we will reach the above steering angle (lerp)")]
         // public float steeringLerp = 20f;
@@ -51,13 +50,10 @@ namespace TrafficSimulation{
         public UnitType unitType;
 
         [Tooltip("Min Speed - when driving (not including stops/brakes), in the unit choosen above. Should be > 0.")]
-        public float minSpeed = 30;
-        // public float minSpeed = 5;
-
+        public float minSpeed = 35;
 
         [Tooltip("Max Speed in the unit choosen above")]
-        public float maxSpeed = 70;
-        // public float maxSpeed = 50;
+        public float maxSpeed = 75;
 
         [Tooltip("Drag the wheel shape here.")]
         public GameObject leftWheelShape;
